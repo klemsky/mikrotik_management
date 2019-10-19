@@ -11,5 +11,6 @@ try {
     	}
     	echo $printRequest;
 } catch (Exception $e) {
-    echo 'Unable to connect to RouterOS.';
+    // echo 'Unable to connect to RouterOS.';
+    // echo $e;
 }
