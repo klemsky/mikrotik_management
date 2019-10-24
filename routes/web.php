@@ -14,3 +14,6 @@
 Route::get('/', function () {
     return view('index');
 });
+Route::get('/ipall', function () {
+    return view('ipall');
+});

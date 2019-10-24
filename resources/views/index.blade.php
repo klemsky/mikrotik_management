@@ -9,8 +9,8 @@ try {
     	foreach ($util->setMenu('/log')->getAll() as $entry) {
         	echo $entry('time') . ' ' . $entry('topics') . ' ' . $entry('message') . '<br>';
     	}
-    	echo $printRequest;
+    	// echo $printRequest;
 } catch (Exception $e) {
     // echo 'Unable to connect to RouterOS.';
-    // echo $e;
+    echo $e;
 }
