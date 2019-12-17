@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/style-edu.css">
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/login-edu.css">
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/custom.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body cz-shortcut-listen="true">
@@ -52,7 +53,7 @@
                                                 <span class="icon-wrap">
                                                     <i class="icon icon-user"></i>
                                                 </span>
-                                                <input type="text" id="address" placeholder="Address" class="input-form" name="address">
+                                                <input type="text" id="address" placeholder="Address" class="input-form" name="address" value="{{ old('address') }}">
                                             </span>
                                         </span>
                                 </p>
@@ -62,7 +63,7 @@
                                                 <span class="icon-wrap">
                                                     <i class="icon icon-user"></i>
                                                 </span>
-                                                <input type="text" id="user" placeholder="Username" class="input-form" name="user">
+                                                <input type="text" id="user" placeholder="Username" class="input-form" name="user" value="{{ old('user') }}">
                                             </span>
                                         </span>
                                 </p>
@@ -71,9 +72,19 @@
                                             <span class="icon-wrap">
                                                 <i class="icon icon-pass"></i>
                                             </span>
-                                            <input type="password" id="password" placeholder="Password" class="input-form" name="password">
+                                            <input type="password" id="password" placeholder="Password" class="input-form" name="password" value="{{ old('password') }}">
                                         </span>
                                 </p>
+                                <br>
+                                        @if($errors->any())
+                                        <span class="alert is-error">
+                                            @foreach($errors->all() as $error)
+                                            
+                                                {{ $error }} </br>
+                                            
+                                            @endforeach
+                                        </span>  
+                                        @endif    
                                 <br>
                                 <p>
                                     <input type="submit" id="password_submitBtn" value="Login" class="button button-primary wide">
