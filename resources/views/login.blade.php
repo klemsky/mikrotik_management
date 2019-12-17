@@ -32,7 +32,6 @@
                         </div>
                     </header>
                     <section class="main-form">
-
                             <dl id="mode_password" style="display: block;">
                                     <span class="alert is-error login_box_msg" style="display: none; width: 100%;">
                                         <dd style="font-size: 0.8em"></dd>
