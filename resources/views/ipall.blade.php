@@ -10,10 +10,12 @@ try {
    	$client = new RouterOS\Client('10.21.0.152', 'admin', 'mikman123!');
 	// Ambil List IP
 	$getIPs = $client->sendSync(new RouterOS\Request('/ip address print'));
+	// print_r($getIPs);
 	foreach ($getIPs as $getIP){
 	    if($getIP->getType() === RouterOS\Response::TYPE_DATA) {
-      		echo 'IP: ', $getIP->getProperty('src-address'),
-	      ' Interface: ', $getIP->getProperty('dst-address'),
+      		echo 'IP: ', $getIP->getProperty('address'),
+	      ' Network: ', $getIP->getProperty('network'),
+	      ' Interface: ', $getIP->getProperty('interface'),
 	      "<br/>";
 	    }
 	}

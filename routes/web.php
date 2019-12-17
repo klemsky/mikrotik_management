@@ -14,6 +14,17 @@
 Route::get('/', function () {
     return view('index');
 });
+
+Route::get('/login', function () {
+    return view('login');
+});
+
+Route::post('/submitLogin','LoginController@login');
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// });
+
 Route::get('/ipall', function () {
     return view('ipall');
 });
