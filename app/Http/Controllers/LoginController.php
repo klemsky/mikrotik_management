@@ -15,7 +15,7 @@ class LoginController extends Controller
 		// $datas = $util->setMenu('/log')->getAll();
     		// $datas = $client->sendSync(new RouterOS\Request('/ip address print'));
 
-    		// return view('dashboard', compact('util'));
+    		return view('dashboard', compact('util'));
     	} catch (Exception $e) {
     		// return redirect()->back()->with('error',$e);
     	}
