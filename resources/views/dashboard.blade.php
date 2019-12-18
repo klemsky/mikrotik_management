@@ -12,7 +12,8 @@
 		use PEAR2\Net\RouterOS;
 		use Illuminate\Support\Facades\Session;
 
-		$client = session::get('client');
+		// $client = session::get('client');
+		session::put('client',$client);
 		$util = new RouterOS\Util($client);
 
 		$dataLog = $util->setMenu('/log')->getAll();

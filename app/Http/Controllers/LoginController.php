@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers;
 
-
-
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\redirect;
-
 
 class LoginController extends Controller
 {
@@ -35,8 +32,6 @@ class LoginController extends Controller
         return view('dashboard');
     }
 
-
-
     public function loginpost(Request $request){
         // $validate = Validator::make(
         //     $request->all(), 
@@ -53,12 +48,14 @@ class LoginController extends Controller
                 // DO WHILE
                 $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
                 $util = new RouterOS\Util($client);
+                // dd($client);
             }catch(Exception $e){
                 echo "error g bisa ";
             }
             session::put('client',$client);
             session::put('util',$util);
-            return view('dashboard');
+            // return view('dashboard');
+            return view('dashboard', compact('client'));
             // return redirect('/dashboard')->with(session::put('util',$util));
         // }
     }
@@ -70,9 +67,12 @@ class LoginController extends Controller
      }
 
     function getIP(){
-        $util = session::get('util');
+        // $client = session::get('client');
+        // $util = $util = new RouterOS\Util($client);
+        // $client = new RouterOS\Client('10.21.0.234');
+        // session::put('client',$client);
 
-        // dd($util);
+        dd(session::get('client'));
 
         return view('ipall', compact('util'));
     }

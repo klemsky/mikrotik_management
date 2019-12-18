@@ -12,10 +12,10 @@
 		use PEAR2\Net\RouterOS;
 		use Illuminate\Support\Facades\Session;
 
-		$util = session::get('util');
+		// $util = session::get('util');
 		// $util = new RouterOS\Util($client);
+		
 		$datas = $util->setMenu('/log')->getAll();
-
 		// $datas = $client->sendSync(new RouterOS\Request('/ip address print'));
 	?>
 	@foreach($datas as $data)
