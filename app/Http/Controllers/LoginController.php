@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
+
     public function loginDepre(Request $request){
     	try {
     		$client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
@@ -31,7 +32,6 @@ class LoginController extends Controller
     	];
     }
 
-
     public function login(Request $request){
     	$validator = Validator::make($request->all(), [
     		'address' => 'required|ipv4',
@@ -42,6 +42,117 @@ class LoginController extends Controller
     	if($validator->fails()){
     		return back()->withErrors($validator)->withInput();
     	}
-    	return 'Hai :)';
+    	
+
+    	try {
+    		
+    		$util = new RouterOS\Util(
+    			$client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!')
+    		);
+    		session(['address' => '10.21.0.234']);
+    		session(['user' => 'admin']);
+    		session(['password' => 'mikman123!']);
+
+
+    		//GET IP
+    		$dataIP = $util->setMenu('/ip address')->getAll();
+
+    		//GET LOG
+    		$dataLog = $util->setMenu('/log')->getAll();
+
+    		//LDAP
+			// $ldap_dn = "cn=read-only-admin,dc=example,dc=com";
+			// $ldap_password = "password";
+			
+			// $ldap_con = ldap_connect("ldap.forumsys.com");
+			
+			// ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
+			
+			// if(ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {
+
+			//   echo "Bind successful!";
+			//    $filter = "(uid=newton)";
+			// 	$result = ldap_search($ldap_con, "dc=example,dc=com", $filter) or exit("Unable to search");
+			// 	$entries = ldap_get_entries($ldap_con, $result);
+
+			// 	print "<pre>";
+			// 	print_r ($entries);
+			// 	print "</pre>";
+			  
+			// } else {
+			// 	echo "Invalid user/pass or other errors!";
+			// }
+
+
+    		$ldap_dn = "CN=Richie Muliawan,OU=NonPolicyLicense,OU=IT,DC=binus,DC=local";
+			$ldap_password = "";
+			
+			$ldap_con = ldap_connect("ldap.binus.edu");
+			
+			ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
+			ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
+			
+			if(ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {
+
+		  		echo "Bind successful!";
+			  		
+			   	$filter = "(cn=Kris Saputra)";
+				$result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+				$entries = ldap_get_entries($ldap_con, $result);
+
+				print "<pre>";
+				print_r ($entries);
+				print "</pre>";
+			  
+			} else {
+				echo "Invalid user/pass or other errors!";
+			}
+
+    		return view('dashboard', compact('dataIP', 'dataLog'));
+    	} catch (Exception $e) {
+
+    	}
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public function getIP(Request $request){
+		$address = session('address');
+		$user = session('user');
+		$password = session('password');
+
+		$util = new RouterOS\Util(
+			$client = new RouterOS\Client($address, $user, $password)
+		);
+
+		$datas = $util->setMenu('/ip address')->getAll();
+		// foreach ($util->getAll() as $item) {
+		//     echo 'IP: ', $item->getProperty('address'),
+		//          ' MAC: ', $item->getProperty('mac-address'),
+		//          "\n";
+		// }
+
+		return view('dashboard', compact('datas'));
+    }
+
+    public function getLog(Request $request){
+    	// dd($request->all());
+
+    	$newutil = $request->serialized;
+    	var_dump($newutil);
+
+    	
     }
 }

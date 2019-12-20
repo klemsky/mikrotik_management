@@ -25,6 +25,6 @@ Route::post('/submitLogin','LoginController@login');
 //     return view('dashboard');
 // });
 
-Route::get('/ipall', function () {
-    return view('ipall');
-});
+Route::post('/getlog', 'LoginController@getLog');
+
+// Route::get('/')

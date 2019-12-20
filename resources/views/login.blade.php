@@ -44,7 +44,7 @@
                                         <dd style="font-size: 0.8em; line-height: 22px;"></dd>
                                     </span>
                             </dl>
-                        <form method="POST" action="/submitLogin" enctype="multipart/form-data" autocomplete="off">
+                        <form method="POST" action="/submitLogin" enctype="multipart/form-data" autocomplete="on">
                             {{csrf_field()}}
                                 <label>Login MikroTik</label>
                                 <p>
