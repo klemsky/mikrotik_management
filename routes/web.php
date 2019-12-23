@@ -21,8 +21,11 @@ Route::get('/login', function () {
 
 Route::post('/submitLogin','LoginController@loginpost');
 
+Route::post('/relog','AdminController@reLogin');
+Route::post('/vpn-account','AdminController@showAllVPN');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
-});
+})->name('dashboard');
 
 Route::get('/ipall','LoginController@getIP');
