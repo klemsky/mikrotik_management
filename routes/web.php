@@ -11,6 +11,8 @@
 |
 */
 
+Route::get('/getData','ClientController@test')->name('getData');
+
 Route::get('/', function () {
     return view('index');
 });
@@ -19,11 +21,26 @@ Route::get('/login', function () {
     return view('login');
 });
 
-Route::post('/submitLogin','LoginController@login');
+Route::post('/submitLogin','LoginController@loginpost');
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// });
+Route::get('/dashboard',function(){
+	return view('dashboard');
+});
+
+Route::get('/clientRegister',function(){
+	return view('clientRegister');
+});
+
+Route::post('/registerClient','ClientController@registerClient');
+Route::post('/registerVendor','ClientController@registerVendor');
+
+Route::get('/clientDashboard',function(){
+	return view('clientDashboard');
+});
+
+Route::get('/ticketNumber',function(){
+	return view('ticketNumber');
+});
 
 Route::get('/ipall', function () {
     return view('ipall');
