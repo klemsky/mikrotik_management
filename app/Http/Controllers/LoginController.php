@@ -11,31 +11,26 @@ use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\redirect;
 
-
 class LoginController extends Controller
 {
-    /*public function login(Request $request){
-        try {
-            // $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
-            $client = new RouterOS\Client($request->address, $request->user, $request->password);
+    // public function login(Request $request){
+    //     try {
+    //         // $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
+    //         $client = new RouterOS\Client($request->address, $request->user, $request->password);
 
-            $util = new RouterOS\Util($client);
-            // $datas = $util->setMenu('/log')->getAll(); 
-            // $datas = $client->sendSync(new RouterOS\Request('/ip address print'));
+    //         $util = new RouterOS\Util($client);
+    //         // $datas = $util->setMenu('/log')->getAll(); 
+    //         // $datas = $client->sendSync(new RouterOS\Request('/ip address print'));
 
-            return view('dashboard', compact('util'));
-        } catch (Exception $e) {
-            // return redirect()->back()->with('error',$e);
-        }
-    }*/
+    //         return view('dashboard', compact('util'));
+    //     } catch (Exception $e) {
+    //         // return redirect()->back()->with('error',$e);
+    //     }
+    // }
 
-    public function login(Request $request){     
-        // if(!Session::has('isLogin'))
-            // return view('login');
+    public function login(Request $request){
         return view('dashboard');
     }
-
-
 
     public function loginpost(Request $request){
         // $validate = Validator::make(
@@ -51,22 +46,31 @@ class LoginController extends Controller
         // }else{
             try {
                 // DO WHILE
-                $client = new RouterOS\Client($request->address, $request->user, $request->password);
-      
-                    $util = new RouterOS\Util($client);
-                    $data [] = [
-                        $Uips = $request->address,
-                        $Uname = $request->user,
-                        $Upass = $request->password
+                $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
+                $util = new RouterOS\Util($client);
 
-                        ];
-
-                }catch(Exception $e){
-                    echo "error g bisa ";
-                }
-            
-                return redirect('/dashboard')->with(session::put('key',$data));
+                $dataLog = $util->setMenu('/log')->getAll();
+            }catch(Exception $e){
+                echo "error g bisa ";
+            }
+            // session::put('client',$client);
+            session::put('util',$util);
+            session::put('address','10.21.0.234');
+            session::put('username','admin');
+            // return redirect()->route('dashboard');
+            return view('dashboard');
+            // return redirect('dashboard');
         // }
+    }
+
+    function logout(Request $request){
+        $request->session()->flush();
+        
+        return redirect('');
+     }
+
+    function getIP(){
+        return view('ipall', compact('util'));
     }
 
     function logout(Request $request){

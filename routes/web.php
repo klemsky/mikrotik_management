@@ -42,6 +42,11 @@ Route::get('/ticketNumber',function(){
 	return view('ticketNumber');
 });
 
-Route::get('/ipall', function () {
-    return view('ipall');
-});
+Route::post('/relog','AdminController@reLogin');
+Route::post('/vpn-account','AdminController@showAllVPN');
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+Route::get('/ipall','LoginController@getIP');

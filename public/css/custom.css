@@ -1,0 +1,245 @@
+.responsive {
+    display: flex;
+}
+
+.term {
+    display: flex;
+    align-items: center;
+}
+
+.term .label {
+    padding-left: 8px;
+    margin: 0;
+}
+
+@media (min-width: 441px) {
+    .responsive .custom-combobox .combobox-label {
+        border-left: none;
+    }
+
+    .user-form-content {
+        min-width: 400px;
+    }
+}
+
+@media (max-width: 440px) {
+    .responsive {
+        flex-direction: column;
+    }
+
+    .responsive .custom-combobox {
+        margin-top: 20px;
+    }
+
+    .user-form .user-form-content .header .logo .site-description {
+        padding-left: 44px;
+    }
+
+    .custom-checkbox > label.label {
+        padding-left: 0px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 406px) {
+    .user-form .user-form-content .header .logo .site-description {
+        padding-left: 16.6%;
+    }
+}
+
+#dropdown-mail:focus + span.combobox-label {
+    border: 1px solid #ff9024
+}
+
+.custom-combobox:focus-within::after {
+    background-position: 0 -256px;
+}
+
+ol.special-ol > li {
+    padding-left: 12px;
+}
+
+span.alert {
+    height: auto;
+    padding: 8px 15px;
+}
+
+span.alert > dd {
+    line-height: 22px;
+}
+
+span.alert > dd::before {
+    display: none;
+}
+
+input#password_disclaimer:focus {
+    outline-color: #ff9024 !important;
+    outline-style: auto !important;
+    outline-width: 1px !important;
+}
+
+.custom-checkbox > label.label {
+    padding-left: 0px;
+    font-size: 12px;
+}
+
+
+
+/* .language-wrap {
+    text-align: right;
+    padding-bottom: 20px;
+}
+
+.language-button { 
+    padding: 0 10px;
+} */
+
+#statementModal > div.single-content,
+#cpassModal > div.single-content {
+    text-align: justify;
+}
+
+
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    padding-top: 5%;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.6);
+}
+
+
+.custom-modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 35px;
+    border: 1px solid #888;
+    width: 70%;
+    max-height: 75%;
+    max-width: 550px;
+    overflow-y: auto;
+}
+
+
+.custom-modal-close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.custom-modal-close:hover,
+.custom-modal-close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+footer.footer {
+    height: auto;
+}
+
+.white-cover-layer{
+    background-color: rgb(255,255,255);
+    height:100%;
+    width:100%;
+    position: fixed;
+}
+
+input[type="checkbox"] {
+    position: absolute;
+    z-index: -1;
+}
+#lblRemember {
+    text-transform: none;
+    color: #5E5E5E;
+    cursor: pointer;
+}
+input[type="checkbox"] + #lblRemember:before {
+    border: 1.2px solid #ABABAB;
+    border-radius: 3px;
+    background: #FFFFFF;
+    content: "\00a0";
+    display: inline-block;
+    font: 12px/1em sans-serif;
+    height: 12px;
+    width: 12px;
+    margin: 0 .25em 0 0;
+    padding: 0;
+    vertical-align: middle;
+    visibility: block;
+}
+input[type="checkbox"]:checked + #lblRemember:before {
+    border: 1.2px solid #A8A8A8;
+    background: #F9F9F9;
+    color: black;
+    content: "\2713";
+    text-align: center;
+}
+input[type="checkbox"]:checked + #lblRemember:after {
+    font-weight: bold;
+}
+
+input[type="checkbox"]:focus + #lblRemember::before {
+    border: 1.1px solid rgb(244, 139, 49);
+}
+
+.combobox-new select{
+    height: 40px;
+    width: 145px;
+    padding-left: 10px;
+    color: #5e5e5e;
+    border: 1px solid #C9C9C9;
+    border-left: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background: #ffffff;
+    background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+    background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.5em;
+    background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+    background-repeat: no-repeat;
+}
+
+.combobox-new select:focus{
+    border: 1px solid rgb(244, 139, 49);
+}
+
+.disabled select{
+    background: #E4E4E4;
+    background-image:
+    linear-gradient(45deg, transparent 50%, gray 50%),
+    linear-gradient(135deg, gray 50%, transparent 50%),
+    linear-gradient(to right, #ccc, #ccc);
+    background-position:
+    calc(100% - 20px) calc(1em + 2px),
+    calc(100% - 15px) calc(1em + 2px),
+    calc(100% - 2.5em) 0.5em;
+    background-size:
+    5px 5px,
+    5px 5px,
+    1px 1.5em;
+    background-repeat: no-repeat;
+}
+
+@media (max-width: 450px){
+    .combobox-new select{
+        border-top: none;
+        border-left: 1px solid #C9C9C9;
+        width: 100%;
+    }
+}
