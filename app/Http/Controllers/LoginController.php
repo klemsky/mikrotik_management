@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+
+
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
@@ -70,4 +72,11 @@ class LoginController extends Controller
     function getIP(){
         return view('ipall', compact('util'));
     }
+
+    function logout(Request $request){
+        $request->session()->flush();
+        
+        return redirect('');
+     }
+    // }
 }
