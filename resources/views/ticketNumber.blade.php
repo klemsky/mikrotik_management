@@ -2,10 +2,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta id="css-theme" content="edu">
-    <title>Login</title>
+    <title>Register VPN Ticket Number</title>
 
     <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{asset('img/favicon.png')}}" />
+    <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
 
     <!-- load stylesheet -->
     <script type="text/javascript" src="{{asset('js/jquery.js')}}"></script>
@@ -32,32 +32,32 @@
                         </div>
                     </header>
                     <section class="main-form">
-                        <form method="POST" action="/submitLogin" enctype="multipart/form-data" autocomplete="off">
+                        <form method="POST" action="/submitTicket" enctype="multipart/form-data" autocomplete="off">
                             {{csrf_field()}}
                                 <label>VPN Ticket Number</label>
                                 <p>
+                                    <span class="custom-textbox">
                                         <span class="custom-textbox">
-                                            <span class="custom-textbox">
-                                                <span class="icon-wrap">
-                                                    <i class="icon icon-user"></i>
-                                                </span>
-                                                <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numTicket">
+                                            <span class="icon-wrap">
+                                                <i class="icon icon-user"></i>
                                             </span>
+                                            <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numTicket">
                                         </span>
+                                    </span>
                                 </p>
                                 <p>
+                                    <span class="custom-textbox">
                                         <span class="custom-textbox">
-                                            <span class="custom-textbox">
-                                                <span class="icon-wrap">
-                                                    <i class="icon icon-user"></i>
-                                                </span>
-                                                <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
+                                            <span class="icon-wrap">
+                                                <i class="icon icon-user"></i>
                                             </span>
+                                            <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
                                         </span>
+                                    </span>
                                 </p>
                                	<br>
                                 <p>
-                                    <input type="submit" id="password_submitBtn" value="Login" class="button button-primary wide">
+                                    <input type="submit" id="ticket_submitBtn" value="Login" class="button button-primary wide">
                                 </p>
                         </form>
                     </section>
@@ -67,8 +67,6 @@
                         </div>
                     </footer>
                     <div id="sms_getCodeBtn" style="display: none;"></div>
-
-
                 </div>
             </div>
         </div>

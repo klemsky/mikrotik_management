@@ -1,13 +1,16 @@
+
 function showRequest(){
-	console.log("test");
+	$('#command').val($("#show-request").children().text());
+    showModal();
 }
 
 function showVPNs(){
-	$("#error").css("display", "none");
-	$('#modal-action').modal('show');
+    $('#command').val($("#show-vpn").children().text());
+    showModal();
 }
 
-function submitShowVPNs(){
+// CODE RELOGIN MIKROTIK
+function relogin(){
 	$.ajax({
         type: "POST",
         url: '/relog',
@@ -16,10 +19,9 @@ function submitShowVPNs(){
 	    },
         data: {
             password: $("#password").val(),
-            command: "showAllVPN",
+            command: $('#command').val(),
         },
         success: function (response) {
-        	console.log(response.data['name'].length);
         	$("#data-request").css('display','block');
         },
         error: function (xhr, status, error) {
@@ -29,4 +31,9 @@ function submitShowVPNs(){
         	$("#error").css("display", "block");
         }
     });
+}
+
+function showModal(){
+    $("#error").css("display", "none");
+    $('#modal-action').modal('show');
 }

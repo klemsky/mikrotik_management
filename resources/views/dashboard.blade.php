@@ -9,16 +9,6 @@
     <meta name="csrf-token" content="{{ csrf_token() }}" />
 	<title>Mikman</title>
 
-    {{--Custom Button--}}
-    {{--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">--}}
-
-    <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
-    <link rel="stylesheet" href="{{asset('css/jquery.mCustomScrollbar.min.css')}}">
-
-    <link rel="stylesheet" href="{{asset('css/main.css')}}">
-    <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
-    <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
-
     {{--Swall Fire--}}
     {{--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>--}}
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
@@ -29,7 +19,16 @@
 
     <script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
 
-    <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+    {{--Custom Button--}}
+    {{--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">--}}
+
+    <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" href="{{asset('css/jquery.mCustomScrollbar.min.css')}}">
+
+    <link rel="stylesheet" href="{{asset('css/main.css')}}">
+    <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
+    <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
+
 </head>
 
 <body>
@@ -108,12 +107,12 @@
                 <div class="sidebar-item sidebar-menu">
                     <ul>
                         <li class="sidebar-dropdown info active" style="padding: 0px;border-top: 1px solid #ffffff;">
-                            <a href="javascript:;" onclick="showRequest()">
+                            <a href="#" id="show-request" onclick="showRequest(this)">
                                 <span class="menu-text" style="padding:10px 0 10px 10px;">Request</span>
                             </a>
                         </li>
                         <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
-                            <a href="javascript:;" onclick="showVPNs()">
+                            <a href="#" id="show-vpn" onclick="showVPNs()">
                                 <span class="menu-text" style="padding:10px 0 10px 10px;">VPN Status</span>
                             </a>
                         </li>
@@ -149,10 +148,11 @@
                         <strong><h5>Password:</h5></strong>
                         <p id="error"></p>
                         <input type="password" id="password" placeholder="MikroTik Password" class="form-control" name="password">
+                        <input type="hidden" id="command" name="command">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" onclick="submitShowVPNs()">Login</button>
+                        <button type="button" class="btn btn-success" onclick="relogin()">Login</button>
                     </div>
                 </div>
             </div>
@@ -179,4 +179,6 @@
 		}
 	}
 </script>
+
 <script src="{{asset('js/main.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>

@@ -42,6 +42,8 @@ Route::get('/ticketNumber',function(){
 	return view('ticketNumber');
 });
 
+Route::post('/submitTicket','ClientController@registerTicketNumber');
+
 Route::post('/relog','AdminController@reLogin');
 Route::post('/vpn-account','AdminController@showAllVPN');
 

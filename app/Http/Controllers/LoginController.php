@@ -72,11 +72,4 @@ class LoginController extends Controller
     function getIP(){
         return view('ipall', compact('util'));
     }
-
-    function logout(Request $request){
-        $request->session()->flush();
-        
-        return redirect('');
-     }
-    // }
 }
