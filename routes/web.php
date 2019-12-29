@@ -17,8 +17,8 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::get('/login', function () {
-    return view('login');
+Route::get('/admin', function () {
+    return view('pages.admin.login');
 });
 
 Route::post('/submitLogin','LoginController@loginpost');
@@ -27,9 +27,14 @@ Route::get('/dashboard',function(){
 	return view('dashboard');
 });
 
-Route::get('/clientRegister',function(){
-	return view('clientRegister');
+// Route::get('/login/request={request}', 'ClientController@getLink');
+Route::get('/login/request={request}', 'ClientController@getLink');
+Route::get('/login',function(){
+	return view('pages.client.login');
 });
+
+Route::post('/generate','ClientController@generateLink');
+Route::post('/register', 'ClientController@loginEmailLDAP');
 
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
@@ -38,17 +43,13 @@ Route::get('/clientDashboard',function(){
 	return view('clientDashboard');
 });
 
-Route::get('/ticketNumber',function(){
-	return view('ticketNumber');
+Route::get('/ticket',function(){
+	return view('pages.client.ticket');
 });
 
 Route::post('/submitTicket','ClientController@registerTicketNumber');
 
 Route::post('/relog','AdminController@reLogin');
 Route::post('/vpn-account','AdminController@showAllVPN');
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
 
 Route::get('/ipall','LoginController@getIP');

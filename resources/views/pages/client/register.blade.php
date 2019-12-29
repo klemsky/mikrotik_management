@@ -34,6 +34,7 @@
                                 <div class="col-md-11">
                                     <div id="ticket-container">
                                         Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
+                                        <input type="hidden" value={{$ticket}} name="ticket">
                                     </div>
                                     <div class="custom-textbox">
                                         <input type="text" placeholder="Your Name" class="input-form" name="txtFullName">
@@ -44,8 +45,8 @@
                                     <div class="custom-textbox">
                                         <input type="text" placeholder="Your Department" class="input-form" name="txtDivision">
                                     </div>
-                                    <div class="custom-textbox">
-                                        <div class="custom-radio">
+                                    <div class="custom-radio">
+                                        <div>
                                             <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
                                             <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
                                         </div>
@@ -269,4 +270,3 @@ body{
 	}
 }
 </style>
-

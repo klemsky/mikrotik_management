@@ -32,33 +32,32 @@
                         </div>
                     </header>
                     <section class="main-form">
-                        <form method="POST" action="/submitTicket" enctype="multipart/form-data" autocomplete="off">
-                            {{csrf_field()}}
-                                <label>VPN Ticket Number</label>
-                                <p>
+                        <form onsubmit="showLink(); return false;">
+                            <label>VPN Ticket Number</label>
+                            <p>
+                                <span class="custom-textbox">
                                     <span class="custom-textbox">
-                                        <span class="custom-textbox">
-                                            <span class="icon-wrap">
-                                                <i class="icon icon-user"></i>
-                                            </span>
-                                            <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numTicket">
+                                        <span class="icon-wrap">
+                                            <i class="icon icon-user"></i>
                                         </span>
+                                        <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numberTicket">
                                     </span>
-                                </p>
-                                <p>
+                                </span>
+                            </p>
+                            <div id="link-ticket"></div>
+                            <p>
+                                <span class="custom-textbox">
                                     <span class="custom-textbox">
-                                        <span class="custom-textbox">
-                                            <span class="icon-wrap">
-                                                <i class="icon icon-user"></i>
-                                            </span>
-                                            <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
+                                        <span class="icon-wrap">
+                                            <i class="icon icon-user"></i>
                                         </span>
+                                        <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
                                     </span>
-                                </p>
-                               	<br>
-                                <p>
-                                    <input type="submit" id="ticket_submitBtn" value="Login" class="button button-primary wide">
-                                </p>
+                                </span>
+                            </p>
+                            <p>
+                                <input type="submit" id="ticket_submitBtn" value="Login" class="button button-primary wide">
+                            </p>
                         </form>
                     </section>
                     <footer class="footer">
@@ -83,7 +82,10 @@
             });
         @endif
     });
+
+    var urlGenerate = "{{ action('ClientController@generateLink') }}";
 </script>
 
 
 </body></html>
+<script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
