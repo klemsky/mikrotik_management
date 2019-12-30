@@ -107,12 +107,12 @@
                 <div class="sidebar-item sidebar-menu">
                     <ul>
                         <li class="sidebar-dropdown info active" style="padding: 0px;border-top: 1px solid #ffffff;">
-                            <a href="#" onclick="showRequest()">
+                            <a href="#" id="show-request" onclick="showRequest(this)">
                                 <span class="menu-text" style="padding:10px 0 10px 10px;">Request</span>
                             </a>
                         </li>
                         <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
-                            <a href="#" id="aHrefVPNStatus">
+                            <a href="#" id="show-vpn" onclick="showVPNs()">
                                 <span class="menu-text" style="padding:10px 0 10px 10px;">VPN Status</span>
                             </a>
                         </li>
@@ -183,10 +183,11 @@
                         <strong><h5>Password:</h5></strong>
                         <p id="error"></p>
                         <input type="password" id="password" placeholder="MikroTik Password" class="form-control" name="password">
+                        <input type="hidden" id="command" name="command">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="button" class="btn btn-success" onclick="submitShowVPNs()">Login</button>
+                        <button type="button" class="btn btn-success" onclick="relogin()">Login</button>
                     </div>
                 </div>
             </div>
@@ -258,6 +259,7 @@
 			$("#change-button").text("IP Address");
 		}
 	}
-
-
 </script>
+
+<script src="{{asset('js/main.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>

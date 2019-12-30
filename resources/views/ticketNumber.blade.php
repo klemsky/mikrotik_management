@@ -2,10 +2,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta id="css-theme" content="edu">
-    <title>Login</title>
+    <title>Register VPN Ticket Number</title>
 
     <!-- favicon -->
-    <link rel="shortcut icon" type="image/png" href="{{asset('img/favicon.png')}}" />
+    <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
 
     <!-- load stylesheet -->
     <script type="text/javascript" src="{{asset('js/jquery.js')}}"></script>
@@ -32,33 +32,32 @@
                         </div>
                     </header>
                     <section class="main-form">
-                        <form method="POST" action="/submitLogin" enctype="multipart/form-data" autocomplete="off">
-                            {{csrf_field()}}
-                                <label>VPN Ticket Number</label>
-                                <p>
-                                        <span class="custom-textbox">
-                                            <span class="custom-textbox">
-                                                <span class="icon-wrap">
-                                                    <i class="icon icon-user"></i>
-                                                </span>
-                                                <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numTicket">
-                                            </span>
+                        <form onsubmit="showLink(); return false;">
+                            <label>VPN Ticket Number</label>
+                            <p>
+                                <span class="custom-textbox">
+                                    <span class="custom-textbox">
+                                        <span class="icon-wrap">
+                                            <i class="icon icon-user"></i>
                                         </span>
-                                </p>
-                                <p>
-                                        <span class="custom-textbox">
-                                            <span class="custom-textbox">
-                                                <span class="icon-wrap">
-                                                    <i class="icon icon-user"></i>
-                                                </span>
-                                                <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
-                                            </span>
+                                        <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numberTicket">
+                                    </span>
+                                </span>
+                            </p>
+                            <div id="link-ticket"></div>
+                            <p>
+                                <span class="custom-textbox">
+                                    <span class="custom-textbox">
+                                        <span class="icon-wrap">
+                                            <i class="icon icon-user"></i>
                                         </span>
-                                </p>
-                               	<br>
-                                <p>
-                                    <input type="submit" id="password_submitBtn" value="Login" class="button button-primary wide">
-                                </p>
+                                        <input type="email" id="email" placeholder="User Email" class="input-form" name="userEmail">
+                                    </span>
+                                </span>
+                            </p>
+                            <p>
+                                <input type="submit" id="ticket_submitBtn" value="Login" class="button button-primary wide">
+                            </p>
                         </form>
                     </section>
                     <footer class="footer">
@@ -67,8 +66,6 @@
                         </div>
                     </footer>
                     <div id="sms_getCodeBtn" style="display: none;"></div>
-
-
                 </div>
             </div>
         </div>
@@ -85,7 +82,10 @@
             });
         @endif
     });
+
+    var urlGenerate = "{{ action('ClientController@generateLink') }}";
 </script>
 
 
 </body></html>
+<script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>

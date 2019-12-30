@@ -13,7 +13,7 @@ use Illuminate\Routing\Redirector;
 class AdminController extends Controller
 {
 	public function reLogin(Request $request){
-		if($request->command == "showAllVPN")
+		if($request->command == "VPN Status")
 			return $this->showAllVPN($request);
 	}
 
