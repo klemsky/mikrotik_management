@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-
-
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
