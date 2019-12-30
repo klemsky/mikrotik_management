@@ -57,7 +57,7 @@ class ClientController extends Controller
             $VpnUserGroup->acl_group_name_allow = $aclDeptAllow;
             $VpnUserGroup->save();
         }
-
+        // dd($request->all());
         ////////// INSERT VPN USER
         if(empty(VpnUser::where('user_id',User::where('name',$request->user_name)->first()->id)->first())){
             $vpnUsername = $request->user_name;
@@ -71,7 +71,11 @@ class ClientController extends Controller
             $VpnUser->user_id = User::where('name',$request->user_name)->first()->id;
             $VpnUser->vpn_username = $vpnUsername;
             $VpnUser->no_ticket = $request->ticket;
-            $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
+            if($request->rbTemp == "Temporary"){
+                $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
+            }else{
+                $VpnUser->expiry_date = null;
+            }
             $VpnUser->completed = 0;
             $VpnUser->rejected = 0;
             $VpnUser->active = 0;
