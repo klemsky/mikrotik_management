@@ -60,6 +60,7 @@ Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
 
 @section('js')
 <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+<script type="text/javascript" src="{{asset('js/date.js')}}"></script>
 @if(isset($error))
 <script>
 showError('{{$error}}');

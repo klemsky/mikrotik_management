@@ -18,7 +18,7 @@ class CreateVpnUsersTable extends Migration
             $table->unsignedBigInteger('vpn_user_group_id');
             $table->unsignedBigInteger('user_id');
             $table->string('vpn_username');
-            $table->string('remote_address');
+            $table->string('remote_address')->nullable();
             $table->bigInteger('no_ticket');
             $table->dateTime('expiry_date');
             $table->boolean('completed');
