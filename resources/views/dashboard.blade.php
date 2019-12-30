@@ -131,7 +131,42 @@
             <div class="container-fluid p-5">
 				<div id='data-request' style="display: none;">qweqweqwewq</div>
             	<div id='data-log'>
-				</div>
+				</div >
+				<table >
+					<tr>
+						<td>Ticket Number</td>
+						<td>Username</td>
+						<td>Email</td>
+						<td>Division</td>
+						<td>Status</td>
+						<td>IP</td>
+						<td>Action</td>
+					</tr>
+                    @foreach($datas as $key)
+                    <tr>
+                    <form method="POST" action="/createVPN" enctype="multipart/form-data" autocomplete="off">
+                        {{csrf_field()}}
+						<td class="tickNum">{{$key->ticketNumber}}</td>
+                        <input type="hidden" name="ticketNumber" value="{{$key->ticketNumber}}"></input>
+						<td class="uName">{{$key->username}}</td>
+                        <input type="hidden" name="username" value="{{$key->username}}"></input>
+                        <td class="eMail">{{$key->email}}</td>
+                        <input type="hidden" name="email" value="{{$key->email}}"></input>
+						<td class="div">{{$key->division}}</td>
+                        <input type="hidden" name="division" value="{{$key->division}}"></input>
+						<td class="stat">{{$key->status}}</td>
+                        <input type="hidden" name="status" value="{{$key->status}}"></input>
+						<td class="ip">{{$key->ip}}</td>
+                        <input type="hidden" name="ip" value="{{$key->ip}}"></input>
+						<td><button type="submit" class="getRow">Create/Add</button></td>
+                    </form>
+                    </tr>
+                    @endforeach
+				</table>
+				
+				</form>
+
+		<!-- 	 -->
             </div>
         </main>
         <!-- page-content" -->
@@ -161,8 +196,54 @@
     <!-- page-wrapper -->
 </body>
 </html>
-
+<script src="{{asset('js/main.js')}}"></script>
+<script src="{{asset('js/mikman.js')}}"></script>
 <script type="text/javascript">
+    // Mengambil Data pada setip baris di tombol create/add
+    //  $(".getRow").click(function(){
+    //     var $row = $(this).closest("tr");
+    //     var $tickNum = $row.find(".tickNum").text();
+    //     var $uName = $row.find(".uName").text();
+    //     var $eMail = $row.find(".eMail").text();
+    //     var $div = $row.find(".div").text();
+    //     var $stat = $row.find(".stat").text();
+    //     var $ip = $row.find(".ip").text();
+    //     $.ajax({
+    //         headers: {
+    //             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+    //         },    
+    //         url: 'createVPN',
+    //         type: "post",
+    //         data: {
+    //             tickNum : $tickNum,
+    //             uName : $uName,
+    //             eMail : $eMail,
+    //             div : $div,
+    //             stat : $stat,
+    //             ip : $ip
+    //             // test : "ini datanya"
+    //         },
+    //             success: function(response){ // What to do if we succeed
+    //             if(data != null){
+    //                 alert("data ada");
+    //             }
+    //             // alert(response); 
+    //             // alert(data);
+    //             },
+    //         function(data, status){
+    //             alert('value stored');
+    //         }
+    //     // var $text = $row.find(".tickNum,.uName,.eMail,.div,.stat,.ip").text();
+    //     // alert($text);
+
+    //     });
+    // });
+
+    $(document).ready(function(){
+        $('#aHrefVPNStatus').on("click", function(){
+            relogin("VPN");
+        });
+    });
 	var log=1;
 	function changeStation(){
 		if(log==1){

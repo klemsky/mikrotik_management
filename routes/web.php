@@ -27,10 +27,18 @@ Route::get('/dashboard',function(){
 	return view('dashboard');
 });
 
-// Route::get('/login/request={request}', 'ClientController@getLink');
 Route::get('/login/request={request}', 'ClientController@getLink');
 Route::get('/login',function(){
 	return view('pages.client.login');
+
+Route::get('/adminDashboard','DashboardController@dashboard');
+
+Route::post('/createVPN','DashboardController@createAccount');
+
+// Route::get('/viewData','DashboardController@viewData');
+
+Route::get('/clientRegister',function(){
+	return view('clientRegister');
 });
 
 Route::get('/ticket',function(){

@@ -13,43 +13,45 @@ use GuzzleHttp\Client;
 
 class ClientController extends Controller
 {
-    public function registerClient(Request $request){
+	public function registerClient(Request $request){
 
-        $request->all();
-        // $validate = Validator::make(
-        //           $request->all(),
-        //           ['txtFullName' => 'required',
-        //           'txtEmail' =>'required',
-        //           'txtDivision' => 'required',
-        //           'rbTime' => 'required',
-        //           'txtAccess1' => 'required',
-        //           ]
-        //       );
-        //   if($validate->fails()){
-        //     return redirect()->back()->withInput($request->input)->withErrors($validate);
-        //   }else{
-        // $userBinus = new User;
+    $request->all();
+    // dd($request);
+		// $validate = Validator::make(
+  //           $request->all(), 
+  //           ['txtFullName' => 'required',
+  //           'txtEmail' =>'required',
+  //           'txtDivision' => 'required',
+  //           'rbTime' => 'required',
+  //           'txtAccess1' => 'required',
+  //           ]
+  //       );
+  //   if($validate->fails()){
+  //     return redirect()->back()->withInput($request->input)->withErrors($validate);
+  //   }else{
+      // $userBinus = new User;
+      $ticket = $request->txtTicket;
+      $username = $request->txtFullName;
+      $email = $request->txtEmail;
+      $division = $request->txtDivision;
+      $status = $request->rbTime;
+      $ip = "";
+      $i = 1;
 
-        dd($request);
-        $ticket = $request->txtTicket;
-        $username = $request->txtFullName;
-        $email = $request->txtEmail;
-        $division = $request->txtDivision;
-        $status = $request->rbTime;
-        $ip = "";
-        $i = 1;
+      while($request->accessIpCount > 0){
+        $request->accessIpCount--;
+        $ip .= ($request->accessIpCount == 0) ? ($request->txtAccess[$i]) : ($request->txtAccess[$i].",");
+        $i++;
+      }
 
-        while($request->accessIpCount > 0){
-            $request->accessIpCount--;
-            $ip .= ($request->accessIpCount == 0) ? ($request->txtAccess[$i]) : ($request->txtAccess[$i].",");
-            $i++;
-        }
-        
-        return redirect('/dashboard');
-// }
-    }
+      DB::select('INSERT INTO userregist (ticketNumber,username,email,division,status,ip) VALUES ("'.$ticket.'","'.$username.'","'.$email.'","'.$division.'","'.$status.'","'.$ip.'")');
 
-    public function registerVendor(Request $request){
+      return redirect()->back()->with('message', 'registerSuccess!');
+    // }
+  }
+
+  public function registerVendor(Request $request){
+
         $validate = Validator::make(
             $request->all(),
             ['txtFullName' => 'required',
