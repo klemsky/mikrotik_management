@@ -17,7 +17,8 @@ class CreateVpnUserGroupsTable extends Migration
             $table->bigIncrements('id');
             $table->unsignedBigInteger('department_id');
             $table->string('acl_group_name');
-            $table->string('local_address');
+            $table->string('acl_group_name_allow');
+            $table->string('local_address')->nullable();
             $table->foreign('department_id')->references('id')->on('departments');
             $table->timestamps();
         });
