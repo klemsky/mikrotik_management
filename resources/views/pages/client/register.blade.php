@@ -31,6 +31,7 @@
                         <li>Section Head IT Infrastructure and Unified Communication: <strong>Budi Ariyanto</strong><br>Email: <strong>binus_ay@binus.edu</strong></li>
                         <li>IT Infrastructure and Unified Communication Manager: <strong>Frantina Andri Widanto</strong><br>Email: <strong>sdp.dcmgr@binus.edu</strong></li>
                     </ul>
+                    
                     VPN account username and password will be sent to requester email.<br>Email: <strong>{{$data['user_email']}}</strong>.
                 </div>
             </div>
