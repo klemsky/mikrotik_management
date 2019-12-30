@@ -62,11 +62,12 @@ Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
 <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
 @if(isset($error))
 <script>
-Swal.fire({
-    type: 'error',
-    text: '{{ $error }}',
-    confirmButtonColor: '#762F8D',
-});
+showError('{{$error}}');
+</script>
+@endif
+@if($errors->any())
+<script>
+showError('{{$errors->first()}}');
 </script>
 @endif
 @endsection

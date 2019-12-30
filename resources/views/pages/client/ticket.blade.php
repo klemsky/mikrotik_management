@@ -26,33 +26,28 @@
             </span>
         </span>
     </p>
+    <label>URL Generate</label>
     <p>
         <span class="custom-textbox">
             <span class="custom-textbox">
                 <span class="icon-wrap">
                     <i class="icon icon-user"></i>
                 </span>
-                <input type="text" id="link" placeholder="Link" class="input-form" name="link">
+                <input type="text" id="link" placeholder="URL" class="input-form" name="link">
             </span>
         </span>
     </p>
     <p>
-        <input type="submit" id="ticket_submitBtn" value="Submit" class="button button-primary wide">
+        <input type="submit" id="ticket_submitBtn" value="Generate URL" class="button button-primary wide">
     </p>
 </form>
 @endsection
 
 @section('js')
 <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+@if(isset($error))
 <script>
-    $(document).ready(function(){
-        @if(Session::has('error'))
-        Swal.fire({
-            type: 'error',
-            text: '{{Session::get('error')}}',
-            confirmButtonColor: '#762F8D',
-        });
-        @endif
-    });
+showError('{{$error}}');
 </script>
+@endif
 @endsection

@@ -74,6 +74,7 @@ class ClientController extends Controller
         $ticket = Crypt::encrypt($ticket);
         $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         return response(["link" => $url]);
+        // return view('pages.client.ticket')->with('error', 'Invalid Email / Password!');
     }
 
     public function getLink($request = null){
@@ -86,54 +87,63 @@ class ClientController extends Controller
     }
 
     public function loginEmailLDAP(Request $request){
-        // dd($request->ticket);
-
-
-        // return view('pages.client.register')->with('ticket', $request->ticket);
-        return view('pages.client.login')->with('error', 'Invalid Email / Password!');
-        
         ////////////////////////////////////////LDAP
         // $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
         // $ldap_password ="M1cro-TEECH!!";
+        $ldap_dn = "(mail=".$request->password_name."@binus.edu)";
+        $ldap_password = $request->password_pwd;
         
-        // $ldap_con = ldap_connect("10.200.200.201", 389);
-        // ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
-        // ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
+        $ldap_con = ldap_connect("10.200.200.201", 389);
+        ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
         
-        // if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {
+        if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {
 
-        //     echo "Bind successful!";
-                
-        //     $filter = "(mail=ivan.jsa@binus.edu)";
-        //     $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
-        //     $entries = ldap_get_entries($ldap_con, $result);
-        //     $department = $entries[0]["department"][0];
-        //     echo $entries[0]["cn"][0] . " is on department of " . $department;
+            echo "Bind successful!";
+            
+            /*
+            $filter = "(mail=david.layardi@binus.edu)";
+            $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+            $entries = ldap_get_entries($ldap_con, $result);
+            $user_name = $entries[0]["cn"][0];
+            $user_email = $entries[0]["userprincipalname"][0];
+            $user_department = $entries[0]["department"][0];
+            // echo $user_name . " is on department of " . $user_department . ". Email: " . $user_email . "<br>";
 
-        //     $name = str_replace("CN=", "", $entries[0]["manager"][0]);
-        //     $name = substr($name, 0, strpos($name, ","));
+            $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
+            $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
 
-            // while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$name.")"))[0]["title"][0], "Manager")){
-            // 	echo $name;
-            // 	echo " Not Manager";
-            // 	$filter = "(CN=".$name.")";
-            // 	$result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
-            // 	$entries = ldap_get_entries($ldap_con, $result);
-            // 	$name = str_replace("CN=", "", $entries[0]["manager"][0]);
-            // 	$name = substr($name, 0, strpos($name, ","));
-            // }
-            // echo $name . " is Manager";
-
-            // $filter = "(CN=".$name.")";
-            // $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
-            // $entries = ldap_get_entries($ldap_con, $result);
-            // $email = $entries[0]["userprincipalname"][0];
-            // echo $email;
+            while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$manager_name.")"))[0]["title"][0], "Manager")){
+            	// echo $manager_name . " is not Manager";
+            	$filter = "(CN=".$manager_name.")";
+            	$result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+            	$entries = ldap_get_entries($ldap_con, $result);
+            	$manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
+                $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
+                $manager_email = $entries[0]["userprincipalname"][0];
+                // echo  ". Email: " . $manager_email . "<br>";
+            }
+            // echo $manager_name . " is Manager";
+            
+            $filter = "(CN=".$manager_name.")";
+            $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+            $entries = ldap_get_entries($ldap_con, $result);
+            $manager_email = $entries[0]["userprincipalname"][0];
+            // echo  ". Email: " . $manager_email . "<br>";
 
             // print "<pre>";
-            // print_r($name);
             // print_r ($entries);
             // print "</pre>";
+
+            $data["ticket"] = $request->ticket;
+            $data["user_name"] = $user_name;
+            $data["user_email"] = $user_email;
+            $data["user_department"] = $user_department;
+            $data["manager_name"] = $manager_name;
+            $data["manager_email"] = $manager_email;
+
+            return view('pages.client.register')->with('data', $data);
+            // return view('pages.client.login')->with('error', 'Invalid Email / Password!');
 
             /////////////////////////////API ITHELPDESK
 			// $ch = curl_init();
@@ -160,10 +170,11 @@ class ClientController extends Controller
 			// print_r($name);
 			// print_r ($body);
 			// print "</pre>";
-			// echo $data['request']['status']['name'];
-        // } else {
-        //     $errors = "Invalid username / password!";
-        //     return back()->withErrors([$errors])->withInput();
-        // }
+            // echo $data['request']['status']['name'];
+            
+            */
+        } else {
+            return back()->withErrors('Why error? :(');
+        }
     }
 }

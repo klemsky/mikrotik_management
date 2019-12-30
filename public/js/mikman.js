@@ -1,112 +1,52 @@
 $(document).ready(function() { 
-    $countAccessList=1;
-    $countAccessList2=1;
-        $("#add-ip").on("click", function() {  
-        $countAccessList +=1; 
+    $countAccessList = 1;
+
+    $("#add-ip").on("click", function() { 
+        if($countAccessList > 4)
+            $(".register-center").css("height","750px");        
+        if($countAccessList > 7)
+            $(".register-center").css("height","900px");
+        if($countAccessList > 9)
+            $(".register-center").css("height","1000px");
+        if($countAccessList > 11)
+            $(".register-center").css("height","1100px");
+        if($countAccessList > 13)
+            $(".register-center").css("height","1200px");
+        
+        $countAccessList += 1; 
         $("#countAccessIP").val($countAccessList);
         $("#address-container").append("<input type=\"text\" class=\"input-form\" name=\"txtAccess["+ $countAccessList +"]\" placeholder=\"IP Address "+$countAccessList+"\"  style=\"margin-bottom: 10px\">"); 
     });
-    $("#remove-ip").on("click", function() {  
-        if($countAccessList >1){
+    $("#remove-ip").on("click", function() {
+        if($countAccessList == 5)
+            $(".register-center").css("height","auto");        
+        if($countAccessList == 6)
+            $(".register-center").css("height","700px");
+        if($countAccessList == 8)
+            $(".register-center").css("height","800px");
+        if($countAccessList == 10)
+            $(".register-center").css("height","900px");
+        if($countAccessList == 12)
+            $(".register-center").css("height","1000px");
+
+        if($countAccessList > 1){
             $countAccessList -= 1;
             $("#address-container").children().last().remove();
         }
     });
-
-    var HowToLoginTitle = "HOW TO LOGIN";
-    var HowToLoginContent = `
-    <ol style="list-style: decimal;">
-        <div style="text-align: center"><img src="https://backaccess.apps.binus.edu/wifi/assets/img/how-to/how-to-1.png" alt="Login Guide" style="display: inline-block; padding-bottom: 10px;"></div>
-        <li>
-            Fill username with your <strong>username</strong> of binus account email
-        </li>
-        <li>
-            Choose your binus account <strong>email type</strong>
-        </li>
-        <li>
-            Fill password field with your <strong>password</strong> of binus account email
-        </li>
-        <li>
-            Check <strong>"Remember me"</strong> to remember your <strong>username</strong> and <strong>password</strong>
-        </li>
-        <li>
-            Press <strong>Login</strong> button
-        </li>
-        <div style="text-align: center"><img src="https://backaccess.apps.binus.edu/wifi/assets/img/how-to/how-to-2.png" alt="Login Guide 2" style="display: inline-block; padding-bottom: 10px;"></div>
-        <li>
-            You will redirected to the page above after sucessfully login.
-        </li>
-    </ol>`;
-
-    var ChangePasswordTitle = "CHANGE PASSWORD";
-    var ChangePasswordContent = `
-            <li><strong>Student / Lecture / Alumni</strong></li>
-            <p>Your login password is the same as the Binusmaya account password, you can change it by following the steps below:</p>
-            <blockquote>
-                <ol class="special-ol">
-                    <li>
-                        Login to Binusmaya
-                    </li>
-                    <li>
-                        After logged in, Click menu <strong>Profile</strong> (Located at the top right with your name written)
-                    </li>
-                    <li>
-                        Click <strong>Account Setting</strong>
-                    </li>
-                    <li>
-                        Press button <strong>Change Password</strong>
-                    </li>
-                    <li>
-                        Fill <i>Current password</i> with your current Binusmaya account password
-                    </li>
-                    <li>
-                        Fill <i>New password</i> with your new password
-                    </li>
-                    <li>
-                        Fill <i>Confirm</i> with your new password as you fill in the field <i>New Password</i>
-                    </li>
-                    <li>Press button <strong>Save</strong></li>
-                    <a target="_blank" href="https://binusmaya.binus.ac.id/" class="button button-primary wide" style="margin: 13px 0 13px 0;">Open Binusmaya</a>
-                </ol>
-            </blockquote>
-            <li><strong>Staff</strong></li>
-            <p>You can change login password by following the steps below:</p>
-            <blockquote>
-                <ol class="special-ol">
-                    <li>
-                        Open change password page for staff by click button below
-                    </li>
-                    <li>
-                        Fill <i>someone@example.com</i> with your binus.edu email
-                    </li>
-                    <li>
-                        Fill <i>Old password</i> with your current binus.edu email password
-                    </li>
-                    <li>
-                        Fill <i>New password</i> with your new password
-                    </li>
-                    <li>
-                        Fill <i>Confirm New password</i> with your new password as you fill in the field <i>New Password</i>
-                    </li>
-                    <li>Press button <strong>Submit</strong></li>
-                    <a target="_blank" href="https://fs.binus.edu/adfs/portal/updatepassword" class="button button-primary wide" style="margin: 13px 0 13px 0;">Change password for staff</a>
-                </ol>
-            </blockquote>
-    `;
-
-    $('#htloginModal .single-content').find("h1.heading").html(HowToLoginTitle);
-    $('#htloginModal .single-content').find("ol").html(HowToLoginContent);
-    $('#cpassModal .single-content').find("ul").html(ChangePasswordContent);
-    $('#cpassModal .single-content').find("h1.heading").html(ChangePasswordTitle);
-
-    $("#cpassButton").click(function() {
-        $('#cpassModal').fadeIn();
-    });
-
-    $("#htloginButton").click(function() {
-        $('#htloginModal').fadeIn();
-    });
 });
+
+function showTime(){
+    $("#input-date-container").html('<input type="text" id="tempText" oninput="setTempDate(this)" class="input-form" placeholder="dd/mm/yyyy" />');
+    $("#input-date-container").css('padding-top','10px');
+    $("#input-date-container").css('padding-bottom','5px');
+}
+
+function hideTime(){
+    $("#input-date-container").html('');
+    $("#input-date-container").css('padding-top','0px');
+    $("#input-date-container").css('padding-bottom','0px');
+}
 
 function showRequest(){
 	$('#command').val($("#show-request").children().text());
@@ -116,6 +56,14 @@ function showRequest(){
 function showVPNs(){
     $('#command').val($("#show-vpn").children().text());
     showModal();
+}
+
+function showError(msg){
+    Swal.fire({
+        type: 'error',
+        text: msg,
+        confirmButtonColor: '#762F8D',
+    });
 }
 
 //////////////// CODE RELOGIN MIKROTIK
@@ -163,23 +111,6 @@ function showLink(){
     });
 }
 
-function loginEmail(){
-    $.ajax({
-        type: "POST",
-        url: "/loginEmail",
-        dataType: "json",
-        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-        data: {
-            user: $("#password_name").val(),
-            pass: $("#password_pwd").val(),
-            ticket: $("#ticket_number").val()
-        },
-        success: function (response) {
-            
-        },
-    });
-}
-
 function showNew(){
     $("#vendor-tab").removeClass("active");
     $("#new-tab").addClass("active");
@@ -193,17 +124,6 @@ function showVendor(){
     $("#new-button").removeClass("active");
     $("#vendor-button").addClass("active");
 }
-
-function showTime(){
-    $("#input-date-container").html('<input type="text" id="tempText" oninput="setTempDate(this)" class="input-form" placeholder="dd/mm/yyyy" />');
-    $("#input-date-container").css('padding-top','10px');
-}
-
-function hideTime(){
-    $("#input-date-container").html('');
-    $("#input-date-container").css('padding-top','0px');
-}
-
 
 function setTempDate(ele){
     document.getElementById("tmpRadio").value=ele.value;

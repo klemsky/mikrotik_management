@@ -33,18 +33,16 @@ Route::get('/login',function(){
 	return view('pages.client.login');
 });
 
+Route::get('/ticket',function(){
+	return view('pages.client.ticket');
+});
 Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
-
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
 
 Route::get('/clientDashboard',function(){
 	return view('clientDashboard');
-});
-
-Route::get('/ticket',function(){
-	return view('pages.client.ticket');
 });
 
 Route::post('/submitTicket','ClientController@registerTicketNumber');

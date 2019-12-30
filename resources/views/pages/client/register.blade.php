@@ -21,7 +21,21 @@
 <body>
 	<div class="register">
         <div class="row">
-            <div class="register-center">
+            <div class="register-left column one-third">
+                <h3 class="title-text">BINUS VPN</h3>
+                <h8 class="welcome-text">VPN Policy</h8>
+                <div class="policy-content">
+                    By creating VPN account, you have agreed to the terms and policies of using Binus VPN account. VPN account will be created once the required approval have been approved through the IT Helpdesk System. Approval stage for a single account VPN requires three stages of approval:
+                    <ul>
+                        <li>Manager Requester: <strong>{{$data['manager_name']}}</strong><br>Email: <strong>{{$data['manager_email']}}</strong></li>
+                        <li>Section Head IT Infrastructure and Unified Communication: <strong>Budi Ariyanto</strong><br>Email: <strong>binus_ay@binus.edu</strong></li>
+                        <li>IT Infrastructure and Unified Communication Manager: <strong>Frantina Andri Widanto</strong><br>Email: <strong>sdp.dcmgr@binus.edu</strong></li>
+                    </ul>
+                    
+                    VPN account username and password will be sent to requester email.<br>Email: <strong>{{$data['user_email']}}</strong>.
+                </div>
+            </div>
+            <div class="register-center column two-thirds">
                 <div class="register-heading">
                     <h2>Request New VPN</h2>
                 </div>
@@ -30,40 +44,61 @@
                         <form method="POST" action="/registerClient" enctype="multipart/form-data" autocomplete="off">
                         {{csrf_field()}}
                             <br><br>
-                            <div class="row register-form">
-                                <div class="col-md-11">
+                            <div class="row">
+                                <div class="column one-half">
                                     <div id="ticket-container">
-                                        Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
-                                        <input type="hidden" value={{$ticket}} name="ticket">
+                                        Ticket No. : &nbsp;<strong>{{$data['ticket']}}</strong>
+                                        <input type="hidden" value="{{$data['ticket']}}" name="ticket">
                                     </div>
                                     <div class="custom-textbox">
-                                        <input type="text" placeholder="Your Name" class="input-form" name="txtFullName">
+                                        <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_name']}}" name="user_name">
+                                        <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
                                     </div>
                                     <div class="custom-textbox">
-                                        <input type="text" placeholder="Your Email" class="input-form" name="txtEmail">
+                                        <label>Email &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_email']}}" name="user_email">
+                                        <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
                                     </div>
                                     <div class="custom-textbox">
-                                        <input type="text" placeholder="Your Department" class="input-form" name="txtDivision">
+                                        <label>Department &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
                                         <div>
-                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
-                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
+                                            <input type="radio" class="tempBtn" name="expiry_date" class="input-form" value="Permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
+                                            <input type="radio" class="tempBtn" name="expiry_date" class="input-form" value="Temporary" id="tmpRadio" onclick="showTime()"> Temporary</input>
                                         </div>
                                         <div id="input-date-container"></div>
-                                        <!-- <input type="text" id="tempText" oninput="setTempDate(this)" style="visibility: hidden;" class="input-form" placeholder="dd/mm/yyyy" /> -->
+                                    </div>
+                                </div>
+                                <div class="column one-half">
+                                    <div class="headerIP">
+                                        <h4 style="padding: 0 0 21px 0;">
+                                            Destination IP Address :
+                                        </h4>
                                     </div>
                                     <div class="custom-textbox">
                                         <div id="address-container" class="form-group">
                                             <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
                                             <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
                                         </div>
-                                        <ul id="add-ip" class="addIpBtn">Add IP</ul>
-                                        <ul id="remove-ip" class="removeIpBtn">Remove IP</ul>  
                                     </div>
-                                    <input type="submit" class="btnRegister"  value="Register"/>
+                                </div>
+                                <div id="add-ip" class="addBtnContainer column one-third">
+                                    <input type="button" class="addIpBtn" value="Add IP"/> 
+                                </div>
+                                <div id="remove-ip" class="removeBtnContainer column one-third">
+                                    <input type="button" class="removeIpBtn" value="Remove IP"/> 
+                                </div>
+                                <div id="submit-container" class="registBtnContainer column one-third">
+                                    <input type="submit" class="btnRegister" value="Register"/>
                                 </div>
                             </div>
+                            <br><br><br><br>
                         </form>
                     </div>
                     @if ($errors->any())
@@ -84,9 +119,13 @@
 
 <style type="text/css">
 body{
+    font-size: 15px;
 	width: 100%;
 	height: 100%;
 	background: -webkit-linear-gradient(left, #1b9ad7,#88388f);
+}
+form label{
+    font-size: 14px;
 }
 .wrapper{
 	text-align: center;
@@ -97,40 +136,80 @@ body{
 #textboxDiv2 input{
 	margin-bottom: 1.5vh;
 }
+.addBtnContainer, .removeBtnContainer{
+    width: 100%;
+    margin: 0px;
+    padding: 0px;
+}
 .addIpBtn{
-	font-weight: 600;
+    width: 100%;
 	color: white;
 	background-color: #88388f;
-	margin-right: 70%;
-	padding: 1%;
+    border: none;
 	border-radius: 1.5rem;
-	text-align: center;
+    padding: 4%;
 	cursor: pointer;
 }
 .removeIpBtn{
-	font-weight: 600;
+    width: 100%;
 	color: white;
 	background-color: #88388f;
-	margin-right: 70%;
-	padding: 1%;
+    border: none;
 	border-radius: 1.5rem;
-	text-align: center;
+    padding: 4%;
 	cursor: pointer;
+}
+.registBtnContainer{
+    width: 100%;
+}
+.btnRegister{
+    /* margin-top: 0vh; */
+    border: none;
+    width: 100%;
+    border-radius: 1.5rem;
+    padding: 4%;
+    background: #0062cc;
+    color: #fff;
+    /* font-weight: 600; */
+    /* width: 50%; */
+    cursor: pointer;
 }
 .row{
 	width: 100%;
 	height: 100%;
+}
+.welcome-text{
+	text-align: center;
+    margin-top: 8%;
+    margin-bottom: 0vh;
+    color: white;
+}
+.register-left{
+	margin-top: 7vh;
+    text-align: center;
+    color: #fff;
+}
+.register-left p{
+    font-weight: lighter;
+}
+.policy-content{
+    text-align: left;
+    padding: 30px;
 }
 #ticket-container{
     padding-bottom: 10px;
 }
 .register-center{
     background: #f8f9fa;
-    width: 650px;
+    width: 100%;
+    padding: 3% 7% 0% 7%;
+    margin-top: 10px;
+    margin-bottom: 0px;
     height: auto;
-    margin: 0 auto;
     border-radius : 30% 0%;
-    min-height: 100vh;
+}
+#myTabContent{
+    padding-top: 5%;
 }
 .custom-textbox, .custom-radio{
     padding-bottom: 10px;
@@ -138,17 +217,6 @@ body{
 .register .register-form{
     padding: 8% 8% 0% 11%;
     padding-left: 8vw;
-}
-.btnRegister{
-    margin-top: 0vh;
-    border: none;
-    border-radius: 1.5rem;
-    padding: 2%;
-    background: #0062cc;
-    color: #fff;
-    font-weight: 600;
-    width: 50%;
-    cursor: pointer;
 }
 .register .nav-tabs{
     margin-top: 3%;
@@ -178,8 +246,8 @@ body{
 }
 .register-heading {
     text-align: center;
-    padding-top: 5%;
-    margin-bottom: -10%;
+    padding: -10px;
+    margin-bottom: -8%;
     color: #495057;
 }
 .tempBtn{
