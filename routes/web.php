@@ -27,6 +27,12 @@ Route::get('/dashboard',function(){
 	return view('dashboard');
 });
 
+Route::get('/adminDashboard','DashboardController@dashboard');
+
+Route::post('/createVPN','DashboardController@createAccount');
+
+// Route::get('/viewData','DashboardController@viewData');
+
 Route::get('/clientRegister',function(){
 	return view('clientRegister');
 });

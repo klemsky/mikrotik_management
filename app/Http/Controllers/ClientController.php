@@ -50,7 +50,7 @@ class ClientController extends Controller
 
       DB::select('INSERT INTO userregist (ticketNumber,username,email,division,status,ip) VALUES ("'.$ticket.'","'.$username.'","'.$email.'","'.$division.'","'.$status.'","'.$ip.'")');
 
-      return redirect('/dashboard');
+      return redirect()->back()->with('message', 'registerSuccess!');
     // }
   }
 

@@ -124,7 +124,7 @@
                                         </div>
                                     </div>
                             </form>
-                                </div>
+                            </div>
 
                             <div class="tab-pane fade show" id="vendor-tab" role="tabpanel" aria-labelledby="vendor-tab">
                             <form method="POST" action="/registerVendor" enctype="multipart/form-data" autocomplete="off">
@@ -165,6 +165,11 @@
                                             <li>{{ $error }}</li>
                                         @endforeach
                                     </ul>
+                                </div>
+                            @endif
+                            @if(session()->has('message'))
+                                <div class="alert alert-success">
+                                    {{ session()->get('message') }}
                                 </div>
                             @endif
                         </div>

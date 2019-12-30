@@ -5,9 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
+use DB;
+
 
 class DashboardController extends Controller
 {
+
+
+    // public function index(){
+    //     $datas = Data::all()->toArray();
+    //     return view('/dashboard',compact('varname'))
+    // }
+    public function createAccount(Request $request){
+        $username = $request->username;
+        $division = $request->division;
+        $status = $request->status;
+        $ip = $request->ip;
+        $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
+        // $client = new RouterOS\Client($request->address, $request->user, $request->password);
+
+
+        
+    }
+
     public function dashboard(Request $request){
 
     	
@@ -16,8 +36,8 @@ class DashboardController extends Controller
     	// $secretVPN = 'VPN-YANDO';
     	// $scriptVPN = 'ORA-UMUM';
 
-
-
+        $datas = DB::select('select * from userregist ORDER BY ticketNumber ASC');
+        return view('/dashboard',['datas'=>$datas]);
 
 
         $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
