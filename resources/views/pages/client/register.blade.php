@@ -69,8 +69,13 @@
                                     </div>
                                     <div class="custom-radio">
                                         <div>
-                                            <input type="radio" class="tempBtn" class="input-form" value="Permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
-                                            <input type="radio" class="tempBtn" class="input-form" value="Temporary" id="tmpRadio" onclick="showTime()"> Temporary</input>
+                                            <label>
+                                                <input type="radio" name="rbTemp" class="tempBtn" class="input-form" value="" onclick="hideTime()" >
+                                                Permanent&nbsp;&nbsp;&nbsp;
+                                            </label><label>
+                                                <input type="radio" name="rbTemp" class="tempBtn" class="input-form" value="Temporary" id="tmpRadio" onclick="showTime()">
+                                                Temporary
+                                            </label>
                                         </div>
                                         <div id="input-date-container"></div>
                                     </div>
