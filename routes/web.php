@@ -27,4 +27,8 @@ Route::post('/submitLogin','LoginController@login');
 
 Route::post('/getlog', 'LoginController@getLog');
 
+Route::post('/sendEmail', 'LoginController@sendEmail');
+
+// Route::get('/dump', '')
+
 // Route::get('/')

@@ -11,6 +11,7 @@
         "php": "^7.2",
         "adldap2/adldap2-laravel": "^6.0",
         "fideloper/proxy": "^4.0",
+        "guzzlehttp/guzzle": "^6.5",
         "laravel/framework": "^6.0",
         "laravel/tinker": "^1.0",
         "pear2/net_routeros": "^1.0@beta"
