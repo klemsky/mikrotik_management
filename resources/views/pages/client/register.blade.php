@@ -70,7 +70,7 @@
                                     <div class="custom-radio">
                                         <div>
                                             <label>
-                                                <input type="radio" name="rbTemp" class="tempBtn" class="input-form" value="" onclick="hideTime()" >
+                                                <input type="radio" name="rbTemp" class="tempBtn" class="input-form" value="Permanent" onclick="hideTime()" >
                                                 Permanent&nbsp;&nbsp;&nbsp;
                                             </label><label>
                                                 <input type="radio" name="rbTemp" class="tempBtn" class="input-form" value="Temporary" id="tmpRadio" onclick="showTime()">
