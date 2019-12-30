@@ -30,6 +30,7 @@ Route::get('/dashboard',function(){
 Route::get('/login/request={request}', 'ClientController@getLink');
 Route::get('/login',function(){
 	return view('pages.client.login');
+});
 
 Route::get('/adminDashboard','DashboardController@dashboard');
 
@@ -44,6 +45,7 @@ Route::get('/clientRegister',function(){
 Route::get('/ticket',function(){
 	return view('pages.client.ticket');
 });
+
 Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');

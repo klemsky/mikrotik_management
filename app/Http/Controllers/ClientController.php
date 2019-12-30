@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
+use DB;
 use GuzzleHttp\Client;
 
 class ClientController extends Controller
@@ -76,6 +77,7 @@ class ClientController extends Controller
         $ticket = $request->number;
         $ticket = Crypt::encrypt($ticket);
         $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
+        dd($url);
         return response(["link" => $url]);
         // return view('pages.client.ticket')->with('error', 'Invalid Email / Password!');
     }

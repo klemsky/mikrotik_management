@@ -13,7 +13,7 @@
         <dd style="font-size: 0.8em; line-height: 22px;"></dd>
     </span>
 </dl>
-<form onsubmit="showLink(); return false;">
+<form>
     {{csrf_field()}}
     <label>VPN Ticket Number</label>
     <p>
@@ -38,7 +38,7 @@
         </span>
     </p>
     <p>
-        <input type="submit" id="ticket_submitBtn" value="Generate URL" class="button button-primary wide">
+        <input type="button" id="ticket_submitBtn" value="Generate URL" class="button button-primary wide" onclick="showLink()">
     </p>
 </form>
 @endsection
