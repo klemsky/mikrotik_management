@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 
 class ClientController extends Controller
 {
@@ -74,9 +76,35 @@ class ClientController extends Controller
 
     public function generateLink(Request $request){
         $ticket = $request->number;
+
+        $client = new Client([
+            'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
+        ]);
+
+        try{
+            $response = $client->request('GET', 'requests/' . $ticket,[
+                'headers'=>[
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
+                ]
+            ]);
+            $body = json_decode($response->getBody());
+        }catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+
+                return ['status' => $exception->response_status->status]; 
+            }			
+        }
+        
+        // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
+        //VALIDASI CEK KE DB PUNYA VPN/GA
+        //TERUS SMTP
+
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
-        return response(["link" => $url]);
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
     public function getLink($request){
@@ -100,16 +128,11 @@ class ClientController extends Controller
         ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
         
         try {
-            if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {
-
-                // echo "Bind successful!";
-                
+            if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
                 $filter = "(mail=".$request->password_name."@binus.edu)";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
-                // print "<pre>";
-                // print_r ($entries);
-                // print "</pre>";
+
                 $user_name = $entries[0]["cn"][0];
                 $user_email = $entries[0]["userprincipalname"][0];
                 $user_department = $entries[0]["department"][0];
@@ -148,34 +171,6 @@ class ClientController extends Controller
                 $data["manager_email"] = $manager_email;
     
                 return view('pages.client.register')->with('data', $data);
-                // return view('pages.client.login')->with('error', 'Invalid Email / Password!');
-    
-                /////////////////////////////API ITHELPDESK
-                // $ch = curl_init();
-    
-                // curl_setopt($ch, CURLOPT_URL, "https://ithelpdesk.apps.binus.edu/api/v3/requests/64111"); //GET TICKET DETAIL
-                // curl_setopt($ch, CURLOPT_URL, "https://ithelpdesk.apps.binus.edu/api/v3/requests"); // GET ALL TICKETS
-                // $client = new Client([
-                // 	'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
-                // ]);
-    
-                // $response = $client->request('GET', 'requests/64536',[
-                // 	'headers'=>[
-                // 		'Content-Type' => 'application/x-www-form-urlencoded',
-                // 		'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
-                // 	]
-                // ]
-                // 	'body'=>[
-                // 		'input_data=' => ''
-                // 	]
-                // );
-                // $body = json_decode($response->getBody());
-                // dd($body);
-                // print "<pre>";
-                // print_r($name);
-                // print_r ($body);
-                // print "</pre>";
-                // echo $data['request']['status']['name'];
             }
         } catch (Exception $e) {
             return back()->withErrors(['Invalid Email / Password!']);
