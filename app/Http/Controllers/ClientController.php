@@ -107,6 +107,8 @@ class ClientController extends Controller
                 return ['status' => $exception->response_status->status]; 
             }			
         }
+
+        // return ['status' => 'failed'];  
         
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
         //VALIDASI CEK KE DB PUNYA VPN/GA
@@ -126,7 +128,52 @@ class ClientController extends Controller
         }
     }
 
+    public function checkUser($user){
+        // dd($user['ticket']);
+        $client = new Client([
+            'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
+        ]);
+
+        try{
+            $response = $client->request('GET', 'requests/' . $user['ticket'],[
+                'headers'=>[
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
+                ]
+            ]);
+            $body = json_decode($response->getBody());
+            $email = $body->request->requester->email_id;
+
+            if($user['email'] == $email){
+                return 'valid';
+            }else{
+                return 'not valid';
+            }
+        }catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+
+                return ['status' => $exception->response_status->status]; 
+            }			
+        }
+    }
+
     public function loginEmailLDAP(Request $request){
+        //LARAVEL VALIDATOR
+
+
+        //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
+        $user = array (
+            "email" => $request->password_name."@binus.edu", 
+            "ticket" => $request->ticket
+        );
+        
+        if($this->checkUser($user) != 'valid'){
+            // return 'not valid';
+            return back()->withErrors(['You do not have permission to view ticket!']);
+        }
+
         ////////////////////////////////////////LDAP
         $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
         $ldap_password ="M1cro-TEECH!!";
