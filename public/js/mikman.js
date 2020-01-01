@@ -38,12 +38,6 @@ $(document).ready(function() {
 
 function showTime(){
     $("#input-date-container").html('<input type="date" id="tempText" name="expiry_date" placeholder="dd/mm/yyyy"/>');
-    
-    // var strHTML = '<span class="custom-datetimepicker">';
-    // strHTML += '<input type="text" name="input[]" class="datetimepicker"></input>';
-    // strHTML += '<span class="icon-area"></span>';
-    // strHTML += '</span>';
-    // $("#input-date-container").html(strHTML);
     $("#input-date-container").css('padding-top','10px');
     $("#input-date-container").css('padding-bottom','5px');
 }
@@ -127,7 +121,10 @@ function showLink(){
                 // $('.is-error').html(data);
                 // $('#btn-submit-item').prop('disabled',false);
                 console.log(response.status);
-                showError('Ticket is not for Network!');
+                if(response.status == "Ticket Empty")
+                    showError('Ticket number cannot be empty!');
+                else
+                    showError('Ticket is not for Network!');
             }
         },
     });

@@ -1,6 +1,6 @@
 @extends('layouts.dmd')
 
-@section('title','BINUS | Register VPN Ticket')
+@section('title','Register VPN Ticket')
 
 @section('content')
 <dl id="mode_password" style="display: block;">

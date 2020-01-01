@@ -24,7 +24,15 @@ Route::get('/admin', function () {
 Route::post('/submitLogin','LoginController@loginpost');
 
 Route::get('/dashboard',function(){
-	return view('dashboard');
+	return view('layouts.dashboard');
+});
+
+Route::get('/admin/dashboard',function(){
+	return view('pages.admin.dashboard');
+});
+
+Route::get('/client/dashboard',function(){
+	return view('pages.client.dashboard');
 });
 
 Route::get('/login/request={request}', 'ClientController@getLink');

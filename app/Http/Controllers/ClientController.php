@@ -21,8 +21,7 @@ use GuzzleHttp\Exception\RequestException;
 class ClientController extends Controller
 {
 	public function registerClient(Request $request){
-
-        // dd(date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00 AM");
+        // dd(count($request->txtAccess));
         ///////// INSERT DEPARTMENT AND USER
         if(empty(Department::where('name',$request->user_department)->first())){
             $department = new Department();
@@ -71,21 +70,36 @@ class ClientController extends Controller
             $VpnUser->user_id = User::where('name',$request->user_name)->first()->id;
             $VpnUser->vpn_username = $vpnUsername;
             $VpnUser->no_ticket = $request->ticket;
-            if($request->rbTemp == "Temporary"){
+            if($request->expiry_date != "Permanent" && $request->expiry_date != null)
                 $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
-            }else{
+            else
                 $VpnUser->expiry_date = null;
-            }
             $VpnUser->completed = 0;
             $VpnUser->rejected = 0;
             $VpnUser->active = 0;
             $VpnUser->save();
         }
+
+        ////////// INSERT VPN ACL LISTS
+        for($i=1; $i<=count($request->txtAccess);$i++){
+            $VpnAclList = new VpnAclList();
+            $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+            $VpnAclList->address = $request->txtAccess[$i];
+            $VpnAclList->completed = 0;
+            $VpnAclList->rejected = 0;
+            $VpnAclList->active = 0;
+            $VpnAclList->save();
+        }
+
         return redirect('/clientDashboard');
     }
 
     public function generateLink(Request $request){
         $ticket = $request->number;
+
+        if($ticket == null){
+            return $response = ['status' => 'Ticket Empty'];
+        }
 
         $client = new Client([
             'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
@@ -115,7 +129,7 @@ class ClientController extends Controller
         //TERUS SMTP
 
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
