@@ -112,7 +112,26 @@ function showLink(){
             number: $("#numberTicket").val(),
         },
         success: function (response) {
-        	$("#link").val(response.link);
+            if(response.status=="success"){
+                // $('.is-success').show();
+                // $('.is-error').hide();
+                // $('.is-success').html("Registration Success!");
+                // window.setTimeout(function () {
+                //     window.location.href = "/ip";
+                // },700);
+                $("#link").val(response.link);
+                // console.log('')
+            }else{
+                // $('.is-error').show();
+                // $('.is-success').hide();
+                // $('.is-error').html(data);
+                // $('#btn-submit-item').prop('disabled',false);
+                console.log(response.status);
+                if(response.status == "Ticket Empty")
+                    showError('Ticket number cannot be empty!');
+                else
+                    showError('Ticket is not for Network!');
+            }
         },
     });
 }

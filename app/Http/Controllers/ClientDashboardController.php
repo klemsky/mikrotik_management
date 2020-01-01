@@ -18,11 +18,19 @@ use GuzzleHttp\Client;
 
 class ClientDashboardController extends Controller
 {
-    public function dataVpnClient(Request $request){
-        $VpnUser = VpnUser::all();
-        $VpnUser->user_id = $request->$user_email;
-        dd($VpnUser->user_id);
-    }
+    // public function dataVpnClient(Request $request){
+    //     // $emailUser = $request->$user_email;
+    //     $User = User::all();
+    //     $User->id = User::where('email',$request->user_email)->first()->id;
+
+    //     $VpnUser = VpnUser::all();
+    //     $vpn_username = VpnUser::where($User->user_id,$VpnUser->user_id)->first()->vpn_username;
+    //     // $no_ticket 
+    //     $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
+    //     dd($vpnAclTiket);
+
+
+    // }
 
     public function loginEmailLDAPClient(Request $request){
         ////////////////////////////////////////LDAP
@@ -83,8 +91,17 @@ class ClientDashboardController extends Controller
                 $data["user_department"] = $user_department;
                 // $data["manager_name"] = $manager_name;
                 // $data["manager_email"] = $manager_email;
-    
-                return view('pages.client.clientDashboard')->with('data', $data);
+
+                $User = User::all();
+                $User->id = User::where('email',$request->user_email)->first()->id;
+
+                $VpnUser = VpnUser::all();
+                $vpn_username = VpnUser::where($User->user_id,$VpnUser->user_id)->first()->vpn_username;
+                // $no_ticket 
+                $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
+                dd($vpnAclTiket);
+                // return view('pages.client.clientDashboard')->with('data', $data);
+
                 // return view('pages.client.login')->with('error', 'Invalid Email / Password!');
     
                 /////////////////////////////API ITHELPDESK
@@ -113,9 +130,19 @@ class ClientDashboardController extends Controller
                 // print_r ($body);
                 // print "</pre>";
                 // echo $data['request']['status']['name'];
+                
+
             }
         } catch (Exception $e) {
-            return back()->withErrors(['Invalid Email / Password!']);
+            // return back()->withErrors(['Invalid Email / Password!']);
+            $User = User::all();
+                $UserId = User::where('email',$request->user_email)->id;
+
+                $VpnUser = VpnUser::all();
+                $vpn_username = VpnUser::where($UserId,$VpnUser->user_id)->first()->vpn_username;
+                // $no_ticket 
+                $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
+                dd($vpnAclTiket);
         }
         
         // } else {

@@ -1,6 +1,6 @@
 @extends('layouts.dmd')
 
-@section('title','BINUS | Login VPN')
+@section('title','Login VPN')
 
 @section('content')
 @if(isset($ticket))
