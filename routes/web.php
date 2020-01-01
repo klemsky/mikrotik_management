@@ -69,3 +69,10 @@ Route::post('/relog','AdminController@reLogin');
 Route::post('/vpn-account','AdminController@showAllVPN');
 
 Route::get('/ipall','LoginController@getIP');
+
+
+//TESTING
+Route::get('/sendEmail', function(){
+	return view('clearview');
+});
+Route::post('/sendEmail', 'SendEmailController@sendEmail');
