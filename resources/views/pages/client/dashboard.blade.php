@@ -3,7 +3,7 @@
 @section('title','Admin Dashboard')
 
 @section('sidebar-title')
-<a href="javascript:;" onclick="showInfo()" style="text-align: center">MIKROTIK VPN MANAGEMENT</a>
+<a href="javascript:;" onclick="showInfo()" style="text-align: center">VPN ACCOUNT</a>
 @endsection
 
 @section('sidebar-header-img')

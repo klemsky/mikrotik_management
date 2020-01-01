@@ -11,11 +11,11 @@
 @endsection
 
 @section('sidebar-header-user')
-<strong>Klemens</strong>
+<strong>Admin</strong>
 @endsection
 
 @section('sidebar-header-role')
-    Role: Administrator
+    <strong>Role: </strong><br>Network Admin
 @endsection
 
 @section('sidebar-search')
