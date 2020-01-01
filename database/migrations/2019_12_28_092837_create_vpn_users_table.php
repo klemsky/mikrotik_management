@@ -20,7 +20,7 @@ class CreateVpnUsersTable extends Migration
             $table->string('vpn_username');
             $table->string('remote_address')->nullable();
             $table->bigInteger('no_ticket');
-            $table->dateTime('expiry_date');
+            $table->dateTime('expiry_date')->nullable();
             $table->boolean('completed');
             $table->boolean('rejected');
             $table->boolean('active');

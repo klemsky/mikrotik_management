@@ -127,7 +127,10 @@ function showLink(){
                 // $('.is-error').html(data);
                 // $('#btn-submit-item').prop('disabled',false);
                 console.log(response.status);
-                showError('Ticket is not for Network!');
+                if(response.status == "Ticket Empty")
+                    showError('Ticket number cannot be empty!');
+                else
+                    showError('Ticket is not for Network!');
             }
         },
     });

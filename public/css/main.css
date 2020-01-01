@@ -52,13 +52,13 @@
     transform: scale(2);
     opacity: 0; } }
 
-
 .sidebar-wrapper {
   width: 280px;
   height: 100%;
   max-height: 100%;
   position: fixed;
   top: 0;
+  left: -280px;
   z-index: 999;
   -webkit-transition: left .3s ease, width .3s ease;
   transition: left .3s ease, width .3s ease; }
@@ -78,7 +78,7 @@
     max-height: calc(100%);
     /*height: calc(100% - 35px);*/
     height: calc(100%);
-    /*overflow-y: scroll;*/
+    overflow-y: scroll;
     position: relative; }
     .sidebar-wrapper .sidebar-content.desktop {
       overflow-y: hidden; }
@@ -367,10 +367,8 @@ body {
   font-size: .9rem; }
 
 /*----------------page-wrapper----------------*/
-  .page-wrapper {
-    height: 100vh; 
-    overflow: hidden;
-  }
+.page-wrapper {
+  height: 100vh; }
   .page-wrapper .theme {
     width: 40px;
     height: 40px;
@@ -391,98 +389,30 @@ body {
     background: #46454c; }
   .page-wrapper .theme.light-theme {
     background: #ececec; }
-
+  .page-wrapper .page-content {
+    display: inline-block;
+    width: 100%;
+    -webkit-transition: padding-left .3s ease;
+    transition: padding-left .3s ease;
+    overflow-x: hidden; }
+    .page-wrapper .page-content .overlay {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 998;
+      background: #000;
+      opacity: .5;
+      display: none; }
   .page-wrapper.toggled .sidebar-wrapper {
     left: 0px; }
   @media screen and (min-width: 768px) {
-        .page-wrapper .page-content {
-    display: inline-block;
-    width: 100%;
-    -webkit-transition: padding-left .3s ease;
-    transition: padding-left .3s ease;
-    overflow-x: hidden;
-    padding-left: 272px; 
-      height: 100vh;
-     }
-      .sidebar-wrapper{
-        left: 0px !important;
-      }
-      .dashboardContent{
-        height: 100vh;
-        width: 100vw;
-        padding-top: 1px;
-        z-index: -1;
-        padding-left: 8px;
-      }
-      .sideBarBtn{
-        display: none;
-      }
-      .contentBackground{
-        margin-top: -22px;
-        width: 84%;
-        height: 104vh;
-        -webkit-filter: blur(4px);
-        position: fixed;
-        z-index: -9999;
-      }
-      .tab-content{
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.30);
-        text-align: center;
-      }
-    }
+    .page-wrapper.toggled .page-content {
+      padding-left: 280px; } }
   @media screen and (max-width: 768px) {
     .page-wrapper.toggled .page-content .overlay {
-      display: block; } 
-       .page-wrapper .page-content {
-    display: inline-block;
-    width: 100%;
-    -webkit-transition: padding-left .3s ease;
-    transition: padding-left .3s ease;
-    overflow-x: hidden;
-      height: 100vh;
-     }
-      .dashboardContent{
-        height: 100vh;
-        width: 100vw;
-        margin-top: -15px;
-        z-index: -1;
-      }
-      .sidebar-icon {
-        width: 35px;
-        height: 5px;
-        background-color: white;
-        margin: 6px 10px;
-        border-radius: 1.5rem;
-      }
-      .sideBarBtn{
-        z-index: -1;
-      }
-      .contentBackground{
-        margin-top: -22px;
-        margin-left: -5px;
-        width: 102%;
-        height: 104vh;
-        -webkit-filter: blur(4px);
-        position: fixed;
-        z-index: -999;
-      }
-      .page-wrapper.toggled .sidebar-wrapper {
-      left: -280px; 
-      }
-      .sidebar-wrapper .closebtn {
-          position: absolute;
-          top: 0;
-          right: 25px;
-          font-size: 36px;
-          margin-left: 50px;
-      }
-      .tab-content{
-        padding: 10px;
-        background-color: rgba(255, 255, 255, 0.30);
-        text-align: center;
-      }
-  }
+      display: block; } }
   @media screen and (min-width: 768px) {
     .page-wrapper.toggled.pinned .page-content {
       padding-left: 80px; } }
@@ -568,10 +498,10 @@ body {
 }
 
 /*.container-fluid.p-5{
-  height: 100vh;
-  width: 100vw;
-}
-*/
+  margin-bottom: -70px;
+  margin-top: -30px;
+}*/
+
 /* Table CSS*/
 .table-data tr td, tr th{
   padding: 5px;
@@ -590,7 +520,6 @@ a{
 
 body, #modal-action{
   font-size: 13px;
-  margin: 0;
 }
 
 .sidebar-menu li{
@@ -646,8 +575,4 @@ th,tr , td { padding: 8px 16px; border: 1px solid black;}
   height: 1000px;
   display: block;
   overflow: scroll;
-}
-
-.container{
-  left: 280px;
 }
