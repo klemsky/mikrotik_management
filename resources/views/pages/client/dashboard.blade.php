@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title','Admin Dashboard')
+@section('title','Client Dashboard')
 
 @section('sidebar-title')
 <a href="javascript:;" onclick="showInfo()" style="text-align: center">VPN ACCOUNT</a>
