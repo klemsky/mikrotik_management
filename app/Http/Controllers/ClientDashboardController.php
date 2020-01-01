@@ -21,7 +21,7 @@ class ClientDashboardController extends Controller
     public function dataVpnClient(Request $request){
         $VpnUser = VpnUser::all();
         $VpnUser->user_id = $request->$user_email;
-        dd($VpnUser->user_id)
+        dd($VpnUser->user_id);
     }
 
     public function loginEmailLDAPClient(Request $request){
