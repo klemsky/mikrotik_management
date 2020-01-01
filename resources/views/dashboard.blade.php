@@ -142,7 +142,7 @@
 						<td>IP</td>
 						<td>Action</td>
 					</tr>
-                    @foreach($datas as $key)
+                    <!-- @foreach($datas as $key)
                     <tr>
                     <form method="POST" action="/createVPN" enctype="multipart/form-data" autocomplete="off">
                         {{csrf_field()}}
@@ -161,7 +161,7 @@
 						<td><button type="submit" class="getRow">Create/Add</button></td>
                     </form>
                     </tr>
-                    @endforeach
+                    @endforeach -->
 				</table>
 				
 				</form>

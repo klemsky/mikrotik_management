@@ -1,0 +1,59 @@
+.form-group {
+    margin-bottom: 1rem;
+}
+form label {
+    display: block;
+    margin: 0 0 8px;
+    padding: 0;
+    font-size: 12px;
+    color: #909090;
+    line-height: 15px;
+    text-transform: uppercase;
+}
+#add-ip-clientDashboard {
+    width: 20%;
+    color: white;
+    background-color: #88388f;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 1%;
+    cursor: pointer;
+    display: inline-block;
+}
+#remove-ip-clientDashboard{
+    width: 20%;
+    color: white;
+    background-color: #88388f;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 1%;
+    cursor: pointer;
+    display: inline-block;
+}
+.btnRegister{
+    width: 20%;
+    color: white;
+    background-color: #0062cc;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 1%;
+    cursor: pointer;
+    display: inline-block;
+    
+}
+
+
+@media only screen and (min-width: 768px) {
+    .vpnInfo {
+        margin-right: 18vw;
+    }
+    .form-group {
+        margin-left: 10%;
+    }
+}
+
+@media only screen and (max-width: 767px) {
+    .form-group {
+        margin-right: 1vw;
+    }
+}

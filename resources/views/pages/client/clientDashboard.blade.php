@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="{{asset('css/jquery.mCustomScrollbar.min.css')}}">
 
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
+    <link rel="stylesheet" href="{{asset('css/clientDashboard.css')}}">
     <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
     <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
 
@@ -32,7 +33,8 @@
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"> -->
     <script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
 
-    <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+    <!-- <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script> -->
+    <script type="text/javascript" src="{{asset('js/clientDashboard.js')}}"></script>
 </head>
 
 <body>
@@ -141,45 +143,39 @@
                         <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="new-tab">
                           <form method="POST" action="/submitClient" enctype="multipart/form-data" autocomplete="off">
                             {{csrf_field()}}
-                                    <h3 class="register-heading">Request New VPN</h3>
-                                    <div class="row register-form">
-                                        <div class="col-md-11">
-                                            <div class="form-group">
-                                                <input type="text" class="form-control" name="txtFullName" placeholder="Your Name *">
+                                            <h3 class="register-heading">Request New VPN</h3>
+                                            <div class="row register-form">
+                                                <div class="col-md-11">
+                                                <div class="custom-textbox">
+                                                <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
+                                                <input type="text" class="form-control" value="{{$data['user_name']}}" disabled style="background-color: white;">
+                                                <input type="hidden" value="{{$data['user_name']}}" name="user_name">
                                             </div>
-                                            <div class="form-group">
-                                                <input type="password" class="form-control" name="txtPassword" placeholder="Password *">
+                                            <div class="custom-textbox">
+                                                <label>Email &nbsp;<i class="icon-checklist"></i></label>
+                                                <input type="text" class="form-control" value="{{$data['user_email']}}" disabled style="background-color: white;">
+                                                <input type="hidden" value="{{$data['user_email']}}" name="user_email">
                                             </div>
-                                            <div class="form-group">
-                                                <input type="password" class="form-control"  name="txtPasswordConfirmation" placeholder="Confirm Password *">
+                                            <div class="custom-textbox">
+                                                <label>Department &nbsp;<i class="icon-checklist"></i></label>
+                                                <input type="text" class="form-control" value="{{$data['user_department']}}" disabled style="background-color: white;">
+                                                <input type="hidden" value="{{$data['user_department']}}" name="user_department">
                                             </div>
-                                            <div class="form-group">
-                                                <input type="email" class="form-control" name="txtEmail" placeholder="Your Email *">
+                                            <div class="custom-textbox">
+                                                <div class="custom-radio">
+                                                    <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
+                                                    <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
+                                                </div>
+                                                <div id="input-date-container"></div>
                                             </div>
-                                            <!-- Ambil dari database -->
-                                            <div class="form-group">
-                                              <input list="division" class="form-control" name="txtDivision" placeholder="Your Division *">
-                                                <datalist id="division">
-                                                        <option value="IT"></option>
-                                                        <option value="BOL"></option>
-                                                      <option value="SOFTDEV"></option>
-                                                      <option value=""></option>t
-                                                  </datalist>
-                                              </input>     
-                                            </div>
-                                            <div class="form-group">
-                                              <input type="radio" class="tempBtn" name="rbTime" value="permanent" onclick="hideTime()" >Permanent</input>
-                                              <input type="radio" class="tempBtn" name="rbTime" value="temporary" onclick="showTime()">Temporary</input>
-                                              <input type="text" id="tempText"style="visibility: hidden;" class="form-control" placeholder="dd/mm/yyyy" />
-                                            </div>
-                                            <div class="form-group">
-                                              <div id="textboxDiv" class="form-group">
-                                                <input type="text" class="form-control" name="txtAccess1" placeholder="IP *">
-                                              </div> 
-                                              <ul id="Add" class="addIpBtn">Add IP</ul>
-                                              <ul id="Remove" class="removeIpBtn">Remove IP</ul>  
-                                            </div>
-                                            <input type="submit" class="btnRegister"  value="Register"/>
+                                            <div id="address-container" class="form-group">
+                                                  <input type="text" class="form-control" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
+                                                  <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
+                                              </div>
+                                              <ul id="add-ip-clientDashboard" class="addIpBtn">Add IP</ul>
+                                              <ul id="remove-ip-clientDashboard" class="removeIpBtn">Remove IP</ul>
+                                            <br>
+                                            <input type="submit" class="btnRegister"  value="Add Access"/>
                                         </div>
                                     </div>
                             </form>
@@ -190,7 +186,7 @@
       				</div>
       				<div class="dashboardContent" style="display: none;" id="updatePassword">
       					<div class="vpnInfo">
-                  <h3 class="vpnName">PASWORDADSADSADAD</h3>
+                  <h3 class="vpnName">TEST!#!@#!@#!</h3>
                   
                 </div>
       				</div>
@@ -204,27 +200,28 @@
 </html>
 
 <script type="text/javascript">
-	var log=1;
-	function changeStation(){
-		if(log==1){
-			log = 0;
-			$("#data-log").css('display','none');
-			$("#data-ip").css('display','block');
-			$("#change-button").text("Log");
-		}
-		else{
-			log = 1;
-			$("#data-ip").css('display','none');
-			$("#data-log").css('display','block');
-			$("#change-button").text("IP Address");
-		}
-	}
-  function openNav() {
-    document.getElementById("sidebar").style.left = "0px";
-  }
-  function closeNav() {
-    document.getElementById("sidebar").style.left = "-280px";
-  }
+
+	// var log=1;
+	// function changeStation(){
+	// 	if(log==1){
+	// 		log = 0;
+	// 		$("#data-log").css('display','none');
+	// 		$("#data-ip").css('display','block');
+	// 		$("#change-button").text("Log");
+	// 	}
+	// 	else{
+	// 		log = 1;
+	// 		$("#data-ip").css('display','none');
+	// 		$("#data-log").css('display','block');
+	// 		$("#change-button").text("IP Address");
+	// 	}
+	// }
+  // function openNav() {
+  //   document.getElementById("sidebar").style.left = "0px";
+  // }
+  // function closeNav() {
+  //   document.getElementById("sidebar").style.left = "-280px";
+  // }
 
   var clientDashboard = document.getElementById('clientDashboard');
   var addAcess = document.getElementById('addAccess');

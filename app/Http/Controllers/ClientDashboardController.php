@@ -16,119 +16,15 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
 
-class ClientController extends Controller
+class ClientDashboardController extends Controller
 {
-	public function registerClient(Request $request){
-        // dd(date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00 AM");
-        ///// INSERT DEPARTMENT AND USER
-        if(empty(Department::where('name',$request->user_department)->first())){
-            $department = new Department();
-            $department->name = $request->user_department;
-            $department->save();
-        }
-
-        if(empty(User::where('name',$request->user_name)->first())){
-            $user = new User();
-            $user->name = $request->user_name;
-            $user->email = $request->user_email;
-            $user->department_id = Department::where('name',$request->user_department)->first()->id;
-            $user->save();
-        }
-
-        ////////// INSERT VPN_USER_GROUP
-        $aclDept = $request->user_department;
-        $aclDept = strtolower($aclDept);
-        $aclDept = str_replace(' ','-',$aclDept);
-        $aclDept = explode("-",$aclDept);
-        if(count($aclDept)>1)
-            $aclDept = "vpn-".$aclDept[0]."-".$aclDept[1];
-        else
-            $aclDept = "vpn-".$aclDept[0];
-
-        if(empty(VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first())){
-            $aclDeptAllow = $aclDept."-allow";
-
-            $VpnUserGroup = new VpnUserGroup;
-            $VpnUserGroup->department_id = Department::where('name',$request->user_department)->first()->id;
-            $VpnUserGroup->acl_group_name = $aclDept;
-            $VpnUserGroup->acl_group_name_allow = $aclDeptAllow;
-            $VpnUserGroup->save();
-        }
-        // dd($request->all());
-        ////////// INSERT VPN USER
-        if(empty(VpnUser::where('user_id',User::where('name',$request->user_name)->first()->id)->first())){
-            $vpnUsername = $request->user_name;
-            $vpnUsername = strtolower($vpnUsername);
-            $vpnUsername = str_replace(' ','-',$vpnUsername);
-            $vpnUsername = explode("-",$vpnUsername);
-            $vpnUsername = $aclDept."-".$vpnUsername[0];
-            
-            $VpnUser = new VpnUser();
-            $VpnUser->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-            $VpnUser->user_id = User::where('name',$request->user_name)->first()->id;
-            $VpnUser->vpn_username = $vpnUsername;
-            $VpnUser->no_ticket = $request->ticket;
-            if($request->rbTemp == "Temporary"){
-                $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
-            }else{
-                $VpnUser->expiry_date = null;
-            }
-            $VpnUser->completed = 0;
-            $VpnUser->rejected = 0;
-            $VpnUser->active = 0;
-            $VpnUser->save();
-        }
-
-        // //INSERT ACL DATA
-        for($i=1; $i<=count($request->txtAccess);$i++){
-            $VpnAclList = new VpnAclList();
-            $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-            $VpnAclList->no_ticket = $request->ticket;
-            $VpnAclList->address = $request->txtAccess[$i];
-            $VpnAclList->completed = 0;
-            $VpnAclList->rejected = 0;
-            $VpnAclList->active = 0;
-            $VpnAclList->save();
-        }
-
-
-        return redirect('/clientDashboard');
+    public function dataVpnClient(Request $request){
+        $VpnUser = VpnUser::all();
+        $VpnUser->user_id = $request->$user_email;
+        dd($VpnUser->user_id)
     }
 
-  public function registerVendor(Request $request){
-
-        $validate = Validator::make(
-            $request->all(),
-            ['txtFullName' => 'required',
-            'txtVendorName' =>'required',
-            'rbTime' => 'required',
-            'txtAccess1' => 'required',
-        ]
-    );
-        if($validate->fails()){
-            return redirect()->back()->withInput($request->input)->withErrors($validate);
-        }else{
-            return redirect('clientDashboard');
-        }
-    }
-
-    public function generateLink(Request $request){
-        $ticket = $request->number;
-        $ticket = Crypt::encrypt($ticket);
-        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
-        return response(["link" => $url]);
-    }
-
-    public function getLink($request){
-        try {
-            $ticket = Crypt::decrypt($request);
-            return view('pages.client.login')->with('ticket',$ticket);
-        } catch (DecryptException $e) {
-            echo 'Ticket number invalid!';
-        }
-    }
-
-    public function loginEmailLDAP(Request $request){
+    public function loginEmailLDAPClient(Request $request){
         ////////////////////////////////////////LDAP
         // $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
         // $ldap_password ="M1cro-TEECH!!";
@@ -181,14 +77,14 @@ class ClientController extends Controller
                 // print_r ($entries);
                 // print "</pre>";
     
-                $data["ticket"] = $request->ticket;
+                // $data["ticket"] = $request->ticket;
                 $data["user_name"] = $user_name;
                 $data["user_email"] = $user_email;
                 $data["user_department"] = $user_department;
-                $data["manager_name"] = $manager_name;
-                $data["manager_email"] = $manager_email;
+                // $data["manager_name"] = $manager_name;
+                // $data["manager_email"] = $manager_email;
     
-                return view('pages.client.register')->with('data', $data);
+                return view('pages.client.clientDashboard')->with('data', $data);
                 // return view('pages.client.login')->with('error', 'Invalid Email / Password!');
     
                 /////////////////////////////API ITHELPDESK
