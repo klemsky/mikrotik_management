@@ -1,0 +1,129 @@
+/* .page-wrapper.toggled .page-content {
+    margin-top: -8px;
+} */
+.page-wrapper {
+    overflow-y: hidden;
+}
+
+.page-wrapper .page-content {
+    margin-top: -8px;
+    margin-bottom: 7px;
+    height: 100vh;
+    /* background: -webkit-linear-gradient(left, #1b9ad7,#88388f); */
+    /* opacity: 50%; */
+    margin: 0;
+    /* width: 100%; */
+    /* height: 100vh; */
+    font-family: "Exo", sans-serif;
+    color: #fff;
+    background: linear-gradient(-45deg, #ee7752, #88388f, #0090d1);
+    background-size: 400% 400%;
+    animation: gradientBG 1s ease infinite;
+}
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+.container {
+    width: 100%;
+    margin: auto;
+}
+#toggle-sidebar {
+    margin-top: 0px !important;
+    width: 60px;
+    height: 60px;
+    position: fixed;
+    z-index: 1;
+}
+img.contentBackground {
+    position: fixed;
+    top: 0px;
+    height: 104vh;
+    width: 104vw;
+    margin: -12px;
+    z-index: -99;
+    -webkit-filter: blur(8px);
+}
+#vpnHome {
+    /* position: absolute; */
+    display: block;
+    background: rgba(255, 255, 255, 0.6);
+    /* background: white; */
+    /* border-radius: 1.5rem; */
+    height: 86vh;
+    margin-top: 3vw;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50vw;
+    word-break: break-all;
+    word-wrap: break-word;
+    overflow-y: scroll;
+    border-radius: 0.3rem;
+
+    
+}
+#vpnHome::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+	border-radius: 10px;
+	background-color: rgba(255, 255, 255, 0);
+}
+
+#vpnHome::-webkit-scrollbar
+{
+	width: 12px;
+    /* background-color: #F5F5F5; */
+    -webkit-box-shadow: none;
+}
+
+#vpnHome::-webkit-scrollbar-thumb
+{
+	border-radius: 10px;
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+	background-color: #555;
+}
+
+#vpnAccess{
+    display: none;
+}
+#vpnPassword{
+    display: none;
+}
+.txtVPN{
+    color: black;
+    font-size: 24px;
+    padding: 1%;
+    font-family:Arial, Helvetica, sans-serif;
+}
+.tableVPN {
+    border-collapse: collapse;
+    padding-top: 1%;
+    width: 90%;
+    margin: auto;
+    /* border : none; */
+}
+.trVPN,.tdVPN{
+    border-left: 0px;
+    border-top: 0px;
+    border-right: 0px;
+    border-bottom: 1px solid black;
+}
+.form-access {
+    width: 50vw;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 3vw;
+    margin-left: auto;
+    margin-right: auto;
+    padding: auto;
+    height: 86vh;
+}
+}
