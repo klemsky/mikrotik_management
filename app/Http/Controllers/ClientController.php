@@ -8,9 +8,6 @@ use App\VpnAclList;
 use App\VpnUser;
 use App\VpnUserGroup;
 use Illuminate\Http\Request;
-use PEAR2\Net\RouterOS;
-use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
@@ -56,7 +53,7 @@ class ClientController extends Controller
             $VpnUserGroup->acl_group_name_allow = $aclDeptAllow;
             $VpnUserGroup->save();
         }
-        // dd($request->all());
+
         ////////// INSERT VPN USER
         if(empty(VpnUser::where('user_id',User::where('name',$request->user_name)->first()->id)->first())){
             $vpnUsername = $request->user_name;
@@ -81,14 +78,28 @@ class ClientController extends Controller
         }
 
         ////////// INSERT VPN ACL LISTS
-        for($i=1; $i<=count($request->txtAccess);$i++){
-            $VpnAclList = new VpnAclList();
-            $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-            $VpnAclList->address = $request->txtAccess[$i];
-            $VpnAclList->completed = 0;
-            $VpnAclList->rejected = 0;
-            $VpnAclList->active = 0;
-            $VpnAclList->save();
+        $VpnUserGroupId = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+        $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+        $sameAddr = false;
+        for($i=1;$i<=count($request->txtAccess);$i++){
+            for($j=0;$j<count($VpnAclLists);$j++){
+                if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
+                    $sameAddr = false;
+                else{
+                    $sameAddr = true;
+                    break;
+                }
+            }
+            if($sameAddr == false){
+                $VpnAclList = new VpnAclList();
+                $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                $VpnAclList->address = $request->txtAccess[$i];
+                $VpnAclList->completed = 0;
+                $VpnAclList->rejected = 0;
+                $VpnAclList->active = 0;
+                $VpnAclList->save();
+            }
         }
 
         return redirect('/clientDashboard');
@@ -143,7 +154,6 @@ class ClientController extends Controller
     }
 
     public function checkUser($user){
-        // dd($user['ticket']);
         $client = new Client([
             'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
         ]);
@@ -176,17 +186,16 @@ class ClientController extends Controller
     public function loginEmailLDAP(Request $request){
         //LARAVEL VALIDATOR
 
-
         //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
-        $user = array (
-            "email" => $request->password_name."@binus.edu", 
-            "ticket" => $request->ticket
-        );
+        // $user = array (
+        //     "email" => $request->password_name."@binus.edu", 
+        //     "ticket" => $request->ticket
+        // );
         
-        if($this->checkUser($user) != 'valid'){
-            // return 'not valid';
-            return back()->withErrors(['You do not have permission to view ticket!']);
-        }
+        // if($this->checkUser($user) != 'valid'){
+        //     // return 'not valid';
+        //     return back()->withErrors(['You do not have permission to view ticket!']);
+        // }
 
         ////////////////////////////////////////LDAP
         $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
@@ -200,7 +209,7 @@ class ClientController extends Controller
         
         try {
             if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
-                $filter = "(mail=".$request->password_name."@binus.edu)";
+                $filter = "(mail=david.layardi@binus.edu)";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
 

@@ -15,12 +15,12 @@
 @endsection
 
 @section('sidebar-header-role')
-    Role: Finance Officer
+<strong>Position: </strong><br>SSG 1: Senior Programmer
 @endsection
 
 @section('sidebar-search')
 <div class="input-group">
-    <input type="text" class="form-control search-menu" onkeydown="searchExtension(event.keyCode)" placeholder="Search your data..." >
+    <input type="text" class="form-control" onkeydown="searchExtension(event.keyCode)" placeholder="Search your data..." >
     <div class="input-group-append" onclick="searchExtension('13')">
         <span class="input-group-text">
             <!-- <i class="fa fa-search" aria-hidden="true"></i> -->

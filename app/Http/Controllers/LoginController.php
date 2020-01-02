@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
@@ -44,7 +45,7 @@ class LoginController extends Controller
         // }else{
             try {
                 // DO WHILE
-                $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
+                $client = new RouterOS\Client('10.21.0.234', $request->user, $request->password);
                 $util = new RouterOS\Util($client);
 
                 $dataLog = $util->setMenu('/log')->getAll();
@@ -54,10 +55,8 @@ class LoginController extends Controller
             // session::put('client',$client);
             session::put('util',$util);
             session::put('address','10.21.0.234');
-            session::put('username','admin');
-            // return redirect()->route('dashboard');
-            return view('dashboard');
-            // return redirect('dashboard');
+            session::put('username',$request->user);
+            return redirect('/admin/dashboard');
         // }
     }
 

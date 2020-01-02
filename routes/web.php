@@ -11,8 +11,6 @@
 |
 */
 
-Route::get('/getData','ClientController@test')->name('getData');
-
 Route::get('/', function () {
     return view('index');
 });
@@ -27,9 +25,11 @@ Route::get('/dashboard',function(){
 	return view('layouts.dashboard');
 });
 
-Route::get('/admin/dashboard',function(){
-	return view('pages.admin.dashboard');
-});
+Route::get('/admin/dashboard','AdminController@getRequestVPN');
+// Route::get('/admin/dashboard',function(){
+// 	return view('pages.admin.dashboard');
+// });
+Route::get('/request','AdminController@getAllData')->name('getData');
 
 Route::get('/client/dashboard',function(){
 	return view('pages.client.dashboard');
@@ -43,8 +43,6 @@ Route::get('/login',function(){
 Route::get('/adminDashboard','DashboardController@dashboard');
 
 Route::post('/createVPN','DashboardController@createAccount');
-
-// Route::get('/viewData','DashboardController@viewData');
 
 Route::get('/clientRegister',function(){
 	return view('clientRegister');

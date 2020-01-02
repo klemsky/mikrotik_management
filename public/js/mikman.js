@@ -1,4 +1,6 @@
 $(document).ready(function() { 
+    $('.toggle').binus_toggle();
+    showRequests();
     $countAccessList = 1;
 
     $("#add-ip").on("click", function() { 
@@ -36,6 +38,53 @@ $(document).ready(function() {
     });
 });
 
+function showRequests(){
+    $.ajax({
+        type: "GET",
+        url: '/request',
+        success: function (response) {
+            console.log(response.data);
+            insertDataTables(response.data);
+        },
+        error: function (xhr, status, error) {
+
+        }
+    });
+}
+
+function insertDataTables(Datas){
+    var strHTML = "";
+
+    strHTML += "<thead>";
+    strHTML += "<tr>";
+    $.each(Datas[0],function(key,value){
+        strHTML += "<th>" + key + "</th>";
+    });
+    strHTML += "</tr>";
+    strHTML += "</thead>";
+
+    strHTML += "<tbody>";
+    $.each(Datas,function(key,value){
+        strHTML += "<tr>";
+        $.each(Datas[key],function(key,value){
+            strHTML += "<td>"+value+"</td>";
+        });
+        strHTML += "</tr>";
+    });
+    // for($i=0;$i<Datas.length;$i++){
+    //     strHTML += "<tr>";
+    //     strHTML += "<td>"+Datas[$i]['id']+"</td>";
+    //     strHTML += "<td>"+Datas[$i]['name']+"</td>";
+    //     strHTML += "<td>"+Datas[$i]['email']+"</td>";
+    //     strHTML += "<td>"+Datas[$i]['department_id']+"</td>";
+    //     strHTML += "</tr>";
+    // }
+    strHTML += "</tbody>";
+
+    $("#table-data").html(strHTML);
+    $('#table-data').DataTable();
+}
+
 function showTime(){
     $("#input-date-container").html('<input type="date" id="tempText" name="expiry_date" placeholder="dd/mm/yyyy"/>');
     $("#input-date-container").css('padding-top','10px');
@@ -46,16 +95,6 @@ function hideTime(){
     $("#input-date-container").html('');
     $("#input-date-container").css('padding-top','0px');
     $("#input-date-container").css('padding-bottom','0px');
-}
-
-function showRequest(){
-	$('#command').val($("#show-request").children().text());
-    showModal();
-}
-
-function showVPNs(){
-    $('#command').val($("#show-vpn").children().text());
-    showModal();
 }
 
 function showError(msg){
@@ -119,8 +158,6 @@ function showLink(){
                 // $('.is-error').show();
                 // $('.is-success').hide();
                 // $('.is-error').html(data);
-                // $('#btn-submit-item').prop('disabled',false);
-                console.log(response.status);
                 if(response.status == "Ticket Empty")
                     showError('Ticket number cannot be empty!');
                 else
@@ -128,26 +165,4 @@ function showLink(){
             }
         },
     });
-}
-
-function showNew(){
-    $("#vendor-tab").removeClass("active");
-    $("#new-tab").addClass("active");
-    $("#vendor-button").removeClass("active");
-    $("#new-button").addClass("active");
-}
-
-function showVendor(){
-    $("#new-tab").removeClass("active");
-    $("#vendor-tab").addClass("active");
-    $("#new-button").removeClass("active");
-    $("#vendor-button").addClass("active");
-}
-
-function setTempDate(ele){
-    document.getElementById("tmpRadio").value=ele.value;
-}
-
-function setTempDate2(ele){
-    document.getElementById("tmpRadio2").value=ele.value;
 }

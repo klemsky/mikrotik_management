@@ -2,17 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Department;
+use App\User;
+use App\VpnAclList;
+use App\VpnUser;
+use App\VpnUserGroup;
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Routing\Redirector;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
 
 class AdminController extends Controller
 {
+    public function getRequestVPN(){
+	    return view('pages.admin.dashboard');
+    }
+
+    public function getAllData(Request $request){
+        $data = VpnAclList::all();
+        return response([
+            'data' => $data,
+        ]);
+    }
+
 	public function reLogin(Request $request){
 		if($request->command == "VPN Status")
 			return $this->showAllVPN($request);
