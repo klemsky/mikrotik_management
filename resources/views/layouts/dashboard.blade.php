@@ -78,7 +78,7 @@
         <main class="page-content pt-2">
             <div id="toggle-sidebar"><img id="arrowImg" src="{{asset('img/prev.png')}}"></div>
             <div id="overlay" class="overlay"></div>
-            <div class="container-fluid p-5 image">
+            <div class="container-fluid p-0 image">
                 @yield('dashboard-image')
             </div>
             @yield('content')

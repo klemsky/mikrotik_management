@@ -126,7 +126,7 @@ class ClientController extends Controller
         //TERUS SMTP
 
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
         return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
@@ -142,7 +142,8 @@ class ClientController extends Controller
     public function loginEmailLDAP(Request $request){
         ////////////////////////////////////////LDAP
         // $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
-        // $ldap_password ="M1cro-TEECH!!";
+        // // $ldap_password ="M1cro-TEECH!!";
+        // dd($request->ticket);
         $ldap_dn = $request->password_name."@binus.edu";
         $ldap_password = $request->password_pwd;
         
@@ -150,57 +151,107 @@ class ClientController extends Controller
         ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
         ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
         
-        try {
-            if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
-                $filter = "(mail=".$request->password_name."@binus.edu)";
-                $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
-                $entries = ldap_get_entries($ldap_con, $result);
-
-                $user_name = $entries[0]["cn"][0];
-                $user_email = $entries[0]["userprincipalname"][0];
-                $user_department = $entries[0]["department"][0];
-                // echo $user_name . " is on department of " . $user_department . ". Email: " . $user_email . "<br>";
-    
-                $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
-                $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
-    
-                while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$manager_name.")"))[0]["title"][0], "Manager")){
-                    // echo $manager_name . " is not Manager";
+        if($request->ticket==null){
+            $user = User::where("email",$ldap_dn)->first();
+            if(empty($user))
+                return back()->withErrors(["You dont have VPN Account!"]);
+            try {
+                if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {     
+                    $filter = "(mail=".$request->password_name."@binus.edu)";
+                    $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+                    $entries = ldap_get_entries($ldap_con, $result); 
+                    $user_name = $entries[0]["cn"][0];
+                    $user_email = $entries[0]["userprincipalname"][0];
+                    $user_department = $entries[0]["department"][0];
+                    $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
+                    $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
+                    while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$manager_name.")"))[0]["title"][0], "Manager")){
+                        $filter = "(CN=".$manager_name.")";
+                        $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+                        $entries = ldap_get_entries($ldap_con, $result);
+                        $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
+                        $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
+                        $manager_email = $entries[0]["userprincipalname"][0];
+                    }
                     $filter = "(CN=".$manager_name.")";
                     $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                     $entries = ldap_get_entries($ldap_con, $result);
+                    $manager_email = $entries[0]["userprincipalname"][0];
+                    // AMBIL DATA DARI DB
+                    $UserId = User::where('email',$ldap_dn)->value('id');
+                    $userGroupId = VpnUser::where('user_id',$UserId)->value('vpn_user_group_id');
+                    $addressAllow = VpnAclList::where('vpn_user_group_id',$userGroupId)->pluck('address');
+                    $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
+                    $data["ticket"] = $request->ticket;
+                    $data["user_name"] = $user_name;
+                    $data["user_email"] = $user_email;
+                    $data["user_department"] = $user_department;
+                    $data["manager_name"] = $manager_name;
+                    $data["manager_email"] = $manager_email;
+                    $data["vpnUsername"] = $vpnUsername;
+                    // return view('pages.client.dashboard')->with(['vpnUsername'=>$vpnUsername,'name'=>$request->password_name,'email'=>$ldap_dn,'department'=>$request->user_department,'manager'=>$request->manager_name,'address'=>$addressAllow]);
+                    return view('pages.client.dashboard')->with(['data'=>$data,'address'=>$addressAllow]);
+
+                    // $vpnAclTiket = VpnUser::where($vpnUsername)->pluck('no_ticket');
+                    // // Bandingin hasil Array dari $vpnAclAllow dengan table no_ticket pake whereRaw
+                    // $vpnAclAllow = VpnAclList::whereRaw('no_ticket',$vpnAclTiket)->pluck('address')->toArray();          
+                    // return view('pages.client.dashboard');
+                }
+            } catch (Exception $e) {
+                return back()->withErrors(['Invalid Email / Password!']);
+            }
+        }else{
+            try {
+                if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
+                    $filter = "(mail=".$request->password_name."@binus.edu)";
+                    $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+                    $entries = ldap_get_entries($ldap_con, $result);
+
+                    $user_name = $entries[0]["cn"][0];
+                    $user_email = $entries[0]["userprincipalname"][0];
+                    $user_department = $entries[0]["department"][0];
+                    // echo $user_name . " is on department of " . $user_department . ". Email: " . $user_email . "<br>";
+        
                     $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
                     $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
+        
+                    while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$manager_name.")"))[0]["title"][0], "Manager")){
+                        // echo $manager_name . " is not Manager";
+                        $filter = "(CN=".$manager_name.")";
+                        $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+                        $entries = ldap_get_entries($ldap_con, $result);
+                        $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
+                        $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
+                        $manager_email = $entries[0]["userprincipalname"][0];
+                        // echo  ". Email: " . $manager_email . "<br>";
+                    }
+                    // echo $manager_name . " is Manager";
+                    
+                    $filter = "(CN=".$manager_name.")";
+                    $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
+                    $entries = ldap_get_entries($ldap_con, $result);
                     $manager_email = $entries[0]["userprincipalname"][0];
                     // echo  ". Email: " . $manager_email . "<br>";
+        
+                    // print "<pre>";
+                    // print_r ($entries);
+                    // print "</pre>";
+        
+                    $data["ticket"] = $request->ticket;
+                    $data["user_name"] = $user_name;
+                    $data["user_email"] = $user_email;
+                    $data["user_department"] = $user_department;
+                    $data["manager_name"] = $manager_name;
+                    $data["manager_email"] = $manager_email;
+
+                    
+        
+                    return view('pages.client.register')->with(['data'=> $data]);
                 }
-                // echo $manager_name . " is Manager";
-                
-                $filter = "(CN=".$manager_name.")";
-                $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
-                $entries = ldap_get_entries($ldap_con, $result);
-                $manager_email = $entries[0]["userprincipalname"][0];
-                // echo  ". Email: " . $manager_email . "<br>";
-    
-                // print "<pre>";
-                // print_r ($entries);
-                // print "</pre>";
-    
-                $data["ticket"] = $request->ticket;
-                $data["user_name"] = $user_name;
-                $data["user_email"] = $user_email;
-                $data["user_department"] = $user_department;
-                $data["manager_name"] = $manager_name;
-                $data["manager_email"] = $manager_email;
-    
-                return view('pages.client.register')->with('data', $data);
+            } catch (Exception $e) {
+                return back()->withErrors(['Invalid Email / Password!']);
             }
-        } catch (Exception $e) {
-            return back()->withErrors(['Invalid Email / Password!']);
         }
         
-        // } else {
-        //     return back()->withErrors('Why error? :(');
-        // }
     }
 }

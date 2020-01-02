@@ -15,22 +15,18 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
+use DB;
 
 class ClientDashboardController extends Controller
 {
-    // public function dataVpnClient(Request $request){
-    //     // $emailUser = $request->$user_email;
-    //     $User = User::all();
-    //     $User->id = User::where('email',$request->user_email)->first()->id;
-
-    //     $VpnUser = VpnUser::all();
-    //     $vpn_username = VpnUser::where($User->user_id,$VpnUser->user_id)->first()->vpn_username;
-    //     // $no_ticket 
-    //     $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
-    //     dd($vpnAclTiket);
-
-
-    // }
+    public function dataVpnClient(Request $request){
+        //// DAPETIN IP USER DARI NOMOR TIKET
+        $UserId = User::where('email',$request->user_email)->value('id');
+        $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
+        $vpnAclTiket = VpnUser::where($vpnUsername)->pluck('no_ticket');
+        // Bandingin hasil Array dari $vpnAclAllow dengan table no_ticket pake whereRaw
+        $vpnAclAllow = VpnAclList::whereRaw('no_ticket',$vpnAclTiket)->pluck('address')->toArray();
+    }
 
     public function loginEmailLDAPClient(Request $request){
         ////////////////////////////////////////LDAP
@@ -92,15 +88,26 @@ class ClientDashboardController extends Controller
                 // $data["manager_name"] = $manager_name;
                 // $data["manager_email"] = $manager_email;
 
-                $User = User::all();
-                $User->id = User::where('email',$request->user_email)->first()->id;
+                // $User = User::all();
+                // $User->id = User::where('email',$request->user_email)->first()->id;
 
-                $VpnUser = VpnUser::all();
-                $vpn_username = VpnUser::where($User->user_id,$VpnUser->user_id)->first()->vpn_username;
-                // $no_ticket 
-                $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
-                dd($vpnAclTiket);
-                // return view('pages.client.clientDashboard')->with('data', $data);
+                // $VpnUser = VpnUser::all();
+                // $vpn_username = VpnUser::where($User->user_id,$VpnUser->user_id)->first()->vpn_username;
+                // // $no_ticket 
+                // $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
+                // dd($vpnAclTiket);
+                //// DAPETIN USERNAME
+                // $userName = User::where('email',$request->user_email)->value('id');
+
+                //// DAPETIN IP USER DARI NOMOR TIKET
+                $UserId = User::where('email',$request->user_email)->value('id');
+                $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
+                $vpnAclTiket = VpnUser::where($vpnUsername)->pluck('no_ticket');
+                // Bandingin hasil Array dari $vpnAclAllow dengan table no_ticket pake whereRaw
+                $vpnAclAllow = VpnAclList::whereRaw('no_ticket',$vpnAclTiket)->pluck('address')->toArray();
+
+
+                return view('pages.client.dashboard')->with(['data'=> $data,'vpnUsername'=>$vpnUsername,'vpnAclAllow'=>$vpnAclAllow]);
 
                 // return view('pages.client.login')->with('error', 'Invalid Email / Password!');
     
@@ -134,15 +141,7 @@ class ClientDashboardController extends Controller
 
             }
         } catch (Exception $e) {
-            // return back()->withErrors(['Invalid Email / Password!']);
-            $User = User::all();
-                $UserId = User::where('email',$request->user_email)->id;
-
-                $VpnUser = VpnUser::all();
-                $vpn_username = VpnUser::where($UserId,$VpnUser->user_id)->first()->vpn_username;
-                // $no_ticket 
-                $vpnAclTiket = VpnUser::where($vpn_username)->first()->no_ticket;
-                dd($vpnAclTiket);
+            return back()->withErrors(['Invalid Email / Password!']);
         }
         
         // } else {

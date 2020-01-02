@@ -128,8 +128,12 @@
              
       				<div class="dashboardContent" style=" display: block;" id="clientDashboard">
       					<div class="vpnInfo">
-      						<h3 class="vpnName">NAMA VPN</h3>
+      						<h3 class="vpnName" style="color: white">VPN Name : {{ $vpnUsername }}</h3>
       						<h3 class="vpnStatus"> Status :  </h3>
+                            <h3 style="color: white"> LIST ACCESS VPN : </h3>
+                              @foreach($vpnAclAllow as $aclAllow)
+                              <h4 style="color: white">{{$aclAllow}}</h4>
+                              @endforeach
       					</div>
 
                 <div class="vpnAccess">
