@@ -46,8 +46,14 @@
                                     </div>
                                     <div class="custom-textbox">
                                         <div class="custom-radio">
-                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
-                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
+                                            <label>
+                                                <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" >
+                                                Permanent
+                                            </label>
+                                            <label>
+                                                <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()">
+                                                Temporary
+                                            </label>
                                         </div>
                                         <div id="input-date-container"></div>
                                         <!-- <input type="text" id="tempText" oninput="setTempDate(this)" style="visibility: hidden;" class="input-form" placeholder="dd/mm/yyyy" /> -->

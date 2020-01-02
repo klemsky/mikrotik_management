@@ -112,7 +112,6 @@ class ClientController extends Controller
                     'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
                 ]
             ]);
-            $body = json_decode($response->getBody());
         }catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $exception = (string) $e->getResponse()->getBody();
@@ -121,15 +120,35 @@ class ClientController extends Controller
                 return ['status' => $exception->response_status->status]; 
             }			
         }
-
+        $body = json_decode($response->getBody());
         // return ['status' => 'failed'];  
         
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
 
+
+
+
+
+        $smtp = new SendEmailController();
+        if(empty(User::where('email',$body->request->requester->email_id)->first())){
+            // return response(["link" => 'belum ada user','status' => 'success']);
+            $data = array (
+                "email" => $body->request->requester->email_id, 
+                "name" => $body->request->requester->name
+            );
+            $smtp->send($data);
+        }else{
+            // return response(["link" => 'sudah ada','status' => 'success']);
+
+        }
+
+
+
+
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
         return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
@@ -157,12 +176,6 @@ class ClientController extends Controller
             ]);
             $body = json_decode($response->getBody());
             $email = $body->request->requester->email_id;
-
-            if($user['email'] == $email){
-                return 'valid';
-            }else{
-                return 'not valid';
-            }
         }catch (RequestException $e) {
             if ($e->hasResponse()) {
                 $exception = (string) $e->getResponse()->getBody();
@@ -171,28 +184,16 @@ class ClientController extends Controller
                 return ['status' => $exception->response_status->status]; 
             }			
         }
+        if($user['email'] == $email){
+            return 'valid';
+        }else{
+            return 'not valid';
+        }
     }
 
-    public function loginEmailLDAP(Request $request){
-        //LARAVEL VALIDATOR
-
-
-        //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
-        $user = array (
-            "email" => $request->password_name."@binus.edu", 
-            "ticket" => $request->ticket
-        );
-        
-        if($this->checkUser($user) != 'valid'){
-            // return 'not valid';
-            return back()->withErrors(['You do not have permission to view ticket!']);
-        }
-
-        ////////////////////////////////////////LDAP
-        $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
-        $ldap_password ="M1cro-TEECH!!";
-        // $ldap_dn = $request->password_name."@binus.edu";
-        // $ldap_password = $request->password_pwd;
+    public function checkLDAPBind($request){
+        $ldap_dn = $request->password_name."@binus.edu";
+        $ldap_password = $request->password_pwd;
         
         $ldap_con = ldap_connect("10.200.200.201", 389);
         ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
@@ -200,7 +201,24 @@ class ClientController extends Controller
         
         try {
             if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
-                $filter = "(mail=".$request->password_name."@binus.edu)";
+                return 'valid';
+            }
+        } catch (Exception $e) {
+            return 'not valid';
+        }
+    }
+
+    public function checkLDAPManager($user){
+        $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
+        $ldap_password = "M1cro-TEECH!!";
+        
+        $ldap_con = ldap_connect("10.200.200.201", 389);
+        ldap_set_option($ldap_con, LDAP_OPT_PROTOCOL_VERSION, 3);
+        ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
+        
+        try {
+            if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
+                $filter = "(mail=".$user['email'].")";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
 
@@ -228,27 +246,43 @@ class ClientController extends Controller
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
                 $manager_email = $entries[0]["userprincipalname"][0];
-                // echo  ". Email: " . $manager_email . "<br>";
-    
-                // print "<pre>";
-                // print_r ($entries);
-                // print "</pre>";
-    
-                $data["ticket"] = $request->ticket;
-                $data["user_name"] = $user_name;
-                $data["user_email"] = $user_email;
-                $data["user_department"] = $user_department;
-                $data["manager_name"] = $manager_name;
-                $data["manager_email"] = $manager_email;
-    
-                return view('pages.client.register')->with('data', $data);
+
+                $data = array (
+                    "ticket" => $user['ticket'],
+                    "user_name" => $user_name,
+                    "user_email" => $user_email,
+                    "user_department" => $user_department,
+                    "manager_name" => $manager_name,
+                    "manager_email" => $manager_email
+                );
+                return $data;
             }
         } catch (Exception $e) {
             return back()->withErrors(['Invalid Email / Password!']);
         }
+    }
+
+    public function loginEmailLDAP(Request $request){
+        //LARAVEL VALIDATOR
+
+
+        //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
+        $user = array (
+            "email" => $request->password_name."@binus.edu", 
+            "ticket" => $request->ticket
+        );
         
-        // } else {
-        //     return back()->withErrors('Why error? :(');
-        // }
+        if($this->checkUser($user) != 'valid'){
+            // return 'not valid';
+            return back()->withErrors(['You do not have permission to view ticket!']);
+        }
+
+        if($this->checkLDAPBind($request) != 'valid'){
+            return back()->withErrors(['Invalid Email / Password!']);
+        }else{
+            $data = $this->checkLDAPManager($user);
+        }
+        dd($data);
+        // return view('pages.client.register')->with('data', $data);
     }
 }

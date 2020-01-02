@@ -32,8 +32,8 @@ class SendMail extends Mailable
     public function build()
     {
         // dd($this->data);
-        $mail = $this->subject('##RE-64632##');
-        $mail = $this->from('noreply-vpn@binus.edu');
+        $mail = $this->subject('[Ticket ##RE-64902##] : Permintaan akun VPN');
+        $mail = $this->from('mikman@binus.edu');
         $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal  in MacOS Create Guide.pdf');
         $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window  7 Create Guide.pdf');
         $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window 10 Create Guide.pdf');

@@ -8,7 +8,12 @@ use App\Mail\SendMail;
 
 class SendEmailController extends Controller
 {
-    public function sendEmail(Request $request){
+	public function send($data){
+		// $data['email']
+		
+	}
+
+    public function sendEmailDepre(Request $request){
     	//Validasi
     	// dd($request->all());
 
@@ -49,9 +54,6 @@ class SendEmailController extends Controller
 				return view('clearview')->with('message', 'Invalid user/pass or other errors!');
 			}
 	    }
-	    // dd($emails);
-
-		// Mail::to($request->recipientEmail1)->send(new SendMail($data));
 		Mail::to($emails)->send(new SendMail($data));
     	return view('clearview')->with('message', 'Message sent successfully!');
     }
