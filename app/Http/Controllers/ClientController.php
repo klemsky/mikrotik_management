@@ -279,13 +279,28 @@ class ClientController extends Controller
 
             if($this->checkUser($user) != 'valid')
                 return back()->withErrors(['You do not have permission to view ticket!']);
+
+            if($this->checkLDAPBind($request) != 'valid')
+                return back()->withErrors(['Invalid Email / Password!']);
+            else
+                $data = $this->checkLDAPManager($request);    
+
+            return view('pages.client.register')->with('data', $data);
+        }else{
+            if($this->checkLDAPBind($request) != 'valid')
+                return back()->withErrors(['Invalid Email / Password!']);
+            else
+                $data = $this->checkLDAPManager($request);
+
+            $userEmail = $request->password_name."@binus.edu";
+            $UserId = User::where('email',$request->password_name."@binus.edu")->value('id');
+            $userGroupId = VpnUser::where('user_id',$UserId)->value('vpn_user_group_id');
+            $addressAllow = VpnAclList::where('vpn_user_group_id',$userGroupId)->pluck('address');
+            $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
+            return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
+            // return redirect()->route('clientDashboard',['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
         }
 
-        if($this->checkLDAPBind($request) != 'valid')
-            return back()->withErrors(['Invalid Email / Password!']);
-        else
-            $data = $this->checkLDAPManager($request);
         
-        return view('pages.client.register')->with('data', $data);
     }
 }

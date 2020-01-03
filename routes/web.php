@@ -29,19 +29,19 @@ Route::get('/dashboard',function(){
 
 Route::get('/admin/dashboard',function(){
 	return view('pages.admin.dashboard');
-});
+})->name('clientLogin');
 
 Route::get('/client/dashboard',function(){
 	return view('pages.client.dashboard');
-});
+})->name('clientDashboard');
 
 Route::get('/login/request={request}', 'ClientController@getLink');
 Route::get('/login',function(){
 	return view('pages.client.login');
 });
-Route::get('/clientLogin',function(){
-	return view('pages.client.clientLogin');
-});
+// Route::get('/clientDashboard',function(){
+// 	return view('pages.client.dashboard');
+// });
 
 Route::get('/adminDashboard','DashboardController@dashboard');
 
@@ -53,6 +53,7 @@ Route::get('/clientRegister',function(){
 	return view('clientRegister');
 });
 
+
 Route::get('/ticket',function(){
 	return view('pages.client.ticket');
 });
@@ -61,8 +62,8 @@ Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
-Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
-Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
+// Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
+// Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 
 // Route::get('/clientDashboard',function(){
 // 	return view('pages.client.clientDashboard');

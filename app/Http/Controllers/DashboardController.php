@@ -36,13 +36,42 @@ class DashboardController extends Controller
     	// $secretVPN = 'VPN-YANDO';
     	// $scriptVPN = 'ORA-UMUM';
 
-        $datas = DB::select('select * from userregist ORDER BY ticketNumber ASC');
-        return view('/dashboard',['datas'=>$datas]);
+        // $datas = DB::select('select * from userregist ORDER BY ticketNumber ASC');
+        // return view('/dashboard',['datas'=>$datas]);
+        
 
+        $vpnName = "vpn-it-infrastructure-loudy";
+        $vpnPass = "b1nus123!";
+        $department = "infra";
 
         $client = new RouterOS\Client('10.21.0.234', 'admin', 'mikman123!');
-        $client = new RouterOS\Client($request->address, $request->user, $request->password);
+        // $client = new RouterOS\Client($request->address, $request->user, $request->password);
+        $util = new RouterOS\Util($client);
+   
+        $util->setMenu('/ip pool');
+        // ANGKA DEPAN NAME MENANDAKAN ARRAY DARI HASIL PRINT
+        $ipPoolRange = $util->get($department,'ranges');
+        $util->setMenu('/ip firewall');
+        dd($ipPoolRange);
+        // $test = $util->find('address')
+        // $test = $util->find(0,255);
+        // $request = new RouterOS\Request('/ip/pool');
+ 
+        // //Define $query here
+        // $query = RouterOS\Query::where('/ip/pool', 'infra');
+        // // $query = RouterOS\Query::where (!((address>"192.168.88.10") || address="192.168.88.10") && interface="bridge-local")
+        // $request->setQuery($query);
+        // $responses = $client->sendSync($request);
+        // foreach ($responses as $response) {
+        //     foreach ($response as $name => $value) {
+        //         echo "{$name}: {$value}\n";
+        //     }
+        //     echo "====\n";
+        // }
+        
+        
 
+        // dd($test);
         // DB::select('INSERT INTO userregist (username,email,division,status,ip) VALUES ("'.$username.'","'.$email.'","'.$division.'","'.$status.'","'.$ip.'")');
         // return view();
        //  if(Session::get('key')){

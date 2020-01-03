@@ -1,9 +1,13 @@
 /* .page-wrapper.toggled .page-content {
     margin-top: -8px;
 } */
+.sidebar-wrapper {
+    background-color: #0090d1;
+}
 .page-wrapper {
     overflow-y: hidden;
 }
+
 
 .page-wrapper .page-content {
     margin-top: -8px;
@@ -16,9 +20,9 @@
     /* height: 100vh; */
     font-family: "Exo", sans-serif;
     color: #fff;
-    background: linear-gradient(-45deg, #ee7752, #88388f, #0090d1);
+    background: linear-gradient(-45deg, #0090d1,#008BC7,#0075C7,#5D5AB4, #88388f);
     background-size: 400% 400%;
-    animation: gradientBG 1s ease infinite;
+    animation: gradientBG 20s ease infinite;
 }
 @keyframes gradientBG {
     0% {
@@ -51,10 +55,14 @@ img.contentBackground {
     z-index: -99;
     -webkit-filter: blur(8px);
 }
+.infoHeader{
+    padding-top: 1%;
+    text-align: center;
+}
 #vpnHome {
     /* position: absolute; */
     display: block;
-    background: rgba(255, 255, 255, 0.6);
+    background:  rgba(0,0,0,0.5) !important;
     /* background: white; */
     /* border-radius: 1.5rem; */
     height: 86vh;
@@ -97,10 +105,11 @@ img.contentBackground {
     display: none;
 }
 .txtVPN{
-    color: black;
+    color: white;
     font-size: 24px;
     padding: 1%;
     font-family:Arial, Helvetica, sans-serif;
+    font: outline;
 }
 .tableVPN {
     border-collapse: collapse;
@@ -117,7 +126,7 @@ img.contentBackground {
 }
 .form-access {
     width: 50vw;
-    background: #fff;
+    background:  rgba(0,0,0,0.5) !important;
     border-radius: 10px;
     overflow: hidden;
     margin-top: 3vw;
@@ -126,4 +135,33 @@ img.contentBackground {
     padding: auto;
     height: 86vh;
 }
+.custom-textbox{
+    margin-left: 4vw;
+    padding: 5px;
 }
+.custom-radio{
+    margin-left: 4vw;
+    padding: 5px;
+}
+.ticketBox{
+    margin-left: 4vw;
+    padding: 5px;
+}
+#access_submitBtn{
+    margin-left: 4vw;
+    padding: 5px;
+}
+input.input-form {
+    width: 80%;
+    border-radius: 0.5rem;
+    padding: 5px;
+    /* outline: none; */
+    /* box-shadow: none !important; */
+}
+#tempText{
+    border-radius: 0.5rem;
+    padding: 5px;
+    /* outline: none; */
+    /* box-shadow: none !important; */
+}
+
