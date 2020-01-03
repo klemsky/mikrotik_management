@@ -40,6 +40,9 @@ Route::get('/login/request={request}', 'ClientController@getLink');
 Route::get('/login',function(){
 	return view('pages.client.login');
 });
+Route::get('/clientLogin',function(){
+	return view('pages.client.clientLogin');
+});
 
 Route::get('/adminDashboard','DashboardController@dashboard');
 
@@ -57,10 +60,12 @@ Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
+Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
+Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 
-Route::get('/clientDashboard',function(){
-	return view('clientDashboard');
-});
+// Route::get('/clientDashboard',function(){
+// 	return view('pages.client.clientDashboard');
+// });
 
 Route::post('/submitTicket','ClientController@registerTicketNumber');
 

@@ -79,24 +79,14 @@
         </nav>
 
         <!-- page-content  -->
-        <div id="page" class="main-container">
-            <header class="header">
-                <!-- header element -->
-            </header>
-            <main class="page-content pt-2">
-                <div class="site-content" id="site-content" style="text-align: center">
-                    <!-- pre content element -->
-                    <!-- ex. breadcrumb, page title, body-navigation, etc -->
-                    <div id="toggle-sidebar"><img id="arrowImg" src="{{asset('img/prev.png')}}"></div>
-                    <div id="overlay" class="overlay"></div>
-                    @yield('dashboard-image')
-                </div>
-                @yield('content')
-            </main>
-            <footer class="footer">
-                <!-- footer element -->
-            </footer>
-        </div>
+        <main class="page-content pt-2">
+            <div id="toggle-sidebar"><img id="arrowImg" src="{{asset('img/prev.png')}}"></div>
+            <div id="overlay" class="overlay"></div>
+            <div class="container-fluid p-0 image">
+                @yield('dashboard-image')
+            </div>
+            @yield('content')
+        </main>
         <!-- page-content" -->
 
         <div class="modal fade bd-example-modal-lg" id="modal-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
