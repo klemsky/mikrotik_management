@@ -52,15 +52,4 @@
 @endsection
 
 @section('js')
-<script>
-    $(document).ready(function(){
-        @if(Session::has('error'))
-        Swal.fire({
-            type: 'error',
-            text: '{{Session::get('error')}}',
-            confirmButtonColor: '#762F8D',
-        });
-        @endif
-    });
-</script>
 @endsection
