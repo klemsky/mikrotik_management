@@ -25,10 +25,11 @@ Route::get('/dashboard',function(){
 	return view('layouts.dashboard');
 });
 
-Route::get('/admin/dashboard','AdminController@getRequestVPN');
-// Route::get('/admin/dashboard',function(){
-// 	return view('pages.admin.dashboard');
-// });
+// Route::get('/admin/dashboard','AdminController@getRequestVPN');
+Route::get('/admin/dashboard',function(){
+	return view('pages.admin.dashboard');
+});
+
 Route::get('/request','AdminController@getAllData')->name('getData');
 
 Route::get('/client/dashboard',function(){

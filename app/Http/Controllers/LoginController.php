@@ -45,7 +45,7 @@ class LoginController extends Controller
         // }else{
             try {
                 // DO WHILE
-                $client = new RouterOS\Client('10.21.0.234', $request->user, $request->password);
+                $client = new RouterOS\Client('10.21.0.234', 'owen', 'owen');
                 $util = new RouterOS\Util($client);
 
                 $dataLog = $util->setMenu('/log')->getAll();

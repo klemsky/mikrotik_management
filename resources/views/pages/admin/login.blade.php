@@ -46,7 +46,7 @@
     </p>
     <br>
     <p>
-        <input type="submit" id="password_submitBtn" value="Submit" class="button button-primary wide">
+        <input type="submit" id="password_submitBtn" value="Login" class="button button-primary wide">
     </p>
 </form>
 @endsection

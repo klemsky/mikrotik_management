@@ -34,7 +34,7 @@
 </head>
 
 <body>
-    <div class="page-wrapper default-theme bg1 toggled">
+    <div class="page-wrapper default-theme bg1">
         <nav id="sidebar" class="sidebar-wrapper">
             <div class="sidebar-content">
                 <!-- sidebar-brand  -->

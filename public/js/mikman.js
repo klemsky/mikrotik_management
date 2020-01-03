@@ -43,7 +43,7 @@ function showRequests(){
         type: "GET",
         url: '/request',
         success: function (response) {
-            console.log(response.data);
+            console.log(response);
             insertDataTables(response.data);
         },
         error: function (xhr, status, error) {

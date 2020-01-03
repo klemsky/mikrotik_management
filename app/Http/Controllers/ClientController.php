@@ -83,22 +83,25 @@ class ClientController extends Controller
 
         $sameAddr = false;
         for($i=1;$i<=count($request->txtAccess);$i++){
-            for($j=0;$j<count($VpnAclLists);$j++){
-                if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
-                    $sameAddr = false;
-                else{
-                    $sameAddr = true;
-                    break;
+            if($request->txtAccess[$i] != null || $request->txtAccess[$i] != ""){
+                for($j=0;$j<count($VpnAclLists);$j++){
+                    if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
+                        $sameAddr = false;
+                    else{
+                        $sameAddr = true;
+                        break;
+                    }
                 }
-            }
-            if($sameAddr == false){
-                $VpnAclList = new VpnAclList();
-                $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-                $VpnAclList->address = $request->txtAccess[$i];
-                $VpnAclList->completed = 0;
-                $VpnAclList->rejected = 0;
-                $VpnAclList->active = 0;
-                $VpnAclList->save();
+                if($sameAddr == false){
+                    $VpnAclList = new VpnAclList();
+                    $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                    $VpnAclList->address = $request->txtAccess[$i];
+                    $VpnAclList->no_ticket = $request->ticket;
+                    $VpnAclList->completed = 0;
+                    $VpnAclList->rejected = 0;
+                    $VpnAclList->active = 0;
+                    $VpnAclList->save();
+                }
             }
         }
 
@@ -199,7 +202,7 @@ class ClientController extends Controller
 
         ////////////////////////////////////////LDAP
         $ldap_dn = "CN=Mikrotik Management,OU=Vendor,OU=Data Center,OU=IT,DC=binus,DC=local";
-        $ldap_password ="M1cro-TEECH!!";
+        $ldap_password ="eyJpdiI6Im9qZ2U3RENXT3JpcnFMMURENk1YbGc9PSIsInZhbHVlIjoiR1NCd2VhNnByRndlbGhGWk4yNXl1UVVOZzdwMVYwYjNla0dKUFFKZVhxOD0iLCJtYWMiOiJhNDZlMTc0YzM1YzliYWMyMTQ0MzNmYWI0ODhiOGE0YzQwY2M1NWFmMDNkYmI0M2NiNjBiMmIxMTMxMGMzOGNmIn0=";
         // $ldap_dn = $request->password_name."@binus.edu";
         // $ldap_password = $request->password_pwd;
         
@@ -208,8 +211,8 @@ class ClientController extends Controller
         ldap_set_option($ldap_con, LDAP_OPT_REFERRALS, 0);
         
         try {
-            if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
-                $filter = "(mail=david.layardi@binus.edu)";
+            if(@ldap_bind($ldap_con, $ldap_dn, Crypt::decrypt($ldap_password))) {                
+                $filter = "(mail=fatihatul.ichsan@binus.edu)";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
 
@@ -255,9 +258,5 @@ class ClientController extends Controller
         } catch (Exception $e) {
             return back()->withErrors(['Invalid Email / Password!']);
         }
-        
-        // } else {
-        //     return back()->withErrors('Why error? :(');
-        // }
     }
 }

@@ -23,10 +23,44 @@ class AdminController extends Controller
     }
 
     public function getAllData(Request $request){
-        $data = VpnAclList::all();
+        // $data = VpnAclList::all();
+        $data = VpnUser::select(['no_ticket','vpn_username','email','name'])->leftJoin('users',function($join) {
+            $join->on('users.id', '=', 'vpn_users.user_id');
+        })->get();
+
+        foreach ($data as $key => $value) 
+            $data[$key]['status'] = $this->checkTicketStatus($data[$key]['no_ticket']);
+
+        // dd($data);
         return response([
             'data' => $data,
         ]);
+    }
+
+    public function checkTicketStatus($ticket){
+        $status = '';
+        $client = new Client([
+            'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
+        ]);
+
+        try{
+            $response = $client->request('GET', 'requests/' . $ticket,[
+                'headers'=>[
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
+                ]
+            ]);
+            $body = json_decode($response->getBody());
+            return $body->request->status->name;
+        }catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+                return ['status' => $exception->response_status->status]; 
+            }			
+        }
+
+        return $status;
     }
 
 	public function reLogin(Request $request){

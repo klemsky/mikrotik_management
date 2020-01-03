@@ -33,42 +33,42 @@
 @section('sidebar-item')
 <div class="sidebar-item sidebar-menu">
     <ul>
-        <li class="sidebar-dropdown info active" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown info active" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request" onclick="showRequests()">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Requests</span>
             </a>
         </li>
     </ul>
     <ul>
-        <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown site-tab" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Edit Account</span>
             </a>
         </li>
     </ul>
     <ul>
-        <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown site-tab" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Delete Account</span>
             </a>
         </li>
     </ul>
     <ul>
-        <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown site-tab" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Delete Account</span>
             </a>
         </li>
     </ul>
     <ul>
-        <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown site-tab" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Delete Account</span>
             </a>
         </li>
     </ul>
     <ul>
-        <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
+        <li class="sidebar-dropdown site-tab" style="padding: 0px;border-top: 0px solid #ffffff;">
             <a href="#" id="show-request">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Delete Account</span>
             </a>
