@@ -60,7 +60,6 @@ Route::get('/ticket',function(){
 Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
-Route::post('/registerVendor','ClientController@registerVendor');
 Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
 Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 
@@ -80,4 +79,8 @@ Route::get('/ipall','LoginController@getIP');
 Route::get('/sendEmail', function(){
 	return view('clearview');
 });
-Route::post('/sendEmail', 'SendEmailController@sendEmail');
+Route::post('/sendEmail', 'SendEmailController@sendEmailDepre');
+
+Route::get('/test', function(){
+	return view('templates.formregister');
+});

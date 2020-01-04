@@ -28,7 +28,12 @@
                 <div class="policy-content">
                     By creating VPN account, you have agreed to the terms and policies of using Binus VPN account. VPN account will be created once the required approval have been approved through the IT Helpdesk System. Approval stage for a single account VPN requires three stages of approval:
                     <ul>
-                        <li>Manager Requester: <strong>{{$data['manager_name']}}</strong><br>Email: <strong>{{$data['manager_email']}}</strong></li>
+                        @if(isset($data['head_name']))
+                            <li>Section Head Requester: <strong>{{$data['head_name']}}</strong><br>Email: <strong>{{$data['head_email']}}</strong></li>
+                        @endif
+                        @if(isset($data['manager_name']))
+                            <li>Manager Requester: <strong>{{$data['manager_name']}}</strong><br>Email: <strong>{{$data['manager_email']}}</strong></li>
+                        @endif
                         <li>Section Head IT Infrastructure and Unified Communication: <strong>Budi Ariyanto</strong><br>Email: <strong>binus_ay@binus.edu</strong></li>
                         <li>IT Infrastructure and Unified Communication Manager: <strong>Frantina Andri Widanto</strong><br>Email: <strong>sdp.dcmgr@binus.edu</strong></li>
                     </ul>
@@ -55,12 +60,15 @@
                                         <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
                                         <input type="hidden" value="{{$data['user_name']}}" name="user_name">
-                                        <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
+                                        <input type="hidden" value="{{$data['user_binusianid']}}" name="binusianid">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Email &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
                                         <input type="hidden" value="{{$data['user_email']}}" name="user_email">
+                                        @if(isset($data['head_email']))
+                                        <input type="hidden" value="{{$data['head_email']}}" name="head_email">
+                                        @endif
                                         <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
                                     </div>
                                     <div class="custom-textbox">
@@ -71,7 +79,7 @@
                                     <div class="custom-radio">
                                             <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="permanent" id="rbPermanent" onclick="hideTime()">
                                             <label for="rbPermanent" class="inputInlineBlock">Permanent</label>
-                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="TempDate" id="rbTemporary" onclick="showTime()">
+                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="temporary" id="rbTemporary" onclick="showTime()">
                                             <label for="rbTemporary" class="inputInlineBlock">Temporary</label>
                                         <div id="input-date-container"></div>
                                     </div>

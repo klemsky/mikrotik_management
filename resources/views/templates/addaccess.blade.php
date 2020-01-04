@@ -9,6 +9,6 @@ Kami lampirkan juga panduan yang telah kami buat untuk menggunakan akun VPN mili
 
 <p>
 Best Regards, <br>
-Network Administrator Team <br>
+Network Administrator Team (ext. 2334) <br>
 Bina Nusantara
 </p>
