@@ -7,6 +7,8 @@ use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
 use DB;
 
+// require_once 'PEAR2/Autoload.php';
+
 
 class DashboardController extends Controller
 {
@@ -40,7 +42,7 @@ class DashboardController extends Controller
         // return view('/dashboard',['datas'=>$datas]);
         
 
-        $vpnName = "vpn-it-infrastructure-loudy";
+        $vpnName = "vpn-it-infrastructure-loudy";  
         $vpnPass = "b1nus123!";
         $department = "infra";
 
@@ -49,10 +51,73 @@ class DashboardController extends Controller
         $util = new RouterOS\Util($client);
    
         $util->setMenu('/ip pool');
-        // ANGKA DEPAN NAME MENANDAKAN ARRAY DARI HASIL PRINT
+        
+        // MENDAPATKAN RANGES IP POOL
+        // $ipPoolRange = $util->get($department,'ranges');
+        // $ipFirewallPool = $util->exec('/ip firewall address-list print detail where address in $ipPoolRange');
+        // $util->setMenu('/ip firewall address-list');
+        // $response = $client->sendSync(new RouterOS\Request('/ip/firewall/address-list/print'));
+        // foreach($response as $resp){
+        //     if($resp->getType() === RouterOS\Response::TYPE_DATA){
+        //         echo 'IP : ',$resp->getProperty('address'),"\n";
+        //     }
+        // }
+
+        // AMBIL POOL
         $ipPoolRange = $util->get($department,'ranges');
-        $util->setMenu('/ip firewall');
-        dd($ipPoolRange);
+
+        $util->setMenu('/ip firewall address-list');
+        //////////////// AMBIL IP KOSONG DARI IP POOL  
+        // IP POOL PER DIVISI -> DATANYA BAKAL KYK GINI
+        // $tempPool = "192.168.20.0";
+
+        // ILANGING NOMOR TERAKHIR
+        $pool = substr($ipPoolRange,0,-4);
+
+        // DAPATIN SEMUA IP DARI POOL
+        for ($i=2; $i<=254;$i++){
+            // echo "$pool$i <br>";
+            $poolData[]="$pool$i";
+        }
+
+        // DAPET SEMUA IP ADDRES DARI FIREWALL
+        foreach($util->getAll() as $addr){
+            // echo 'IP : ', $addr->getProperty('address'),
+            $data[]=$addr->getProperty('address');
+        }
+
+        // DAPETIN IP KOSONG DENGAN MEMISAHKAN IP YANG ADA DAN POOL
+        $hasil=array_diff($poolData,$data);
+
+        // AMBIL ARRAY PERTAMA
+        foreach($hasil as $ip){
+            $ipRemote = $ip;
+            break;
+        }
+
+        // HASIL IP VPN USERNYA
+        // print_r($ipRemote);
+
+        // Data diambil dari request yang dikirim lewat tombol
+        $name = 'vpn-it-infra-loudy';
+        $password = 'infraloudy';
+        $localAddr = $pool.'1';
+
+        $util->setMenu('/ppp secret');
+    	$util->add(
+        array(
+            'name' => $name,
+            'password' => $password,
+            'service' => 'l2tp',
+            'local-address' => $localAddr,
+            'remote-address' => $ipRemote
+            )
+        );	
+        echo "SUCCESS";
+        
+        // $util->setMenu('/ip firewall address-list');
+
+        // $util->get('address')
         // $test = $util->find('address')
         // $test = $util->find(0,255);
         // $request = new RouterOS\Request('/ip/pool');
