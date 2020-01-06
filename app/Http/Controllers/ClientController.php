@@ -209,7 +209,7 @@ class ClientController extends Controller
             );
             $smtp->send($data);
 
-            return response(["link" => 'email berhasil dikirim','status' => $body->response_status->status]);
+            return response(["link" => $url,'status' => $body->response_status->status]);
         }
     }
 
