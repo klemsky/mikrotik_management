@@ -117,7 +117,8 @@ class ClientController extends Controller
         $directReportsEmail = array(
             $request->head_email,
             // $request->manager_email
-            "klemens.raharja@binus.edu"
+            "klemens.raharja@binus.edu",
+            "loudy.owen@binus.edu"
         );
 
         foreach($directReportsEmail as $key => $value)          

@@ -2,7 +2,7 @@
 
 <p>Dear IT Helpdesk,</p>
 
-Berikut adalah form pendaftaraan akun VPN yang telah oleh Bapak/Ibu {{ $data["name"] ?? ''}} melalui aplikasi pendaftaran VPN.
+Berikut adalah form pendaftaraan akun VPN yang telah Bapak/Ibu {{ $data["name"] ?? ''}} isi melalui aplikasi pendaftaran VPN.
 <table class="table-form-number">
     <tr class="form-number">
         <td>FM-BINUS-AA-FPT-266/R2</td>
@@ -11,7 +11,7 @@ Berikut adalah form pendaftaraan akun VPN yang telah oleh Bapak/Ibu {{ $data["na
 
 <table class="table-register-form">
     <tr>
-        <th colspan="9">FORM VPN</th>
+        <th colspan="9">FORM PERMINTAAN ACCOUNT VPN</th>
     </tr>
     <tr>
         <td colspan="9" class="table-header">A. Pemohon</td>

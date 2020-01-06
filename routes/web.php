@@ -61,11 +61,10 @@ Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
-Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 
-// Route::get('/clientDashboard',function(){
-// 	return view('pages.client.clientDashboard');
-// });
+Route::get('/clientDashboard',function(){
+	return view('pages.client.clientDashboard');
+});
 
 Route::post('/submitTicket','ClientController@registerTicketNumber');
 
@@ -82,5 +81,5 @@ Route::get('/sendEmail', function(){
 Route::post('/sendEmail', 'SendEmailController@sendEmailDepre');
 
 Route::get('/test', function(){
-	return view('templates.newvpn');
+	return view('templates.formregister');
 });

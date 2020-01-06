@@ -23,6 +23,7 @@ body{
 .table-register-form tr:nth-child(1){
     font-size: 24pt;
     height: 75px;
+    text-transform: uppercase;
 }
 
 .table-register-form .table-header{
