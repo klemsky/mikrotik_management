@@ -418,6 +418,13 @@ class ClientController extends Controller
             else
                 $data = $this->checkLDAPManager($request);    
 
+            $encryptedData = array();
+            foreach($data as $key => $value){
+                $encryptedValue = Crypt::encrypt($value);
+                $encryptedData[$key] = $encryptedValue;
+            }
+            // dd(Crypt::decrypt($encryptedData['ticket']));  
+
             return view('pages.client.register')->with('data', $data);
         }else{
             if($this->checkLDAPBind($request) != 'valid')
