@@ -62,6 +62,7 @@ Route::post('/generate','ClientController@generateLink');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
+Route::post('/addAddr','ClientController@addAddress');
 // Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
 // Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 

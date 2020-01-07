@@ -43,6 +43,7 @@
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="new-tab" role="tabpanel" aria-labelledby="new-tab">
                         <form method="POST" action="/registerClient" enctype="multipart/form-data" autocomplete="off">
+                        <!-- {{ method_field('PUT') }} -->
                         {{csrf_field()}}
                             <br><br>
                             <div class="row">
