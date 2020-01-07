@@ -20,7 +20,17 @@ use GuzzleHttp\Exception\RequestException;
 class ClientController extends Controller
 {
 	public function registerClient(Request $request){
-        // dd($request->all);
+        $request->ticket = Crypt::decrypt($request->ticket);
+        $request->user_name = Crypt::decrypt($request->user_name);
+        $request->binusianid = Crypt::decrypt($request->binusianid);
+        $request->user_email = Crypt::decrypt($request->user_email);
+        $request->manager_email = Crypt::decrypt($request->manager_email);
+        $request->user_department = Crypt::decrypt($request->user_department);
+        if(isset($request->head_email))
+            $request->head_email = Crypt::decrypt($request->manager_email);
+
+        dd($request->all());
+
         ///////// INSERT DEPARTMENT AND USER
         if(empty(Department::where('name',$request->user_department)->first())){
             $department = new Department();
@@ -115,7 +125,7 @@ class ClientController extends Controller
         }
 
         $directReportsEmail = array(
-            $request->head_email,
+            // $request->head_email,
             // $request->manager_email
             "klemens.raharja@binus.edu",
             "loudy.owen@binus.edu"
@@ -132,7 +142,7 @@ class ClientController extends Controller
             "subject" => $body->request->subject,
             "number" => $request->ticket,
             "action" => "form_register",
-            "countAccess" => $request->accessIpCount,
+            "countAccess" => count($request->txtAccess),
             "access" => $accessip,
             "binusianid" => $request->binusianid,
             "department" => $request->user_department,
@@ -148,11 +158,23 @@ class ClientController extends Controller
     }
 
     public function generateLink(Request $request){
-        $ticket = $request->number;
+        $validator = Validator::make($request->all(),
+        [
+    		'number' => 'required|numeric',
+        ],
+        [
+            'number.required' => 'Ticket Number is required!',
+            'number.numeric' => 'Ticket Number must be a number!'
+        ]
+        );
 
-        if($ticket == null){
-            return $response = ['status' => 'Ticket Empty'];
-        }
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'Validator Fail', 'errMsg' => $error];
+            }
+    	}
+
+        $ticket = $request->number;
 
         $client = new Client([
             'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
@@ -179,10 +201,9 @@ class ClientController extends Controller
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
-
+        $ticket = Crypt::encrypt($ticket);
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
-            $ticket = Crypt::encrypt($ticket);
-            $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
             $smtp = new SendEmailController();
             $data = array (
                 "email" => $body->request->requester->email_id, 
@@ -219,7 +240,7 @@ class ClientController extends Controller
             $ticket = Crypt::decrypt($request);
             return view('pages.client.login')->with('ticket',$ticket);
         } catch (DecryptException $e) {
-            echo 'Ticket number invalid!';
+            return view('pages.client.login')->withErrors(['Error Ticket Not Found!']);
         }
     }
 
@@ -368,9 +389,7 @@ class ClientController extends Controller
     }
 
     public function loginEmailLDAP(Request $request){
-        //LARAVEL VALIDATOR
-        
-        if($request->ticket!=null){
+         if($request->ticket!=null){
             //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
             $user = array (
                 "email" => $request->password_name."@binus.edu", 
@@ -384,8 +403,15 @@ class ClientController extends Controller
                 return back()->withErrors(['Invalid Email / Password!']);
             else
                 $data = $this->checkLDAPManager($request);    
+            
+            $encryptedData = array();
+            foreach($data as $key => $value){
+                $encryptedValue = Crypt::encrypt($value);
+                $encryptedData[$key] = $encryptedValue;
+            }
+            // dd(Crypt::decrypt($encryptedData['ticket']));
 
-            return view('pages.client.register')->with('data', $data);
+            return view('pages.client.register')->with(array('data' => $data, 'encryptedData' => $encryptedData));
         }else{
             if($this->checkLDAPBind($request) != 'valid')
                 return back()->withErrors(['Invalid Email / Password!']);

@@ -54,27 +54,27 @@
                                 <div class="column one-half">
                                     <div id="ticket-container">
                                         Ticket No. : &nbsp;<strong>{{$data['ticket']}}</strong>
-                                        <input type="hidden" value="{{$data['ticket']}}" name="ticket">
+                                        <input type="hidden" value="{{$encryptedData['ticket']}}" name="ticket">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_name']}}" name="user_name">
-                                        <input type="hidden" value="{{$data['user_binusianid']}}" name="binusianid">
+                                        <input type="hidden" value="{{$encryptedData['user_name']}}" name="user_name">
+                                        <input type="hidden" value="{{$encryptedData['user_binusianid']}}" name="binusianid">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Email &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_email']}}" name="user_email">
+                                        <input type="hidden" value="{{$encryptedData['user_email']}}" name="user_email">
                                         @if(isset($data['head_email']))
-                                        <input type="hidden" value="{{$data['head_email']}}" name="head_email">
+                                        <input type="hidden" value="{{$encryptedData['head_email']}}" name="head_email">
                                         @endif
-                                        <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
+                                        <input type="hidden" value="{{$encryptedData['manager_email']}}" name="manager_email">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Department &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_department']}}" name="user_department">
+                                        <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
                                             <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="permanent" id="rbPermanent" onclick="hideTime()">
@@ -93,7 +93,6 @@
                                     <div class="custom-textbox">
                                         <div id="address-container" class="form-group">
                                             <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
-                                            <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
                                         </div>
                                     </div>
                                 </div>
