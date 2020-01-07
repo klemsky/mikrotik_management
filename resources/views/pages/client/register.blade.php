@@ -78,9 +78,9 @@
                                         <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
-                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" onclick="hideTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" name="rbTemp" onclick="hideTime()">
                                             <label for="rbPermanent" class="inputInlineBlock">Permanent</label>
-                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" onclick="showTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" name="rbTemp" onclick="showTime()">
                                             <label for="rbTemporary" class="inputInlineBlock">Temporary</label>
                                         <div id="input-date-container"></div>
                                     </div>
