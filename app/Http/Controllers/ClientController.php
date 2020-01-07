@@ -49,62 +49,62 @@ class ClientController extends Controller
             $request->head_email = Crypt::decrypt($request->manager_email);
 
         ///////// INSERT DEPARTMENT AND USER
-        if(empty(Department::where('name',$request->user_department)->first())){
-            $department = new Department();
-            $department->name = $request->user_department;
-            $department->save();
-        }
+            if(empty(Department::where('name',$request->user_department)->first())){
+                $department = new Department();
+                $department->name = $request->user_department;
+                $department->save();
+            }
 
-        if(empty(User::where('name',$request->user_name)->first())){
-            $user = new User();
-            $user->name = $request->user_name;
-            $user->email = $request->user_email;
-            $user->department_id = Department::where('name',$request->user_department)->first()->id;
-            $user->save();
-        }
+            if(empty(User::where('name',$request->user_name)->first())){
+                $user = new User();
+                $user->name = $request->user_name;
+                $user->email = $request->user_email;
+                $user->department_id = Department::where('name',$request->user_department)->first()->id;
+                $user->save();
+            }
 
-        ////////// INSERT VPN_USER_GROUP
-        $aclDept = $request->user_department;
-        $aclDept = strtolower($aclDept);
-        $aclDept = str_replace(' ','-',$aclDept);
-        $aclDept = explode("-",$aclDept);
-        if(count($aclDept)>1)
-            $aclDept = "vpn-".$aclDept[0]."-".$aclDept[1];
-        else
-            $aclDept = "vpn-".$aclDept[0];
-
-        if(empty(VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first())){
-            $aclDeptAllow = $aclDept."-allow";
-
-            $VpnUserGroup = new VpnUserGroup;
-            $VpnUserGroup->department_id = Department::where('name',$request->user_department)->first()->id;
-            $VpnUserGroup->acl_group_name = $aclDept;
-            $VpnUserGroup->acl_group_name_allow = $aclDeptAllow;
-            $VpnUserGroup->save();
-        }
-        // dd($request->all());
-        ////////// INSERT VPN USER
-        if(empty(VpnUser::where('user_id',User::where('name',$request->user_name)->first()->id)->first())){
-            $vpnUsername = $request->user_name;
-            $vpnUsername = strtolower($vpnUsername);
-            $vpnUsername = str_replace(' ','-',$vpnUsername);
-            $vpnUsername = explode("-",$vpnUsername);
-            $vpnUsername = $aclDept."-".$vpnUsername[0];
-            
-            $VpnUser = new VpnUser();
-            $VpnUser->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-            $VpnUser->user_id = User::where('name',$request->user_name)->first()->id;
-            $VpnUser->vpn_username = $vpnUsername;
-            $VpnUser->no_ticket = $request->ticket;
-            if($request->expiry_date != "Permanent" && $request->expiry_date != null)
-                $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
+            ////////// INSERT VPN_USER_GROUP
+            $aclDept = $request->user_department;
+            $aclDept = strtolower($aclDept);
+            $aclDept = str_replace(' ','-',$aclDept);
+            $aclDept = explode("-",$aclDept);
+            if(count($aclDept)>1)
+                $aclDept = "vpn-".$aclDept[0]."-".$aclDept[1];
             else
-                $VpnUser->expiry_date = null;
-            $VpnUser->completed = 0;
-            $VpnUser->rejected = 0;
-            $VpnUser->active = 0;
-            $VpnUser->save();
-        }
+                $aclDept = "vpn-".$aclDept[0];
+
+            if(empty(VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first())){
+                $aclDeptAllow = $aclDept."-allow";
+
+                $VpnUserGroup = new VpnUserGroup;
+                $VpnUserGroup->department_id = Department::where('name',$request->user_department)->first()->id;
+                $VpnUserGroup->acl_group_name = $aclDept;
+                $VpnUserGroup->acl_group_name_allow = $aclDeptAllow;
+                $VpnUserGroup->save();
+            }
+            // dd($request->all());
+            ////////// INSERT VPN USER
+            if(empty(VpnUser::where('user_id',User::where('name',$request->user_name)->first()->id)->first())){
+                $vpnUsername = $request->user_name;
+                $vpnUsername = strtolower($vpnUsername);
+                $vpnUsername = str_replace(' ','-',$vpnUsername);
+                $vpnUsername = explode("-",$vpnUsername);
+                $vpnUsername = $aclDept."-".$vpnUsername[0];
+                
+                $VpnUser = new VpnUser();
+                $VpnUser->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                $VpnUser->user_id = User::where('name',$request->user_name)->first()->id;
+                $VpnUser->vpn_username = $vpnUsername;
+                $VpnUser->no_ticket = $request->ticket;
+                if($request->expiry_date != "Permanent" && $request->expiry_date != null)
+                    $VpnUser->expiry_date = date('Y-m-d', strtotime("+1 day", strtotime($request->expiry_date)))." 00:00:00";
+                else
+                    $VpnUser->expiry_date = null;
+                $VpnUser->completed = 0;
+                $VpnUser->rejected = 0;
+                $VpnUser->active = 0;
+                $VpnUser->save();
+            }
 
         ////////// INSERT VPN ACL LISTS
         $accessip = array();
@@ -172,6 +172,56 @@ class ClientController extends Controller
         return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
     }
 
+    public function generateLink(Request $request){
+        $validator = Validator::make($request->all(),
+        [
+    		'number' => 'required|numeric',
+        ],
+        [
+            'number.required' => 'Ticket Number is required!',
+            'number.numeric' => 'Ticket Number must be a number!'
+        ]
+        );
+
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'Validator Fail', 'errMsg' => $error];
+            }
+    	}
+
+        $ticket = $request->number;
+
+        $directReportsEmail = array(
+            // $request->head_email,
+            // $request->manager_email
+            "klemens.raharja@binus.edu",
+            "loudy.owen@binus.edu"
+        );
+
+        foreach($directReportsEmail as $key => $value)          
+            if(empty($value)) 
+                unset($directReportsEmail[$key]); 
+
+        $smtp = new SendEmailController();
+        $data = array (
+            "email" => $request->user_email, 
+            "name" => $request->user_name,
+            "subject" => $body->request->subject,
+            "number" => $request->ticket,
+            "action" => "form_register",
+            "countAccess" => count($request->txtAccess),
+            "access" => $accessip,
+            "binusianid" => $request->binusianid,
+            "department" => $request->user_department,
+            "directReportsEmail" => $directReportsEmail,
+            "expiry_date" => $request->expiry_date
+
+            //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
+        );
+        $smtp->send($data);
+        return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
+    }
+    
     public function generateLink(Request $request){
         $validator = Validator::make($request->all(),
         [
@@ -411,8 +461,8 @@ class ClientController extends Controller
                 "ticket" => $request->ticket
             );
 
-            if($this->checkUser($user) != 'valid')
-                return back()->withErrors(['You do not have permission to view ticket!']);
+            // if($this->checkUser($user) != 'valid')
+            //     return back()->withErrors(['You do not have permission to view ticket!']);
 
             if($this->checkLDAPBind($request) != 'valid')
                 return back()->withErrors(['Invalid Email / Password!']);
@@ -432,13 +482,20 @@ class ClientController extends Controller
                 return back()->withErrors(['Invalid Email / Password!']);
             else
                 $data = $this->checkLDAPManager($request);
-
-            $userEmail = $request->password_name."@binus.edu";
+            
             $UserId = User::where('email',$request->password_name."@binus.edu")->value('id');
             $userGroupId = VpnUser::where('user_id',$UserId)->value('vpn_user_group_id');
             $addressAllow = VpnAclList::where('vpn_user_group_id',$userGroupId)->pluck('address');
             $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
-            return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
+            $status = VpnUser::where('vpn_username',$vpnUsername)->value('completed');
+            $noTicket = VpnUser::where('user_id',$UserId)->value('no_ticket');
+            $vpnStatus = VpnUser::where('vpn_username',$vpnUsername)->value('expiry_date');
+            // dd($status);
+            if($status==1){
+                return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus]);
+            }else if($status==0){
+                return view('pages.client.dashboard')->with(['ticket'=>$noTicket,'managerName'=>$data['manager_name'],'managerEmail'=>$data['manager_email'],'username'=>$data['user_name']]);
+            }
             // return redirect()->route('clientDashboard',['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
         }
     }

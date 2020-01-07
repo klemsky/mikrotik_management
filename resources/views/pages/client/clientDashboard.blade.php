@@ -134,7 +134,8 @@
                               @foreach($vpnAclAllow as $aclAllow)
                               <h4 style="color: white">{{$aclAllow}}</h4>
                               @endforeach
-      					</div>
+                          </div>
+      				</div>
 
                 <div class="vpnAccess">
                   vpnAccess
@@ -147,41 +148,41 @@
                         <div class="tab-pane fade show active" role="tabpanel" aria-labelledby="new-tab">
                           <form method="POST" action="/submitClient" enctype="multipart/form-data" autocomplete="off">
                             {{csrf_field()}}
-                                            <h3 class="register-heading">Request New VPN</h3>
-                                            <div class="row register-form">
-                                                <div class="col-md-11">
-                                                <div class="custom-textbox">
-                                                <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
-                                                <input type="text" class="form-control" value="{{$data['user_name']}}" disabled style="background-color: white;">
-                                                <input type="hidden" value="{{$data['user_name']}}" name="user_name">
-                                            </div>
-                                            <div class="custom-textbox">
-                                                <label>Email &nbsp;<i class="icon-checklist"></i></label>
-                                                <input type="text" class="form-control" value="{{$data['user_email']}}" disabled style="background-color: white;">
-                                                <input type="hidden" value="{{$data['user_email']}}" name="user_email">
-                                            </div>
-                                            <div class="custom-textbox">
-                                                <label>Department &nbsp;<i class="icon-checklist"></i></label>
-                                                <input type="text" class="form-control" value="{{$data['user_department']}}" disabled style="background-color: white;">
-                                                <input type="hidden" value="{{$data['user_department']}}" name="user_department">
-                                            </div>
-                                            <div class="custom-textbox">
-                                                <div class="custom-radio">
-                                                    <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
-                                                    <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
-                                                </div>
-                                                <div id="input-date-container"></div>
-                                            </div>
-                                            <div id="address-container" class="form-group">
-                                                  <input type="text" class="form-control" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
-                                                  <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
-                                              </div>
-                                              <ul id="add-ip-clientDashboard" class="addIpBtn">Add IP</ul>
-                                              <ul id="remove-ip-clientDashboard" class="removeIpBtn">Remove IP</ul>
-                                            <br>
-                                            <input type="submit" class="btnRegister"  value="Add Access"/>
-                                        </div>
+                                    <h3 class="register-heading">Request New VPN</h3>
+                                    <div class="row register-form">
+                                        <div class="col-md-11">
+                                        <div class="custom-textbox">
+                                        <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="form-control" value="{{$data['user_name']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_name']}}" name="user_name">
                                     </div>
+                                    <div class="custom-textbox">
+                                        <label>Email &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="form-control" value="{{$data['user_email']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_email']}}" name="user_email">
+                                    </div>
+                                    <div class="custom-textbox">
+                                        <label>Department &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="form-control" value="{{$data['user_department']}}" disabled style="background-color: white;">
+                                        <input type="hidden" value="{{$data['user_department']}}" name="user_department">
+                                    </div>
+                                    <div class="custom-textbox">
+                                        <div class="custom-radio">
+                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="permanent" onclick="hideTime()" > Permanent</input>&nbsp;&nbsp;&nbsp;
+                                            <input type="radio" class="tempBtn" name="rbTime" class="input-form" value="TempDate" id="tmpRadio" onclick="showTime()"> Temporary</input>
+                                        </div>
+                                        <div id="input-date-container"></div>
+                                    </div>
+                                    <div id="address-container" class="form-group">
+                                            <input type="text" class="form-control" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
+                                            <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
+                                        </div>
+                                        <ul id="add-ip-clientDashboard" class="addIpBtn">Add IP</ul>
+                                        <ul id="remove-ip-clientDashboard" class="removeIpBtn">Remove IP</ul>
+                                    <br>
+                                    <input type="submit" class="btnRegister"  value="Add Access"/>
+                                </div>
+                            </div>
                             </form>
                           </div>
                         </div>
