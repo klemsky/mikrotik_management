@@ -16,6 +16,7 @@
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+    <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
     <link rel="stylesheet" href="{{asset('css/client/clientRegister.css')}}">
 
 </head>
@@ -47,7 +48,7 @@
                 </div>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="new-tab" role="tabpanel" aria-labelledby="new-tab">
-                        <form method="POST" action="/registerClient" enctype="multipart/form-data" autocomplete="off">
+                        <form method="POST" action="" enctype="multipart/form-data" autocomplete="off" id="form-registration">
                         {{csrf_field()}}
                             <br><br>
                             <div class="row">
@@ -77,9 +78,9 @@
                                         <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
-                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="permanent" id="rbPermanent" onclick="hideTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" onclick="hideTime()">
                                             <label for="rbPermanent" class="inputInlineBlock">Permanent</label>
-                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="temporary" id="rbTemporary" onclick="showTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" onclick="showTime()">
                                             <label for="rbTemporary" class="inputInlineBlock">Temporary</label>
                                         <div id="input-date-container"></div>
                                     </div>
@@ -103,24 +104,67 @@
                                     <input type="button" class="removeIpBtn" value="Remove IP"/> 
                                 </div>
                                 <div id="submit-container" class="registBtnContainer column one-third">
-                                    <input type="submit" class="btnRegister" value="Register"/>
+                                    <input type="submit" class="btnRegister" value="Register" id="btn-submit-form"/>
                                 </div>
                             </div>
                             <br><br><br><br>
                         </form>
                     </div>
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+
+<script>
+$(document).ready(function(){
+    $('#btn-submit-form').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#btn-submit-form').prop('disabled',true);
+    });
+
+    function insertRegistrationForm(){
+        var form = $('#form-registration')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            type: 'POST',
+            url: '/registerClient',
+            data: formData,
+            success: function(response){
+                if(response.status == 'success'){
+                    showSuccess(response.succMsg);
+                    $('.swal2-confirm').click(function(e){
+                        window.location.href = "/login";
+                    });
+                }else{
+                    if(response.status == 'failed')
+                        showError(response.errMsg);
+                    $('#btn-submit-form').prop('disabled',false);
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+    function showError(msg){
+        Swal.fire({
+            type: 'error',
+            text: msg,
+            confirmButtonColor: '#762F8D',
+        });
+    }
+
+    function showSuccess(msg){
+        Swal.fire({
+            type: 'success',
+            text: msg,
+            confirmButtonColor: '#762F8D',
+        });
+    }
+});
+
+</script>

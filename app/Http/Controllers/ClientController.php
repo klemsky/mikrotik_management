@@ -20,6 +20,25 @@ use GuzzleHttp\Exception\RequestException;
 class ClientController extends Controller
 {
 	public function registerClient(Request $request){
+
+        // dd($request->all());
+        $validator = Validator::make($request->all(),
+        [
+            'txtAccess.*' => 'required|ipv4',
+            'expiry_date' => 'date'
+        ],
+        [
+            'txtAccess.*.required' => 'Access List is required!',
+            'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
+            'expiry_date.date' => 'Expiry date must be in date format!'
+        ]
+        );
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'failed', 'errMsg' => $error];
+            }
+    	}
+
         $request->ticket = Crypt::decrypt($request->ticket);
         $request->user_name = Crypt::decrypt($request->user_name);
         $request->binusianid = Crypt::decrypt($request->binusianid);
@@ -28,8 +47,6 @@ class ClientController extends Controller
         $request->user_department = Crypt::decrypt($request->user_department);
         if(isset($request->head_email))
             $request->head_email = Crypt::decrypt($request->manager_email);
-
-        dd($request->all());
 
         ///////// INSERT DEPARTMENT AND USER
         if(empty(Department::where('name',$request->user_department)->first())){
@@ -120,7 +137,7 @@ class ClientController extends Controller
                 $exception = (string) $e->getResponse()->getBody();
                 $exception = json_decode($exception);
 
-                return ['status' => $exception->response_status->status]; 
+                return ['status' => $exception->response_status->status, 'errMsg' => 'Invalid Ticket']; 
             }			
         }
 
@@ -151,10 +168,8 @@ class ClientController extends Controller
 
             //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
         );
-
-        // dd($data);
         $smtp->send($data);
-        return redirect('/clientDashboard');
+        return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
     }
 
     public function generateLink(Request $request){
