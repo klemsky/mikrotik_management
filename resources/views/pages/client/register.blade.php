@@ -150,13 +150,6 @@ $(document).ready(function(){
             processData: false
         });
     }
-    function showError(msg){
-        Swal.fire({
-            type: 'error',
-            text: msg,
-            confirmButtonColor: '#762F8D',
-        });
-    }
 
     function showSuccess(msg){
         Swal.fire({
