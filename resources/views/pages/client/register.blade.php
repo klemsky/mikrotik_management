@@ -16,6 +16,7 @@
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
+    <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
     <link rel="stylesheet" href="{{asset('css/client/clientRegister.css')}}">
 
 </head>
@@ -28,7 +29,12 @@
                 <div class="policy-content">
                     By creating VPN account, you have agreed to the terms and policies of using Binus VPN account. VPN account will be created once the required approval have been approved through the IT Helpdesk System. Approval stage for a single account VPN requires three stages of approval:
                     <ul>
-                        <li>Manager Requester: <strong>{{$data['manager_name']}}</strong><br>Email: <strong>{{$data['manager_email']}}</strong></li>
+                        @if(isset($data['head_name']))
+                            <li>Section Head Requester: <strong>{{$data['head_name']}}</strong><br>Email: <strong>{{$data['head_email']}}</strong></li>
+                        @endif
+                        @if(isset($data['manager_name']))
+                            <li>Manager Requester: <strong>{{$data['manager_name']}}</strong><br>Email: <strong>{{$data['manager_email']}}</strong></li>
+                        @endif
                         <li>Section Head IT Infrastructure and Unified Communication: <strong>Budi Ariyanto</strong><br>Email: <strong>binus_ay@binus.edu</strong></li>
                         <li>IT Infrastructure and Unified Communication Manager: <strong>Frantina Andri Widanto</strong><br>Email: <strong>sdp.dcmgr@binus.edu</strong></li>
                     </ul>
@@ -42,37 +48,39 @@
                 </div>
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="new-tab" role="tabpanel" aria-labelledby="new-tab">
-                        <form method="POST" action="/registerClient" enctype="multipart/form-data" autocomplete="off">
-                        <!-- {{ method_field('PUT') }} -->
+                        <form method="POST" action="" enctype="multipart/form-data" autocomplete="off" id="form-registration">
                         {{csrf_field()}}
                             <br><br>
                             <div class="row">
                                 <div class="column one-half">
                                     <div id="ticket-container">
                                         Ticket No. : &nbsp;<strong>{{$data['ticket']}}</strong>
-                                        <input type="hidden" value="{{$data['ticket']}}" name="ticket">
+                                        <input type="hidden" value="{{$encryptedData['ticket']}}" name="ticket">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Full Name &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_name']}}" name="user_name">
-                                        <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
+                                        <input type="hidden" value="{{$encryptedData['user_name']}}" name="user_name">
+                                        <input type="hidden" value="{{$encryptedData['user_binusianid']}}" name="binusianid">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Email &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_email']}}" name="user_email">
-                                        <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
+                                        <input type="hidden" value="{{$encryptedData['user_email']}}" name="user_email">
+                                        @if(isset($data['head_email']))
+                                        <input type="hidden" value="{{$encryptedData['head_email']}}" name="head_email">
+                                        @endif
+                                        <input type="hidden" value="{{$encryptedData['manager_email']}}" name="manager_email">
                                     </div>
                                     <div class="custom-textbox">
                                         <label>Department &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
-                                        <input type="hidden" value="{{$data['user_department']}}" name="user_department">
+                                        <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
-                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="permanent" id="rbPermanent" onclick="hideTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" onclick="hideTime()">
                                             <label for="rbPermanent" class="inputInlineBlock">Permanent</label>
-                                            <input type="radio" class="inputInlineBlock" name="rbTime" class="input-form" value="TempDate" id="rbTemporary" onclick="showTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" onclick="showTime()">
                                             <label for="rbTemporary" class="inputInlineBlock">Temporary</label>
                                         <div id="input-date-container"></div>
                                     </div>
@@ -86,7 +94,6 @@
                                     <div class="custom-textbox">
                                         <div id="address-container" class="form-group">
                                             <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
-                                            <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
                                         </div>
                                     </div>
                                 </div>
@@ -97,24 +104,60 @@
                                     <input type="button" class="removeIpBtn" value="Remove IP"/> 
                                 </div>
                                 <div id="submit-container" class="registBtnContainer column one-third">
-                                    <input type="submit" class="btnRegister" value="Register"/>
+                                    <input type="submit" class="btnRegister" value="Register" id="btn-submit-form"/>
                                 </div>
                             </div>
                             <br><br><br><br>
                         </form>
                     </div>
-                    @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                    @endif
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
+
+<script>
+$(document).ready(function(){
+    $('#btn-submit-form').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#btn-submit-form').prop('disabled',true);
+    });
+
+    function insertRegistrationForm(){
+        var form = $('#form-registration')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            type: 'POST',
+            url: '/registerClient',
+            data: formData,
+            success: function(response){
+                if(response.status == 'success'){
+                    showSuccess(response.succMsg);
+                    $('.swal2-confirm').click(function(e){
+                        window.location.href = "/login";
+                    });
+                }else{
+                    if(response.status == 'failed')
+                        showError(response.errMsg);
+                    $('#btn-submit-form').prop('disabled',false);
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+
+    function showSuccess(msg){
+        Swal.fire({
+            type: 'success',
+            text: msg,
+            confirmButtonColor: '#762F8D',
+        });
+    }
+});
+
+</script>

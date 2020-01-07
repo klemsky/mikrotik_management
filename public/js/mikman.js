@@ -120,15 +120,21 @@ function showLink(){
                 // $('.is-success').hide();
                 // $('.is-error').html(data);
                 // $('#btn-submit-item').prop('disabled',false);
-                console.log(response.status);
-                if(response.status == "Ticket Empty")
-                    showError('Ticket number cannot be empty!');
+                // console.log(response.status);
+                if(response.status == "Validator Fail")
+                    showError(response.errMsg);
+
+                // if(response.status == "Ticket Empty")
+                    // showError('Ticket number cannot be empty!');
+                // else if(response.status == "apa");
+                //     showError('Ticket is not for Network!');
                 else
                     showError('Ticket is not for Network!');
             }
         },
     });
 }
+
 
 function showNew(){
     $("#vendor-tab").removeClass("active");

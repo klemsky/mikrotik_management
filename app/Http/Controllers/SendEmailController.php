@@ -8,10 +8,20 @@ use App\Mail\SendMail;
 
 class SendEmailController extends Controller
 {
+	// public function send($data){
+	// 	Mail::to($data['email'])->send(new SendMail($data));
+	// }
+
 	public function send($data){
-		// $data['email']
-		
-	}
+		// $emails = array();
+		// array_push($emails, $data['email']);
+		// array_push($emails, 'loudy.owen@binus.edu');
+
+		// array_push($emails, 'ithelpdesk@binus.edu');
+	   
+		Mail::send(new SendMail($data));
+		// return view('clearview')->with('message', 'Message sent successfully!');
+    }
 
     public function sendEmailDepre(Request $request){
     	//Validasi

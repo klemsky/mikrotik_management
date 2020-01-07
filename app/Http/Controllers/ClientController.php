@@ -20,6 +20,7 @@ use GuzzleHttp\Exception\RequestException;
 class ClientController extends Controller
 {
 	public function registerClient(Request $request){
+
         // dd($request->all());
         $validator = Validator::make($request->all(),
         [
@@ -105,7 +106,7 @@ class ClientController extends Controller
                 $VpnUser->save();
             }
 
-            ////////// INSERT VPN ACL LISTS
+        ////////// INSERT VPN ACL LISTS
         $accessip = array();
         for($i=1; $i<=count($request->txtAccess);$i++){
             $VpnAclList = new VpnAclList();
@@ -139,6 +140,56 @@ class ClientController extends Controller
                 return ['status' => $exception->response_status->status, 'errMsg' => 'Invalid Ticket']; 
             }			
         }
+
+        $directReportsEmail = array(
+            // $request->head_email,
+            // $request->manager_email
+            "klemens.raharja@binus.edu",
+            "loudy.owen@binus.edu"
+        );
+
+        foreach($directReportsEmail as $key => $value)          
+            if(empty($value)) 
+                unset($directReportsEmail[$key]); 
+
+        $smtp = new SendEmailController();
+        $data = array (
+            "email" => $request->user_email, 
+            "name" => $request->user_name,
+            "subject" => $body->request->subject,
+            "number" => $request->ticket,
+            "action" => "form_register",
+            "countAccess" => count($request->txtAccess),
+            "access" => $accessip,
+            "binusianid" => $request->binusianid,
+            "department" => $request->user_department,
+            "directReportsEmail" => $directReportsEmail,
+            "expiry_date" => $request->expiry_date
+
+            //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
+        );
+        $smtp->send($data);
+        return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
+    }
+
+    public function generateLink(Request $request){
+        $validator = Validator::make($request->all(),
+        [
+    		'number' => 'required|numeric',
+        ],
+        [
+            'number.required' => 'Ticket Number is required!',
+            'number.numeric' => 'Ticket Number must be a number!'
+        ]
+        );
+
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'Validator Fail', 'errMsg' => $error];
+            }
+    	}
+
+        $ticket = $request->number;
 
         $directReportsEmail = array(
             // $request->head_email,
@@ -403,7 +454,7 @@ class ClientController extends Controller
     }
 
     public function loginEmailLDAP(Request $request){
-        if($request->ticket!=null){
+         if($request->ticket!=null){
             //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
             $user = array (
                 "email" => $request->password_name."@binus.edu", 
@@ -417,15 +468,15 @@ class ClientController extends Controller
                 return back()->withErrors(['Invalid Email / Password!']);
             else
                 $data = $this->checkLDAPManager($request);    
-
+            
             $encryptedData = array();
             foreach($data as $key => $value){
                 $encryptedValue = Crypt::encrypt($value);
                 $encryptedData[$key] = $encryptedValue;
             }
-            // dd(Crypt::decrypt($encryptedData['ticket']));  
+            // dd(Crypt::decrypt($encryptedData['ticket']));
 
-            return view('pages.client.register')->with('data', $data);
+            return view('pages.client.register')->with(array('data' => $data, 'encryptedData' => $encryptedData));
         }else{
             if($this->checkLDAPBind($request) != 'valid')
                 return back()->withErrors(['Invalid Email / Password!']);

@@ -32,14 +32,34 @@ class SendMail extends Mailable
     public function build()
     {
         // dd($this->data);
-        $mail = $this->subject('[Ticket ##RE-64902##] : Permintaan akun VPN');
-        $mail = $this->from('mikman@binus.edu');
-        $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal  in MacOS Create Guide.pdf');
-        $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window  7 Create Guide.pdf');
-        $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window 10 Create Guide.pdf');
+        if($this->data["action"] == 'add_access'){
+            $mail = $this->to($this->data['email']);
+            $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            $mail = $this->from('mikman@binus.edu');
+            // $mail = $this->cc(['richie.muliawan@binus.edu','ithelpdesk@binus.edu']);
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal  in MacOS Create Guide.pdf');
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window  7 Create Guide.pdf');
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window 10 Create Guide.pdf');
+    
+            return $mail->view('templates.addaccess')->with('data', $this->data);
+        }else if($this->data["action"] == 'create'){
+            $mail = $this->to($this->data['email']);
+            $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            $mail = $this->from('mikman@binus.edu');
+            // $mail = $this->cc('klemens.raharja@binus.edu');
 
-        return $mail->view('templates.addaccess')->with('data', $this->data);
+            return $mail->view('templates.newvpn')->with('data', $this->data);
+        }else if($this->data["action"] == 'form_register'){
+            $mail = $this->to($this->data['email']);
+            $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            $mail = $this->from('mikman@binus.edu');
+            // $mail = $this->cc('klemens.raharja@binus.edu');
+ 
+            $mail = $this->cc($this->data['directReportsEmail']);
 
+
+            return $mail->view('templates.formregister')->with('data', $this->data);
+        }
         // return $this->from('noreply-mikman@binus.edu')->subject('test')->view('dynamic_email_template')->with('data', $this->data);
     }
 }
