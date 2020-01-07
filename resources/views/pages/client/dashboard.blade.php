@@ -62,11 +62,7 @@
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">VPN Status </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    @if({{$vpnStatus}}==0)
-                    <td class="tdVPN"><p class="txtVPN">Permanent</p></td>
-                    @else
-                    <td class="tdVPN"><p class="txtVPN">{{$vpnStatus}}</p></td>
-                    @endif
+                    
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Name  </p></td>
