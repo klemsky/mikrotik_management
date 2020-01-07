@@ -16,24 +16,37 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use Illuminate\Support\Facades\Redirect;
-use Symfony\Component\Console\Input\Input;
 
 class ClientController extends Controller
 {
 	public function registerClient(Request $request){
-        // dd(count($request->txtAccess));
-        // $request->all();
-        // dd($request);
-        $validator = Validator::make($request->all(), [
-            'rbTime' => 'required',
-            'txtAccess.*' => 'required'
-        ]);
-        if($validator->fails()){
-            // $data = $this->checkLDAPManager($request);
-            // return redirect()->back()->withInput($request->input)->withErrors($validator);
-            return Redirect::back()->withInput(Input::all());
-        }else{
+        // dd($request->all());
+        $validator = Validator::make($request->all(),
+        [
+            'txtAccess.*' => 'required|ipv4',
+            'expiry_date' => 'date'
+        ],
+        [
+            'txtAccess.*.required' => 'Access List is required!',
+            'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
+            'expiry_date.date' => 'Expiry date must be in date format!'
+        ]
+        );
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'failed', 'errMsg' => $error];
+            }
+    	}
+
+        $request->ticket = Crypt::decrypt($request->ticket);
+        $request->user_name = Crypt::decrypt($request->user_name);
+        $request->binusianid = Crypt::decrypt($request->binusianid);
+        $request->user_email = Crypt::decrypt($request->user_email);
+        $request->manager_email = Crypt::decrypt($request->manager_email);
+        $request->user_department = Crypt::decrypt($request->user_department);
+        if(isset($request->head_email))
+            $request->head_email = Crypt::decrypt($request->manager_email);
+
         ///////// INSERT DEPARTMENT AND USER
             if(empty(Department::where('name',$request->user_department)->first())){
                 $department = new Department();
@@ -93,30 +106,89 @@ class ClientController extends Controller
             }
 
             ////////// INSERT VPN ACL LISTS
-            for($i=1; $i<=count($request->txtAccess);$i++){
-                $VpnAclList = new VpnAclList();
-                $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-                $VpnAclList->address = $request->txtAccess[$i];
-                $VpnAclList->completed = 0;
-                $VpnAclList->rejected = 0;
-                $VpnAclList->active = 0;
-                $VpnAclList->save();
-            }
-
-            return redirect('/login');
+        $accessip = array();
+        for($i=1; $i<=count($request->txtAccess);$i++){
+            $VpnAclList = new VpnAclList();
+            $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+            $VpnAclList->address = $request->txtAccess[$i];
+            $VpnAclList->completed = 0;
+            $VpnAclList->rejected = 0;
+            $VpnAclList->active = 0;
+            $VpnAclList->save();
+            array_push($accessip, $request->txtAccess[$i]);
         }
-    }
 
-    public function addAddress(Request $request){
-        return redirect()->back();
-    }
+        $client = new Client([
+            'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
+        ]);
 
+        try{
+            $response = $client->request('GET', 'requests/' . $request->ticket,[
+                'headers'=>[
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
+                ]
+            ]);
+            $body = json_decode($response->getBody());
+            $email = $body->request->requester->email_id;
+        }catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+
+                return ['status' => $exception->response_status->status, 'errMsg' => 'Invalid Ticket']; 
+            }			
+        }
+
+        $directReportsEmail = array(
+            // $request->head_email,
+            // $request->manager_email
+            "klemens.raharja@binus.edu",
+            "loudy.owen@binus.edu"
+        );
+
+        foreach($directReportsEmail as $key => $value)          
+            if(empty($value)) 
+                unset($directReportsEmail[$key]); 
+
+        $smtp = new SendEmailController();
+        $data = array (
+            "email" => $request->user_email, 
+            "name" => $request->user_name,
+            "subject" => $body->request->subject,
+            "number" => $request->ticket,
+            "action" => "form_register",
+            "countAccess" => count($request->txtAccess),
+            "access" => $accessip,
+            "binusianid" => $request->binusianid,
+            "department" => $request->user_department,
+            "directReportsEmail" => $directReportsEmail,
+            "expiry_date" => $request->expiry_date
+
+            //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
+        );
+        $smtp->send($data);
+        return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
+    }
+    
     public function generateLink(Request $request){
-        $ticket = $request->number;
+        $validator = Validator::make($request->all(),
+        [
+    		'number' => 'required|numeric',
+        ],
+        [
+            'number.required' => 'Ticket Number is required!',
+            'number.numeric' => 'Ticket Number must be a number!'
+        ]
+        );
 
-        if($ticket == null){
-            return $response = ['status' => 'Ticket Empty'];
-        }
+    	if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'Validator Fail', 'errMsg' => $error];
+            }
+    	}
+
+        $ticket = $request->number;
 
         $client = new Client([
             'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
@@ -143,30 +215,38 @@ class ClientController extends Controller
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
-
-
-
-
-
-        $smtp = new SendEmailController();
-        if(empty(User::where('email',$body->request->requester->email_id)->first())){
-            // return response(["link" => 'belum ada user','status' => 'success']);
+        $ticket = Crypt::encrypt($ticket);
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
+            $smtp = new SendEmailController();
             $data = array (
                 "email" => $body->request->requester->email_id, 
-                "name" => $body->request->requester->name
+                "name" => $body->request->requester->name,
+                "subject" => $body->request->subject,
+                "number" => $body->request->id,
+                "action" => "create",
+                "link" => $url,
+                "department" => $request->user_department,
+                //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
             );
             $smtp->send($data);
+
+            return response(["link" => $url,'status' => $body->response_status->status]);
         }else{
-            // return response(["link" => 'sudah ada','status' => 'success']);
+            // return response(["link" => 'sudah ada di DB BOS!','status' => $body->response_status->status]);
+            $smtp = new SendEmailController();
+            $data = array (
+                "email" => $body->request->requester->email_id, 
+                "name" => $body->request->requester->name,
+                "subject" => $body->request->subject,
+                "number" => $body->request->id,
+                "action" => "add_access"
+                //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
+            );
+            $smtp->send($data);
 
+            return response(["link" => $url,'status' => $body->response_status->status]);
         }
-
-
-
-
-        $ticket = Crypt::encrypt($ticket);
-        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
-        return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
     public function getLink($request){
@@ -174,7 +254,7 @@ class ClientController extends Controller
             $ticket = Crypt::decrypt($request);
             return view('pages.client.login')->with('ticket',$ticket);
         } catch (DecryptException $e) {
-            echo 'Ticket number invalid!';
+            return view('pages.client.login')->withErrors(['Error Ticket Not Found!']);
         }
     }
 
@@ -247,38 +327,75 @@ class ClientController extends Controller
                 $user_name = $entries[0]["cn"][0];
                 $user_email = $entries[0]["userprincipalname"][0];
                 $user_department = $entries[0]["department"][0];
-                // echo $user_name . " is on department of " . $user_department . ". Email: " . $user_email . "<br>";
+                $user_title = $entries[0]["title"][0];
+                $user_binusianid = $entries[0]["extensionattribute10"][0];
+                if(strpos($entries[0]["title"][0], "Manager")){
+                    $data = array (
+                        "ticket" => $request->ticket,
+                        "user_name" => $user_name,
+                        "user_email" => $user_email,
+                        "user_department" => $user_department,
+                        "user_title" => $user_title,
+                        "user_binusianid" => $user_binusianid
+                    );
+                    return $data;
+                }
+   
+                $directReportsName = str_replace("CN=", "", $entries[0]["manager"][0]);
+                $directReportsName = substr($directReportsName, 0, strpos($directReportsName, ","));
+                $totalDirectReports = 1;
     
-                $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
-                $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
-    
-                while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$manager_name.")"))[0]["title"][0], "Manager")){
-                    // echo $manager_name . " is not Manager";
-                    $filter = "(CN=".$manager_name.")";
+                while(!strpos(ldap_get_entries($ldap_con, ldap_search($ldap_con, "dc=binus,dc=local", "(CN=".$directReportsName.")"))[0]["title"][0], "Manager")){
+                    $filter = "(CN=".$directReportsName.")";
                     $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                     $entries = ldap_get_entries($ldap_con, $result);
-                    $manager_name = str_replace("CN=", "", $entries[0]["manager"][0]);
-                    $manager_name = substr($manager_name, 0, strpos($manager_name, ","));
-                    $manager_email = $entries[0]["userprincipalname"][0];
-                    // echo  ". Email: " . $manager_email . "<br>";
+
+                    // KALAU DIA BOARD DIRECTOR / CEO GIMANA JIR
+
+                    $directReportsTitle = $entries[0]["title"][0];
+                    if(strpos($directReportsTitle,"Head")){
+                        $head_name = $entries[0]["cn"][0];
+                        $head_email = $entries[0]["userprincipalname"][0];
+                        $totalDirectReports = 2;
+                    }
+                    $directReportsManager = $entries[0]["manager"][0];
+
+                    $directReportsName = str_replace("CN=", "", $directReportsManager);
+                    $directReportsName = substr($directReportsName, 0, strpos($directReportsName, ","));
+                    $directReportsEmail = $entries[0]["userprincipalname"][0];
                 }
-                // echo $manager_name . " is Manager";
                 
-                $filter = "(CN=".$manager_name.")";
+                $filter = "(CN=".$directReportsName.")";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
+                $manager_name = $directReportsName;
                 $manager_email = $entries[0]["userprincipalname"][0];
 
-                $data = array (
-                    "ticket" => $request->ticket,
-                    "user_name" => $user_name,
-                    "user_email" => $user_email,
-                    "user_department" => $user_department,
-                    "manager_name" => $manager_name,
-                    "manager_email" => $manager_email
-                );
-                
-                return $data;
+                if($totalDirectReports == 1){
+                    $data = array (
+                        "ticket" => $request->ticket,
+                        "user_name" => $user_name,
+                        "user_email" => $user_email,
+                        "user_department" => $user_department,
+                        "manager_name" => $manager_name,
+                        "manager_email" => $manager_email,
+                        "user_binusianid" => $user_binusianid
+                    );
+                    return $data;
+                }else if($totalDirectReports == 2){
+                    $data = array (
+                        "ticket" => $request->ticket,
+                        "user_name" => $user_name,
+                        "user_email" => $user_email,
+                        "user_department" => $user_department,
+                        "head_name" => $head_name,
+                        "head_email" => $head_email,
+                        "manager_name" => $manager_name,
+                        "manager_email" => $manager_email,
+                        "user_binusianid" => $user_binusianid
+                    );
+                    return $data;
+                }
             }
         } catch (Exception $e) {
             return back()->withErrors(['Invalid Email / Password!']);
@@ -286,8 +403,6 @@ class ClientController extends Controller
     }
 
     public function loginEmailLDAP(Request $request){
-        //LARAVEL VALIDATOR
-        
         if($request->ticket!=null){
             //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
             $user = array (
@@ -325,7 +440,5 @@ class ClientController extends Controller
             }
             // return redirect()->route('clientDashboard',['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
         }
-
-        
     }
 }
