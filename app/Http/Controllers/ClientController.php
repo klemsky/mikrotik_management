@@ -171,56 +171,6 @@ class ClientController extends Controller
         $smtp->send($data);
         return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
     }
-
-    public function generateLink(Request $request){
-        $validator = Validator::make($request->all(),
-        [
-    		'number' => 'required|numeric',
-        ],
-        [
-            'number.required' => 'Ticket Number is required!',
-            'number.numeric' => 'Ticket Number must be a number!'
-        ]
-        );
-
-    	if($validator->fails()){
-            foreach($validator->errors()->all() as $error){
-                return ['status' => 'Validator Fail', 'errMsg' => $error];
-            }
-    	}
-
-        $ticket = $request->number;
-
-        $directReportsEmail = array(
-            // $request->head_email,
-            // $request->manager_email
-            "klemens.raharja@binus.edu",
-            "loudy.owen@binus.edu"
-        );
-
-        foreach($directReportsEmail as $key => $value)          
-            if(empty($value)) 
-                unset($directReportsEmail[$key]); 
-
-        $smtp = new SendEmailController();
-        $data = array (
-            "email" => $request->user_email, 
-            "name" => $request->user_name,
-            "subject" => $body->request->subject,
-            "number" => $request->ticket,
-            "action" => "form_register",
-            "countAccess" => count($request->txtAccess),
-            "access" => $accessip,
-            "binusianid" => $request->binusianid,
-            "department" => $request->user_department,
-            "directReportsEmail" => $directReportsEmail,
-            "expiry_date" => $request->expiry_date
-
-            //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
-        );
-        $smtp->send($data);
-        return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
-    }
     
     public function generateLink(Request $request){
         $validator = Validator::make($request->all(),
