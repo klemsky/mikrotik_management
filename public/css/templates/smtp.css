@@ -30,3 +30,7 @@ body{
     color: white;
     background-color: black;
 }
+
+.table-register-form{
+    vertical-align: top;
+}

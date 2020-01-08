@@ -25,11 +25,13 @@ class ClientController extends Controller
         $validator = Validator::make($request->all(),
         [
             'txtAccess.*' => 'required|ipv4',
+            'rbTemp' => 'required|in:perm,temp',
             'expiry_date' => 'date'
         ],
         [
             'txtAccess.*.required' => 'Access List is required!',
             'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
+            'rbTemp.required' => 'VPN duration must be selected! Permanent/Temporary!',
             'expiry_date.date' => 'Expiry date must be in date format!'
         ]
         );
