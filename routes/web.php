@@ -30,7 +30,12 @@ Route::get('/admin/dashboard',function(){
 	return view('pages.admin.dashboard');
 });
 
-Route::get('/request','AdminController@getAllData')->name('getData');
+Route::post('/admin/assign-address','AdminController@assignAddressVPN');
+Route::post('/admin/create-vpn','AdminController@createVPNMikroTik');
+
+Route::get('/request','AdminController@getAllRequest')->name('getData');
+Route::get('/vpn-all','AdminController@getAllVPNData');
+Route::get('/request-detail/{email}','AdminController@getDetailRequest');
 
 Route::get('/client/dashboard',function(){
 	return view('pages.client.dashboard');
@@ -61,7 +66,7 @@ Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/registerVendor','ClientController@registerVendor');
 Route::post('/loginVpnClient','ClientDashboardController@loginEmailLDAPClient');
-Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
+// Route::get('/clientDashboard','ClientDashboardController@loginEmailLDAPClient');
 
 // Route::get('/clientDashboard',function(){
 // 	return view('pages.client.clientDashboard');

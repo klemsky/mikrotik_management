@@ -55,7 +55,7 @@ class LoginController extends Controller
             // session::put('client',$client);
             session::put('util',$util);
             session::put('address','10.21.0.234');
-            session::put('username',$request->user);
+            session::put('username','owen');
             return redirect('/admin/dashboard');
         // }
     }
@@ -63,7 +63,7 @@ class LoginController extends Controller
     function logout(Request $request){
         $request->session()->flush();
         
-        return redirect('');
+        return back();
      }
 
     function getIP(){

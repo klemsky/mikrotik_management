@@ -14,7 +14,9 @@
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/main_new.css">
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/style-edu.css">
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/login-edu.css">
-    <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/custom.css">
+    <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/custom.css"><script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('binus-bootstrap/js/plugins/accordion-toggle.js')}}"></script>
+    <script type="text/javascript" charset="utf8" src="{{asset('DataTables/datatables.js')}}"></script>
     @yield('css')
 </head>
 

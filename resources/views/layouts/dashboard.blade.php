@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-@yield('html-header')
-<head>
+    <head>
+    @yield('html-header')
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -90,14 +90,16 @@
         <!-- page-content" -->
 
         <div class="modal fade bd-example-modal-lg" id="modal-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div id="modal-dialog-detail" class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <div class="modal-header"></div>
-                    <div class="modal-body"></div>
-                    <div class="modal-footer"></div>
+                    <div id="modal-header" class="modal-header"></div>
+                    <div id="modal-body" class="modal-body"></div>
+                    <div id="modal-footer" class="modal-footer"></div>
                 </div>
             </div>
         </div>
+        @yield('modal')
+
     </div>
     <!-- page-wrapper -->
     

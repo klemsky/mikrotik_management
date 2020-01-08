@@ -104,14 +104,14 @@ class ClientController extends Controller
             }
         }
 
-        return redirect('/clientDashboard');
+        return redirect('/login');
     }
 
     public function generateLink(Request $request){
         $ticket = $request->number;
 
         if($ticket == null){
-            return $response = ['status' => 'Ticket Empty'];
+            return $response = ['status' => 'Ticket number cannot be empty!'];
         }
 
         $client = new Client([
@@ -130,7 +130,8 @@ class ClientController extends Controller
                 $exception = (string) $e->getResponse()->getBody();
                 $exception = json_decode($exception);
 
-                return ['status' => $exception->response_status->status]; 
+                // return ['status' => $exception->response_status->status];
+                return ['status' => 'Ticket is not for Network!'];
             }			
         }
         $body = json_decode($response->getBody());
@@ -147,21 +148,20 @@ class ClientController extends Controller
         $smtp = new SendEmailController();
         if(empty(User::where('email',$body->request->requester->email_id)->first())){
             // return response(["link" => 'belum ada user','status' => 'success']);
-            $data = array (
-                "email" => $body->request->requester->email_id, 
-                "name" => $body->request->requester->name
-            );
-            $smtp->send($data);
+            // $data = array (
+            //     "email" => $body->request->requester->email_id, 
+            //     "name" => $body->request->requester->name
+            // );
+            // $smtp->send($data);
         }else{
             // return response(["link" => 'sudah ada','status' => 'success']);
-
         }
 
 
 
 
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         return response(["link" => $url,'status' => $body->response_status->status]);
     }
 
@@ -235,7 +235,7 @@ class ClientController extends Controller
         
         try {
             if(@ldap_bind($ldap_con, $ldap_dn, $ldap_password)) {                
-                $filter = "(mail=".$ldap_dn.")";
+                $filter = "(mail=david.layardi@binus.edu)";
                 $result = ldap_search($ldap_con, "dc=binus,dc=local", $filter) or exit("Unable to search");
                 $entries = ldap_get_entries($ldap_con, $result);
 
@@ -290,15 +290,17 @@ class ClientController extends Controller
                 "ticket" => $request->ticket
             );
 
-            if($this->checkUser($user) != 'valid')
-                return back()->withErrors(['You do not have permission to view ticket!']);
+            // if($this->checkUser($user) != 'valid')
+            //     return back()->withErrors(['You do not have permission to view ticket!']);
         }
 
         if($this->checkLDAPBind($request) != 'valid')
             return back()->withErrors(['Invalid Email / Password!']);
-        else
+        else{
             $data = $this->checkLDAPManager($request);
-        
+            // if()
+            //redirect client dashboard
+        }
         return view('pages.client.register')->with('data', $data);
     }
 }
