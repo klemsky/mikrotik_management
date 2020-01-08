@@ -15,7 +15,7 @@ class CreateVpnAclListsTable extends Migration
     {
         Schema::create('vpn_acl_lists', function (Blueprint $table) {
             $table->unsignedBigInteger('vpn_user_group_id');
-            $table->bigInteger('no_ticket')->nullable();
+            $table->bigInteger('no_ticket');
             $table->string('address');
             $table->boolean('completed');
             $table->boolean('rejected');
