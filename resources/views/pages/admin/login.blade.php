@@ -46,21 +46,10 @@
     </p>
     <br>
     <p>
-        <input type="submit" id="password_submitBtn" value="Submit" class="button button-primary wide">
+        <input type="submit" id="password_submitBtn" value="Login" class="button button-primary wide">
     </p>
 </form>
 @endsection
 
 @section('js')
-<script>
-    $(document).ready(function(){
-        @if(Session::has('error'))
-        Swal.fire({
-            type: 'error',
-            text: '{{Session::get('error')}}',
-            confirmButtonColor: '#762F8D',
-        });
-        @endif
-    });
-</script>
 @endsection

@@ -12,12 +12,21 @@
 */
 
 //ADMIN
+=======
 Route::get('/', function () {
     return view('index');
 });
 Route::get('/admin', function () {
     return view('pages.admin.login');
 });
+
+Route::post('/submitLogin','LoginController@loginpost');
+
+Route::get('/dashboard',function(){
+	return view('layouts.dashboard');
+});
+
+// Route::get('/admin/dashboard','AdminController@getRequestVPN');
 Route::get('/admin/dashboard',function(){
 	return view('pages.admin.dashboard');
 });
@@ -35,6 +44,14 @@ Route::get('/login',function(){
 	return view('pages.client.login');
 });
 Route::get('/login/request={request}', 'ClientController@getLink'); //Ga perlu validasi
+=======
+Route::post('/admin/assign-address','AdminController@assignAddressVPN');
+Route::post('/admin/create-vpn','AdminController@createVPNMikroTik');
+
+Route::get('/request','AdminController@getAllRequest')->name('getData');
+Route::get('/vpn-all','AdminController@getAllVPNData');
+Route::get('/request-detail/{email}','AdminController@getDetailRequest');
+
 Route::get('/client/dashboard',function(){
 	return view('pages.client.dashboard');
 });
@@ -51,6 +68,7 @@ Route::get('/clientLogin',function(){
 });
 Route::post('/createVPN','DashboardController@createAccount');
 // Route::get('/viewData','DashboardController@viewData');
+
 Route::get('/clientRegister',function(){
 	return view('clientRegister');
 });

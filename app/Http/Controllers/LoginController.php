@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use PEAR2\Net\RouterOS;
 use Illuminate\Support\Facades\Session;
@@ -54,17 +55,15 @@ class LoginController extends Controller
             // session::put('client',$client);
             session::put('util',$util);
             session::put('address','10.21.0.234');
-            session::put('username','admin');
-            // return redirect()->route('dashboard');
-            return view('dashboard');
-            // return redirect('dashboard');
+            session::put('username','owen');
+            return redirect('/admin/dashboard');
         // }
     }
 
     function logout(Request $request){
         $request->session()->flush();
         
-        return redirect('');
+        return back();
      }
 
     function getIP(){
