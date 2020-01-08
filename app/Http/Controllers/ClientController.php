@@ -30,13 +30,8 @@ class ClientController extends Controller
             'expiry_date' => 'date'
         ],
         [
-<<<<<<< HEAD
-            'txtAccess.*.required' => 'Access List is required!',
-            'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
-=======
             'txtAccess.*.required' => 'Please fill all IP Address!',
             'txtAccess.*.ipv4' => 'IP Address must be a valid IPv4!',
->>>>>>> fea26546618a8f428e604402925247cd47a3a41f
             'rbTemp.required' => 'VPN duration must be selected! Permanent/Temporary!',
             'expiry_date.date' => 'Expiry date must be in date format!'
         ]
@@ -244,7 +239,7 @@ class ClientController extends Controller
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (
