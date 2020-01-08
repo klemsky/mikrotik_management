@@ -48,7 +48,6 @@
 @endsection
 
 @section('content')
-    
     <div class="container">
         <div id="vpnHome" class="VPN-Content">
             @if(isset($status))
@@ -59,11 +58,19 @@
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
                     <td class="tdVPN"><p class="txtVPN">{{$vpnUsername}}</p></td>
                 </tr>
+                @if(null!==$vpnStatus)
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">VPN Status </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    
+                    <td class="tdVPN"><p class="txtVPN">Temporary until <strong>{{$vpnStatus}}</strong></p></td>
                 </tr>
+                @else
+                <tr class="trVPN">
+                    <td class="tdVPN"><p class="txtVPN">VPN Status </p></td>
+                    <td class="tdVPN"><p class="txtVPN">:</p></td>
+                    <td class="tdVPN"><p class="txtVPN">Permanent</p></td>
+                </tr>
+                @endif
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Name  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
@@ -88,9 +95,11 @@
                     <td class="tdVPN" style="vertical-align: text-top"><p class="txtVPN" >Access List  </p></td>
                     <td class="tdVPN" style="vertical-align: text-top"><p class="txtVPN">:</p></td>
                     <td class="tdVPN">
-                        @foreach($address as $addr)
-                        <p class="txtVPN">{{$addr}} </p>
-                        @endforeach     
+                        @if(isset($address))
+                            @foreach($address as $addr)
+                            <p class="txtVPN">{{$addr}} </p>
+                            @endforeach     
+                        @endif
                     </td>
                 </tr>
             </table>
@@ -133,7 +142,7 @@
         <div id="vpnAccess" class="VPN-Content">
             
             <div class="form-access">
-            <form method="POST" action="/addAddr" enctype="multipart/form-data" autocomplete="off">
+            <form method="POST" action="/addAddr" enctype="multipart/form-data" autocomplete="off" id="formAddAccess">
             {{csrf_field()}}
                 @if(isset($status))
                 <h3 class="infoHeader"><strong>ADD ACCESS</strong></h3>
@@ -145,19 +154,19 @@
                 </div>
                 <div class="custom-textbox">
                     <label>Full Name : &nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
+                    <input type="text" class="static-input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
                     <input type="hidden" value="{{$data['user_name']}}" name="user_name">
                     <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
                 </div>
                 <div class="custom-textbox">
                     <label>Email : &nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
+                    <input type="text" class="static-input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
                     <input type="hidden" value="{{$data['user_email']}}" name="user_email">
                     <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
                 </div>
                 <div class="custom-textbox">
                     <label>Department :&nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
+                    <input type="text" class="static-input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
                     <input type="hidden" value="{{$data['user_department']}}" name="user_department">
                 </div>
                 <!-- <div class="custom-radio">
@@ -177,19 +186,19 @@
                 <div class="custom-textbox">
                     <label>Address : &nbsp;<i class="icon-checklist"></i></label><br>
                     <div id="address-container" class="form-group">
-                        <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px">
+                        <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px" value="">
                         <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
                     </div>
                     
                 </div>
                 <div class="custom-textbox" style="text-align: center; margin-left: 0px;">
-                    <div id="add-ip" class="formBtn">
+                    <div id="add-ip" class="formBtn" style="background-color : #52de97">
                         <a class="addIpBtn" value="Add IP">Add IP</a>
                     </div>
-                    <div id="remove-ip" class="formBtn">
+                    <div id="remove-ip" class="formBtn" style="background-color : #db3056">
                         <a class="removeIpBtn" value="Remove IP">Remove IP</a> 
                     </div><br>
-                    <input type="submit" id="access_submitBtn" value="Submit" class="formBtn">
+                    <input type="submit" id="access_submitBtn" value="Submit" class="formBtn" style="background-color : #46b3e6">
                 </div>
                 @else
                     <h3 class="infoHeader"><strong>ADD ACCESS</strong></h3>
@@ -205,9 +214,34 @@
         <div id="vpnPassword" class="VPN-Content">
             <div class="pwdVPN">
                 <h3 style="color: white"><h3 class="infoHeader"><strong>CHANGE PASSWORD</strong></h3>
+                @if(isset($status))
+                <table class="tableVPN">
+                <tr class="trVPN" style="text-align: center">
+                    <div class="custom-textbox">
+                        <label>Old Password : &nbsp;<i class="icon-checklist"></i></label><br>
+                        <input type="text" class="input-form" name="oldPassword" style="background-color: white;">
+                    </div>
+                    <div class="custom-textbox">
+                        <label>New Password : &nbsp;<i class="icon-checklist"></i></label><br>
+                        <input type="text" class="input-form" name="newPassword" style="background-color: white;">
+                    </div>
+                    <div class="custom-textbox">
+                        <label>Confirm New Password : &nbsp;<i class="icon-checklist"></i></label><br>
+                        <input type="text" class="input-form" name="confirmNewPassword" style="background-color: white;">
+                    </div>
+                    <div class="custom-textbox" style="text-align: center; margin-left: 0px;">
+                        <input type="submit" id="access_submitBtn" value="Submit" class="formBtn">
+                    </div>
+                </tr>
+                @else
+                <tr class="trVPN" style="text-align: center">
+                    <td class="tdVPN"><p class="txtVPN" style="font-size: 24px">*You can change password after your VPN created</p></td>
+                </tr>
+                @endif
+            </table>
             </div>
-            
         </div>
+        
     </div>
     <!-- <img src="{{asset('img/spiritBackground.png')}}" class="contentBackground">
  -->
@@ -218,4 +252,49 @@
 <script src="{{asset('js/main.js')}}"></script>
 <script src="{{asset('js/mikman.js')}}"></script>
 <script src="{{asset('js/clientLoginDashboard.js')}}"></script>
+<script>
+$(document).ready(function(){
+    $('#access_submitBtn').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#access_submitBtn').prop('disabled',true);
+    });
+
+    function insertRegistrationForm(){
+        var form = $('#formAddAccess')[0];
+        var formData = new FormData(form);
+
+        $.ajax({
+            type: 'POST',
+            url: '/addAddr',
+            data: formData,
+            success: function(response){
+                if(response.status == 'success'){
+                    showSuccess(response.succMsg);
+                    $('.swal2-confirm').click(function(e){
+                        // window.location.href = "/clientDashboard";
+                        // document.getElementById("txtAccess[1]").value = "";
+                    });
+                }else{
+                    if(response.status == 'failed')
+                        showError(response.errMsg);
+                    $('#access_submitBtn').prop('disabled',false);
+                }
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    }
+
+    function showSuccess(msg){
+        Swal.fire({
+            type: 'success',
+            text: msg,
+            confirmButtonColor: '#762F8D',
+        });
+    }
+});
+
+</script>
 @endsection
