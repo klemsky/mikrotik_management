@@ -27,6 +27,54 @@ class ClientDashboardController extends Controller
         // Bandingin hasil Array dari $vpnAclAllow dengan table no_ticket pake whereRaw
         $vpnAclAllow = VpnAclList::whereRaw('no_ticket',$vpnAclTiket)->pluck('address')->toArray();
     }
+    public function addAddress(Request $request){
+        $validator = Validator::make($request->all(),
+        [
+            'txtAccess.*' => 'required|ipv4',
+        ],
+        [
+            'txtAccess.*.required' => 'Please fill all IP Address!',
+            'txtAccess.*.ipv4' => 'IP Address must be a valid IPv4!',
+        ]
+        );
+        if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'failed', 'errMsg' => $error];
+            }
+    	}
+        $VpnUserGroupId = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+        $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+        $sameAddr = false;
+        $accessip = array();
+        for($i=1;$i<=count($request->txtAccess);$i++){
+            if($request->txtAccess[$i] != null || $request->txtAccess[$i] != ""){
+                $sameAddr = false;
+                for($j=0;$j<count($VpnAclLists);$j++){
+                    if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
+                        $sameAddr = false;
+                    else{
+                        $sameAddr = true;
+                        break;
+                    }
+                }
+                if($sameAddr == false){
+                    $VpnAclList = new VpnAclList();
+                    $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                    $VpnAclList->address = $request->txtAccess[$i];
+                    $VpnAclList->no_ticket = $request->ticket;
+                    $VpnAclList->completed = 0;
+                    $VpnAclList->rejected = 0;
+                    $VpnAclList->active = 0;
+                    $VpnAclList->save();
+                    $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+                    array_push($accessip, $request->txtAccess[$i]);
+                }
+            }
+        }
+        return ['status' => 'success', 'succMsg' => 'Submit Success!']; 
+    }
 
     public function loginEmailLDAPClient(Request $request){
         ////////////////////////////////////////LDAP
