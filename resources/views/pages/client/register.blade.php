@@ -119,7 +119,12 @@
 
 <script>
 $(document).ready(function(){
-
+    $('#btn-submit-form').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#access_submitBtn').prop('disabled',true);
+    });
+});
 
     function insertRegistrationForm(){
         var form = $('#form-registration')[0];
@@ -154,6 +159,6 @@ $(document).ready(function(){
             confirmButtonColor: '#762F8D',
         });
     }
-});
+
 
 </script>

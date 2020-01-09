@@ -70,5 +70,5 @@ Route::get('/sendEmail', function(){
 Route::post('/sendEmail', 'SendEmailController@sendEmailDepre');
 
 Route::get('/test', function(){
-	return view('templates.formregister');
+	return view('templates.formaddaccess');
 });

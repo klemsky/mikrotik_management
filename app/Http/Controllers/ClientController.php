@@ -49,7 +49,7 @@ class ClientController extends Controller
         $request->manager_email = Crypt::decrypt($request->manager_email);
         $request->user_department = Crypt::decrypt($request->user_department);
         if(isset($request->head_email))
-            $request->head_email = Crypt::decrypt($request->manager_email);
+            $request->head_email = Crypt::decrypt($request->head_email);
 
         ///////// INSERT DEPARTMENT AND USER
             if(empty(Department::where('name',$request->user_department)->first())){
@@ -233,6 +233,9 @@ class ClientController extends Controller
             }			
         }
         $body = json_decode($response->getBody());
+        if($body->request->status->id == "3"){
+            return response(["link" => "Ticket is ". $body->request->status->name,'status' => $body->response_status->status]);
+        }
         // return ['status' => 'failed'];  
         
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
