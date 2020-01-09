@@ -61,14 +61,19 @@ class SendMail extends Mailable
             return $mail->view('templates.formregister')->with('data', $this->data);
         }else if($this->data["action"] == 'form_add_access'){
             $mail = $this->to($this->data['email']);
-            $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            // if(isset($this->data["number"])){
+            //     $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            // }else{
+                $mail = $this->subject('['. $this->data["name"] .'] :'. 'Permintaan Akun VPN');
+            // }
+            
             $mail = $this->from('mikman@binus.edu');
             // $mail = $this->cc('klemens.raharja@binus.edu');
  
             $mail = $this->cc($this->data['directReportsEmail']);
 
 
-            return $mail->view('templates.formregister')->with('data', $this->data);
+            return $mail->view('templates.formaddaccess')->with('data', $this->data);
         }
         // return $this->from('noreply-mikman@binus.edu')->subject('test')->view('dynamic_email_template')->with('data', $this->data);
     }

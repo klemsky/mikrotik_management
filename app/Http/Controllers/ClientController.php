@@ -134,6 +134,8 @@ class ClientController extends Controller
                     $VpnAclList->completed = 0;
                     $VpnAclList->rejected = 0;
                     $VpnAclList->active = 0;
+                    $VpnAclList->request_type = "create-vpn";
+                    $VpnAclList->note = "note";
                     $VpnAclList->save();
                     $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
                     array_push($accessip, $request->txtAccess[$i]);

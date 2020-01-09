@@ -35,7 +35,39 @@ $(document).ready(function() {
             $("#address-container").children().last().remove();
         }
     });
+
+    $('#btn-submit-form').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#btn-submit-form').prop('disabled',true);
+    });
 });
+
+function insertRegistrationForm(){
+    var form = $('#form-registration')[0];
+    var formData = new FormData(form);
+
+    $.ajax({
+        type: 'POST',
+        url: '/registerClient',
+        data: formData,
+        success: function(response){
+            if(response.status == 'success'){
+                showSuccess(response.succMsg);
+                $('.swal2-confirm').click(function(e){
+                    window.location.href = "/login";
+                });
+            }else{
+                if(response.status == 'failed')
+                    showError(response.errMsg);
+                $('#btn-submit-form').prop('disabled',false);
+            }
+        },
+        cache: false,
+        contentType: false,
+        processData: false
+    });
+}
 
 function showRequests(){
     $("#table-data").html("");
@@ -356,6 +388,14 @@ function hideTime(){
 function showError(msg){
     Swal.fire({
         type: 'error',
+        text: msg,
+        confirmButtonColor: '#762F8D',
+    });
+}
+
+function showSuccess(msg){
+    Swal.fire({
+        type: 'success',
         text: msg,
         confirmButtonColor: '#762F8D',
     });

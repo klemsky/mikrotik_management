@@ -6,8 +6,6 @@
     <title>BINUS | Request VPN</title>
     <!-- favicon -->
     <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
-    <!-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script> -->
-	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
@@ -21,7 +19,6 @@
     <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
     <link rel="stylesheet" href="{{asset('css/client/clientRegister.css')}}">
-
 </head>
 <body>
 	<div class="register">
@@ -119,49 +116,3 @@
     </div>
 </body>
 </html>
-
-<script>
-$(document).ready(function(){
-    $('#btn-submit-form').click(function(e){
-        e.preventDefault();
-        insertRegistrationForm();
-        $('#access_submitBtn').prop('disabled',true);
-    });
-});
-
-    function insertRegistrationForm(){
-        var form = $('#form-registration')[0];
-        var formData = new FormData(form);
-
-        $.ajax({
-            type: 'POST',
-            url: '/registerClient',
-            data: formData,
-            success: function(response){
-                if(response.status == 'success'){
-                    showSuccess(response.succMsg);
-                    $('.swal2-confirm').click(function(e){
-                        window.location.href = "/login";
-                    });
-                }else{
-                    if(response.status == 'failed')
-                        showError(response.errMsg);
-                    $('#btn-submit-form').prop('disabled',false);
-                }
-            },
-            cache: false,
-            contentType: false,
-            processData: false
-        });
-    }
-
-    function showSuccess(msg){
-        Swal.fire({
-            type: 'success',
-            text: msg,
-            confirmButtonColor: '#762F8D',
-        });
-    }
-
-
-</script>
