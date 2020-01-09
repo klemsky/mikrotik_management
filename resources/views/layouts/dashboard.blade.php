@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+    <head>
+    @yield('html-header')
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,13 +10,15 @@
     {{--Custom Button--}}
     {{--<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css" integrity="sha384-oS3vJWv+0UjzBfQzYUhtDYW+Pj2yciDJxpsK1OYPAYjqT085Qq/1cq5FLXAZQ7Ay" crossorigin="anonymous">--}}
 
-    <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
     <link rel="stylesheet" href="{{asset('css/jquery.mCustomScrollbar.min.css')}}">
-     
+    
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
     <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
+    <link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}">
+    <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
     <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
-    
+    <link rel="stylesheet" type="text/css" href="{{asset('DataTables/datatables.css')}}">
+ 
     {{--Swall Fire--}}
     {{--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>--}}
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
@@ -24,8 +26,10 @@
     <script src="{{asset('js/jquery/jquery.min.js')}}"></script>
     <script src="{{asset('js/popper.min.js')}}"></script>
     <script src="{{asset('js/jquery/jquery.mCustomScrollbar.concat.min.js')}}"></script>
-
+    
     <script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('binus-bootstrap/js/plugins/accordion-toggle.js')}}"></script>
+    <script type="text/javascript" charset="utf8" src="{{asset('DataTables/datatables.js')}}"></script>
     @yield('css')
 </head>
 
@@ -37,7 +41,7 @@
                 <div class="sidebar-item sidebar-brand" style="margin: 20px">
                     <img src="{{asset('img/binus_it.png')}}" width="200px">
                 </div>
-                <div class="sidebar-item sidebar-brand" >
+                <div class="sidebar-item sidebar-brand" style="font-size: 14px;">
                     @yield('sidebar-title')
                 </div>
                 <!-- sidebar-header  -->
@@ -86,14 +90,16 @@
         <!-- page-content" -->
 
         <div class="modal fade bd-example-modal-lg" id="modal-action" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
+            <div id="modal-dialog-detail" class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <div class="modal-header"></div>
-                    <div class="modal-body"></div>
-                    <div class="modal-footer"></div>
+                    <div id="modal-header" class="modal-header"></div>
+                    <div id="modal-body" class="modal-body"></div>
+                    <div id="modal-footer" class="modal-footer"></div>
                 </div>
             </div>
         </div>
+        @yield('modal')
+
     </div>
     <!-- page-wrapper -->
     

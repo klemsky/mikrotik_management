@@ -16,6 +16,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use PEAR2\Net\RouterOS\Response;
 
 class ClientController extends Controller
 {
@@ -25,11 +26,13 @@ class ClientController extends Controller
         $validator = Validator::make($request->all(),
         [
             'txtAccess.*' => 'required|ipv4',
+            'rbTemp' => 'required|in:perm,temp',
             'expiry_date' => 'date'
         ],
         [
             'txtAccess.*.required' => 'Access List is required!',
             'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
+            'rbTemp.required' => 'VPN duration must be selected! Permanent/Temporary!',
             'expiry_date.date' => 'Expiry date must be in date format!'
         ]
         );
@@ -107,16 +110,35 @@ class ClientController extends Controller
             }
 
         ////////// INSERT VPN ACL LISTS
+        $VpnUserGroupId = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+        $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+        $sameAddr = false;
         $accessip = array();
-        for($i=1; $i<=count($request->txtAccess);$i++){
-            $VpnAclList = new VpnAclList();
-            $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
-            $VpnAclList->address = $request->txtAccess[$i];
-            $VpnAclList->completed = 0;
-            $VpnAclList->rejected = 0;
-            $VpnAclList->active = 0;
-            $VpnAclList->save();
-            array_push($accessip, $request->txtAccess[$i]);
+        for($i=1;$i<=count($request->txtAccess);$i++){
+            if($request->txtAccess[$i] != null || $request->txtAccess[$i] != ""){
+                $sameAddr = false;
+                for($j=0;$j<count($VpnAclLists);$j++){
+                    if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
+                        $sameAddr = false;
+                    else{
+                        $sameAddr = true;
+                        break;
+                    }
+                }
+                if($sameAddr == false){
+                    $VpnAclList = new VpnAclList();
+                    $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                    $VpnAclList->address = $request->txtAccess[$i];
+                    $VpnAclList->no_ticket = $request->ticket;
+                    $VpnAclList->completed = 0;
+                    $VpnAclList->rejected = 0;
+                    $VpnAclList->active = 0;
+                    $VpnAclList->save();
+                    $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+                    array_push($accessip, $request->txtAccess[$i]);
+                }
+            }
         }
 
         $client = new Client([
@@ -168,8 +190,69 @@ class ClientController extends Controller
 
             //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
         );
-        $smtp->send($data);
+        // $smtp->send($data);
         return ['status' => 'success', 'succMsg' => 'Registration Success!']; 
+    }
+
+    public function addAddress(Request $request){
+        $validator = Validator::make($request->all(),
+        [
+            'txtAccess.*' => 'required|ipv4',
+        ],
+        [
+            'txtAccess.*.required' => 'Access List is required!',
+            'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
+        ]
+        );
+        if($validator->fails()){
+            foreach($validator->errors()->all() as $error){
+                return ['status' => 'failed', 'errMsg' => $error];
+            }
+    	}
+        // $accessip = array();
+        // for($i=1; $i<=count($request->txtAccess);$i++){
+        //     $VpnAclList = new VpnAclList();
+        //     $VpnAclList->vpn_user_group_id = User::where('email',$request->user_email)->value('department_id');
+        //     $VpnAclList->address = $request->txtAccess[$i];
+        //     $VpnAclList->completed = 0;
+        //     $VpnAclList->rejected = 0;
+        //     $VpnAclList->active = 0;
+        //     $VpnAclList->save();
+        //     array_push($accessip, $request->txtAccess[$i]);
+        // }
+
+        $VpnUserGroupId = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+        $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+        $sameAddr = false;
+        $accessip = array();
+        for($i=1;$i<=count($request->txtAccess);$i++){
+            if($request->txtAccess[$i] != null || $request->txtAccess[$i] != ""){
+                $sameAddr = false;
+                for($j=0;$j<count($VpnAclLists);$j++){
+                    if($request->txtAccess[$i] != $VpnAclLists[$j]["address"])
+                        $sameAddr = false;
+                    else{
+                        $sameAddr = true;
+                        break;
+                    }
+                }
+                if($sameAddr == false){
+                    $VpnAclList = new VpnAclList();
+                    $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                    $VpnAclList->address = $request->txtAccess[$i];
+                    $VpnAclList->no_ticket = $request->ticket;
+                    $VpnAclList->completed = 0;
+                    $VpnAclList->rejected = 0;
+                    $VpnAclList->active = 0;
+                    $VpnAclList->save();
+                    $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
+
+                    array_push($accessip, $request->txtAccess[$i]);
+                }
+            }
+        }
+
     }
     
     public function generateLink(Request $request){
@@ -217,7 +300,7 @@ class ClientController extends Controller
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (
@@ -230,7 +313,7 @@ class ClientController extends Controller
                 "department" => $request->user_department,
                 //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
             );
-            $smtp->send($data);
+            // $smtp->send($data);
 
             return response(["link" => $url,'status' => $body->response_status->status]);
         }else{
@@ -244,7 +327,7 @@ class ClientController extends Controller
                 "action" => "add_access"
                 //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
             );
-            $smtp->send($data);
+            // $smtp->send($data);
 
             return response(["link" => 'udah punya vpn','status' => $body->response_status->status]);
         }
@@ -439,7 +522,7 @@ class ClientController extends Controller
             $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
             $status = VpnUser::where('vpn_username',$vpnUsername)->value('completed');
             $noTicket = VpnUser::where('user_id',$UserId)->value('no_ticket');
-            $vpnStatus = VpnUser::where('vpn_username',$vpnUsername)->value('expiry_date');
+            $vpnStatus = date("d-m-Y",strtotime("-1 days",strtotime(VpnUser::where('vpn_username',$vpnUsername)->value('expiry_date'))));
             // dd($status);
             if($status==1){
                 return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus]);
