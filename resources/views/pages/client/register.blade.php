@@ -125,9 +125,8 @@ $(document).ready(function(){
     $('#btn-submit-form').click(function(e){
         e.preventDefault();
         insertRegistrationForm();
-        $('#access_submitBtn').prop('disabled',true);
+        $('#btn-submit-form').prop('disabled',true);
     });
-});
 
     function insertRegistrationForm(){
         var form = $('#form-registration')[0];

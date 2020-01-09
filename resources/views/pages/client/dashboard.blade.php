@@ -256,11 +256,11 @@
 $(document).ready(function(){
     $('#access_submitBtn').click(function(e){
         e.preventDefault();
-        insertRegistrationForm();
+        insertAddAccessForm();
         $('#access_submitBtn').prop('disabled',true);
     });
 
-    function insertRegistrationForm(){
+    function insertAddAccessForm(){
         var form = $('#formAddAccess')[0];
         var formData = new FormData(form);
 
