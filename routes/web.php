@@ -34,6 +34,7 @@ Route::get('/vpn-detail/{id}','AdminController@getDetailVPN');
 Route::post('/admin/assign-address','AdminController@assignAddressVPN');
 Route::post('/admin/create-vpn','AdminController@createVPNMikroTik');
 Route::post('/admin/show-vpn','AdminController@getAllVPNData');
+Route::post('/admin/edit-vpn','AdminController@editVPNMikroTik');
 
 //CLIENT
 Route::post('/submitLogin','LoginController@loginpost'); //Ga perlu validasi

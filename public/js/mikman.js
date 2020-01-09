@@ -77,7 +77,7 @@ function detailVPN(id){
         // data: { email: email },
         success: function (response) {
             // console.log(response);
-            showDetailRequest(response);
+            showDetailVPN(response);
             showModal();
         },
         error: function (xhr, status, error) {
@@ -181,6 +181,110 @@ function showDetailRequest(data){
     strFooter += '<button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>';
     strFooter += '<button type="button" class="btn btn-primary" onclick=showLoginModal("assign-address")>Assign VPN Address</button>';
     strFooter += '<button type="button" class="btn btn-info" onclick=showLoginModal("create-vpn")>Create VPN Account</button>';
+    
+    $('#modal-header').html(strTitle);
+    $('#modal-body').html(strBody);
+    $('#modal-footer').html(strFooter);
+    $('.create-vpn-form').css('margin-bottom','10px');
+    $('#modal-dialog-detail').css('max-width','1000px');
+}
+
+function showDetailVPN(data){
+    console.log(data);
+    var strTitle = '<h4>Detail VPN Account: </h4>';
+    
+    var strBody = '';
+    
+    strBody += '<form id="form-vpn">';
+
+    strBody += '<div class="row">';
+    strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
+    strBody += '<strong><h5>User Information:</h5></strong><br>';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<strong><h5>VPN Information:</h5></strong><br>';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<br>';
+    strBody += '</div>';
+    strBody += '</div>';
+    
+    strBody += '<div class="row">';
+    strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
+    strBody += '<label>Name:</label>';
+    strBody += '<input type="hidden" class="input-form create-vpn-form" name="id" value="'+data['id']+'">';
+    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="name" placeholder="Name" value="'+data['name']+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>VPN Name:</label>';
+    strBody += '<input type="text" class="input-form create-vpn-form" name="vpn_username" placeholder="VPN Username" value="'+data['vpn_username']+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>Access List Group Name:</label>';
+    strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name" placeholder="ACL Group Name" value="'+data['acl_group_name']+'">';
+    strBody += '</div>';
+    strBody += '</div>';
+
+    strBody += '<div class="row">';
+    strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
+    strBody += '<label>Email:</label>';
+    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="email" placeholder="Email" value="'+data['email']+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>Local Address:</label>';
+    if(!data["local_address"])
+        strBody += '<input type="text" class="input-form create-vpn-form" name="local_address" placeholder="Local Address VPN">';
+    else
+        strBody += '<input type="text" class="input-form create-vpn-form" name="local_address" placeholder="Local Address VPN" value="'+data["local_address"]+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>Access List Group Allow:</label>';
+    strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name_allow" placeholder="ACL Group Allow" value="'+data['acl_group_name_allow']+'">';
+    strBody += '</div>';
+    strBody += '</div>';
+
+    strBody += '<div class="row">';
+    strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
+    strBody += '<label>Department:</label>';
+    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="department_name" placeholder="Department" value="'+data['department_name']+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>Remote Address:</label>';
+    if(!data["remote_address"])
+        strBody += '<input type="text" class="input-form create-vpn-form" name="remote_address" placeholder="Remote Address VPN">';
+    else
+        strBody += '<input type="text" class="input-form create-vpn-form" name="remote_address" placeholder="Remote Address VPN" value="'+data["remote_address"]+'">';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<label>Expiry Date:</label>';
+    if(data["expiry_date"] != null)
+        strBody += '<input type="text" class="input-form create-vpn-form" name="expiry_date" placeholder="Expiry Date" value="'+data['expiry_date']+'">';
+    else
+        strBody += '<input type="text" class="input-form create-vpn-form" name="expiry_date" placeholder="Expiry Date" value="Permanent">';
+    strBody += '</div>';
+    strBody += '</div>';
+
+    strBody += '<div class="row">';
+    strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
+    strBody += '<br>';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '<strong>Status VPN:</strong><br>';
+    strBody += (data['completed']==0 && data['active']==0)?'Not created':'' + '<br>';
+    strBody += '</div>';
+    strBody += '<div class="col-md-4">';
+    strBody += '';
+    strBody += '</div>';
+    strBody += '</div>';
+    strBody += '<input type="hidden" class="input-form create-vpn-form" name="department_id" value="'+data['department_id']+'">';
+
+    strBody += '</form>';
+
+    var strFooter = '';
+
+    strFooter += '<button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>';
+    strFooter += '<button type="button" class="btn btn-warning" onclick=showLoginModal("edit-vpn")>Edit VPN Account</button>';
+    strFooter += '<button type="button" class="btn btn-danger" onclick=showLoginModal("disable-vpn")>Disable VPN Account</button>';
     
     $('#modal-header').html(strTitle);
     $('#modal-body').html(strBody);

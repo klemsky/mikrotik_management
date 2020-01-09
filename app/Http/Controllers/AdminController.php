@@ -371,4 +371,44 @@ class AdminController extends Controller
             $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name_allow'].' dst-address-list='.$form['acl_group_name'].' place-before='.$lastRule.''));
         }
     }
+
+    public function editVPNMikroTik(Request $request){
+        //RE-LOGIN MIKROTIK
+        $client = $this->relogin($request->password);
+        
+        $form = array();
+        parse_str($request->form, $form);
+        $vpn_user = VpnUser::where('id',$form['id'])->first();
+        $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
+        dd($vpn_user_group);
+
+        $data = $this->getDetailRequest($form['id']);
+        
+        $client->sendSync(new RouterOS\Request('/ppp secret add name="'.$form['vpn_username'].'" password="binus123" service=l2tp profile=default local-address="'.$form['local_address'].'" remote-address="'.$form['remote_address'].'"'));
+
+        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$form['remote_address'].' list='.$form['acl_group_name'].''));
+        
+        foreach ($data['access_list_ticket'] as $key => $value) {
+            $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$value->address.' list='.$form['acl_group_name_allow'].''));
+            // if(strpos($addAddrListAllow[0]('message') , 'failure') == 0)
+            //     return ['command' => $request->command,'message' => $addAddrListAllow[0]('message') . ' Address List Allow : ' . $value->address];
+        }
+
+        // if(strpos($userPPP[0]('message') , 'failure') == 0)
+        //     return ['command' => $request->command,'message' => $userPPP[0]('message') . ' Secret'];
+   
+        // if(strpos($addAddrList[0]('message') , 'failure') == 0)
+        //     return ['command' => $request->command,'message' => $addAddrList[0]('message') . ' Address List'];
+
+        $filterRule = $client->sendSync(new RouterOS\Request('/ip firewall filter print'));
+        $lastRule = count($filterRule) - 2;
+        $string = '';
+        foreach ($filterRule as $key => $value) {
+            $string .= ' '. $filterRule[$key]('src-address-list');
+        }
+        if(strpos($string, $form['acl_group_name']) == false){
+            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name'].' dst-address-list='.$form['acl_group_name_allow'].' place-before='.$lastRule.' comment="'.$form['department_name'].' - '.$form['acl_group_name'].'"'));
+            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name_allow'].' dst-address-list='.$form['acl_group_name'].' place-before='.$lastRule.''));
+        }
+    }
 }
