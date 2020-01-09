@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\redirect;
+use PEAR2\Net\RouterOS\SocketException;
 
 class LoginController extends Controller
 {
@@ -48,15 +49,15 @@ class LoginController extends Controller
                 $util = new RouterOS\Util($client);
 
                 $dataLog = $util->setMenu('/log')->getAll();
-            }catch(Exception $e){
+            }catch(SocketException $e){
                 echo "error g bisa ";
             }
             // session::put('client',$client);
             session::put('util',$util);
             session::put('address','10.21.0.234');
-            session::put('username','admin');
+            session::put('username','owen');
             // return redirect()->route('dashboard');
-            return view('dashboard');
+            return redirect('/admin/dashboard');
             // return redirect('dashboard');
         // }
     }

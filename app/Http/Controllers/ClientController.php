@@ -235,13 +235,16 @@ class ClientController extends Controller
             }			
         }
         $body = json_decode($response->getBody());
+        if($body->request->status->id == "3"){
+            return response(["link" => "Ticket is ". $body->request->status->name,'status' => $body->response_status->status]);
+        }
         // return ['status' => 'failed'];  
         
         // return response(["link" => $body->request->requester->email_id,'status' => 'success']);
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://lo.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (
