@@ -119,7 +119,11 @@
 
 <script>
 $(document).ready(function(){
-
+    $('#btn-submit-form').click(function(e){
+        e.preventDefault();
+        insertRegistrationForm();
+        $('#btn-submit-form').prop('disabled',true);
+    });
 
     function insertRegistrationForm(){
         var form = $('#form-registration')[0];

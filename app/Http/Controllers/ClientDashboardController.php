@@ -62,17 +62,74 @@ class ClientDashboardController extends Controller
                     $VpnAclList = new VpnAclList();
                     $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
                     $VpnAclList->address = $request->txtAccess[$i];
-                    $VpnAclList->no_ticket = $request->ticket;
+                    if(isset($request->ticket))
+                        $VpnAclList->no_ticket = $request->ticket;
+                    // $VpnAclList->no_ticket = $request->ticket;
+                    $VpnAclList->request_type = "Add Access";
+                    $VpnAclList->note = "note add access";
                     $VpnAclList->completed = 0;
                     $VpnAclList->rejected = 0;
                     $VpnAclList->active = 0;
                     $VpnAclList->save();
                     $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
 
-                    array_push($accessip, $request->txtAccess[$i]);
+                    
                 }
+                array_push($accessip, $request->txtAccess[$i]);
             }
         }
+        //// SEND EMAIL
+        $directReportsEmail = array(
+            // $request->head_email,
+            // $request->manager_email
+            "klemens.raharja@binus.edu",
+            "loudy.owen@binus.edu"
+        );
+
+        $ticket = $request->ticket_number;
+
+        $client = new Client([
+            'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
+        ]);
+
+        try{
+            $response = $client->request('GET', 'requests/' . $ticket,[
+                'headers'=>[
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'Authtoken' => '3BB79015-7E6F-43BF-9EC9-8462F0DACE4C'
+                ]
+            ]);
+        }catch (RequestException $e) {
+            if ($e->hasResponse()) {
+                $exception = (string) $e->getResponse()->getBody();
+                $exception = json_decode($exception);
+
+                return ['status' => $exception->response_status->status]; 
+            }			
+        }
+
+        $body = json_decode($response->getBody());
+
+        foreach($directReportsEmail as $key => $value)          
+            if(empty($value)) 
+                unset($directReportsEmail[$key]); 
+        $smtp = new SendEmailController();
+        $data = array (
+            "email" => $request->user_email, 
+            "name" => $request->user_name,
+            // "subject" => $body->request->subject,
+            // "number" => $request->ticket,
+            "action" => "form_add_access",
+            "countAccess" => count($request->txtAccess),
+            "access" => $accessip,
+            "binusianid" => $request->binusianid,
+            "department" => $request->user_department,
+            "directReportsEmail" => $directReportsEmail,
+            // "expiry_date" => $request->expiry_date
+
+            //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
+        );
+        $smtp->send($data);
         return ['status' => 'success', 'succMsg' => 'Submit Success!']; 
     }
 

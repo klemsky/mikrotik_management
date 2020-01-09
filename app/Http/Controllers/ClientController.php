@@ -30,13 +30,8 @@ class ClientController extends Controller
             'expiry_date' => 'date'
         ],
         [
-<<<<<<< HEAD
-            'txtAccess.*.required' => 'Access List is required!',
-            'txtAccess.*.ipv4' => 'Access List must be a valid IPv4!',
-=======
             'txtAccess.*.required' => 'Please fill all IP Address!',
             'txtAccess.*.ipv4' => 'IP Address must be a valid IPv4!',
->>>>>>> fea26546618a8f428e604402925247cd47a3a41f
             'rbTemp.required' => 'VPN duration must be selected! Permanent/Temporary!',
             'expiry_date.date' => 'Expiry date must be in date format!'
         ]
@@ -54,7 +49,7 @@ class ClientController extends Controller
         $request->manager_email = Crypt::decrypt($request->manager_email);
         $request->user_department = Crypt::decrypt($request->user_department);
         if(isset($request->head_email))
-            $request->head_email = Crypt::decrypt($request->manager_email);
+            $request->head_email = Crypt::decrypt($request->head_email);
 
         ///////// INSERT DEPARTMENT AND USER
             if(empty(Department::where('name',$request->user_department)->first())){
@@ -139,6 +134,8 @@ class ClientController extends Controller
                     $VpnAclList->completed = 0;
                     $VpnAclList->rejected = 0;
                     $VpnAclList->active = 0;
+                    $VpnAclList->request_type = "create-vpn";
+                    $VpnAclList->note = "note";
                     $VpnAclList->save();
                     $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
                     array_push($accessip, $request->txtAccess[$i]);
