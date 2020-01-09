@@ -242,7 +242,7 @@ class ClientController extends Controller
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (

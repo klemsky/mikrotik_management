@@ -15,6 +15,9 @@
     <link rel="stylesheet" type="text/css" href="https://backaccess.apps.binus.edu/wifi/assets/css/login-edu.css">
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
+    <script src="{{asset('binus-bootstrap/js/plugins/accordion-toggle.js')}}"></script>
+    <script type="text/javascript" charset="utf8" src="{{asset('DataTables/datatables.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
     <link rel="stylesheet" href="{{asset('css/client/clientRegister.css')}}">

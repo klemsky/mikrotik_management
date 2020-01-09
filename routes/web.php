@@ -18,19 +18,27 @@ Route::get('/', function () {
 Route::get('/admin', function () {
     return view('pages.admin.login');
 });
-Route::get('/admin/dashboard',function(){
-	return view('pages.admin.dashboard');
-});
+Route::get('/admin/dashboard','AdminController@getRequestVPN');
 Route::get('/ticket',function(){ 
 	return view('pages.client.ticket');
 });
-Route::post('/generate','ClientController@generateLink');//validated
 Route::post('/relog','AdminController@reLogin');
 Route::post('/vpn-account','AdminController@showAllVPN');
 
+Route::get('/request','AdminController@getAllRequest')->name('getData');
+// Route::get('/vpn-all','AdminController@getAllVPNData');
+Route::get('/request-detail/{id}','AdminController@getDetailRequest');
+Route::get('/vpn-detail/{id}','AdminController@getDetailVPN');
+
+//USING RE-LOGIN MIKROTIK
+Route::post('/admin/assign-address','AdminController@assignAddressVPN');
+Route::post('/admin/create-vpn','AdminController@createVPNMikroTik');
+Route::post('/admin/show-vpn','AdminController@getAllVPNData');
+Route::post('/admin/edit-vpn','AdminController@editVPNMikroTik');
 
 //CLIENT
 Route::post('/submitLogin','LoginController@loginpost'); //Ga perlu validasi
+Route::post('/generate','ClientController@generateLink');//validated
 Route::get('/login',function(){
 	return view('pages.client.login');
 });
