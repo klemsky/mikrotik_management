@@ -81,9 +81,9 @@
                                         <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
                                     </div>
                                     <div class="custom-radio">
-                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" name="rbTemp" value="perm" onclick="hideTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" name="rbTemp" onclick="hideTime()" value="perm">
                                             <label for="rbPermanent" class="inputInlineBlock">Permanent</label>
-                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" name="rbTemp" value="temp" onclick="showTime()">
+                                            <input type="radio" class="inputInlineBlock" class="input-form" id="rbTemporary" name="rbTemp" onclick="showTime()" value="temp">
                                             <label for="rbTemporary" class="inputInlineBlock">Temporary</label>
                                         <div id="input-date-container"></div>
                                     </div>
@@ -125,8 +125,9 @@ $(document).ready(function(){
     $('#btn-submit-form').click(function(e){
         e.preventDefault();
         insertRegistrationForm();
-        $('#btn-submit-form').prop('disabled',true);
+        $('#access_submitBtn').prop('disabled',true);
     });
+});
 
     function insertRegistrationForm(){
         var form = $('#form-registration')[0];
@@ -161,6 +162,6 @@ $(document).ready(function(){
             confirmButtonColor: '#762F8D',
         });
     }
-});
+
 
 </script>

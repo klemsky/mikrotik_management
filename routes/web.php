@@ -48,6 +48,7 @@ Route::get('/client/dashboard',function(){
 });
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
+Route::post('/addAddr','ClientDashboardController@addAddress');
 
 
 //NEXT PUSH AKAN DIHAPUS KALO GA DIPAKE
@@ -77,5 +78,5 @@ Route::get('/sendEmail', function(){
 Route::post('/sendEmail', 'SendEmailController@sendEmailDepre');
 
 Route::get('/test', function(){
-	return view('templates.formregister');
+	return view('templates.formaddaccess');
 });
