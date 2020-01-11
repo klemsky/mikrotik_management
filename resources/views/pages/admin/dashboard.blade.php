@@ -73,7 +73,7 @@
                 {{csrf_field()}}
                 <div id="modal-login-body" class="modal-body">
                     <label>Password:</label>
-                    <input type="password" class="input-form" name="password" placeholder="Password MikroTik">
+                    <input type="password" class="input-form" name="password" placeholder="Password MikroTik" value="owen">
                     <p id="error" style="display:none;">Error Message</p>
                     <input type="hidden" id="command">
                 </div>
