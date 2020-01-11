@@ -14,7 +14,7 @@
     
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
     <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
-    <link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}">
+    <!-- <link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}"> -->
     <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
     <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('DataTables/datatables.css')}}">

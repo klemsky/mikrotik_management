@@ -1,5 +1,4 @@
 $(document).ready(function() { 
-    $('.toggle').binus_toggle();
     $countAccessList = 1;
 
     $("#add-ip").on("click", function() { 
