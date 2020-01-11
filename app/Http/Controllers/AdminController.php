@@ -316,9 +316,9 @@ class AdminController extends Controller
 
         if($vpn_user['vpn_username'] != $form['vpn_username'])
             $vpn_user->vpn_username = $form['vpn_username'];
-        if($vpn_user_group['acl_group_name'] != $form['acl_group_name'])
+        if($vpn_user_group['acl_group_name'] != $form['acl_group_name'] && ($vpn_user_group['local_address'] == null || $vpn_user_group['local_address'] == ""))
             $vpn_user_group->acl_group_name = $form['acl_group_name'];
-        if($vpn_user_group['acl_group_name_allow'] != $form['acl_group_name_allow'])
+        if($vpn_user_group['acl_group_name_allow'] != $form['acl_group_name_allow'] && ($vpn_user_group['local_address'] == null || $vpn_user_group['local_address'] == ""))
             $vpn_user_group->acl_group_name_allow = $form['acl_group_name_allow'];
         $vpn_user->remote_address = $remote_address_vpn;
         $vpn_user_group->local_address = $local_address_vpn;
@@ -341,15 +341,33 @@ class AdminController extends Controller
         
         $form = array();
         parse_str($request->form, $form);
+        
+        $vpn_user = VpnUser::where('id',$form['id'])->first();
+        $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
+        $acl_lists = VpnAclList::where('vpn_user_group_id',$form['vpn_user_group_id'])->where('no_ticket',$form['no_ticket'])->get();
+        $new_date = date("M/d/Y H:i:s",strtotime($vpn_user->expiry_date));
 
+        if($vpn_user->vpn_username != $form['vpn_username'])
+            $vpn_user->vpn_username = $form['vpn_username'];
+        if($vpn_user->remote_address != $form['remote_address'])
+            $vpn_user->remote_address = $form['remote_address'];
+        if($vpn_user_group->local_address != $form['local_address'])
+            $vpn_user_group->local_address = $form['local_address'];
+
+        $vpn_user->active = 1;
+        foreach ($acl_lists as $key => $value) {
+            $acl_lists[$key]->active = 1;
+            $acl_lists[$key]->save();
+        }
+        
         $data = $this->getDetailRequest($form['id']);
         
         $client->sendSync(new RouterOS\Request('/ppp secret add name="'.$form['vpn_username'].'" password="binus123" service=l2tp profile=default local-address="'.$form['local_address'].'" remote-address="'.$form['remote_address'].'"'));
 
-        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$form['remote_address'].' list='.$form['acl_group_name'].''));
+        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$form['remote_address'].' list='.$vpn_user_group->acl_group_name.''));
         
         foreach ($data['access_list_ticket'] as $key => $value) {
-            $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$value->address.' list='.$form['acl_group_name_allow'].''));
+            $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$value->address.' list='.$vpn_user_group->acl_group_name_allow.''));
             // if(strpos($addAddrListAllow[0]('message') , 'failure') == 0)
             //     return ['command' => $request->command,'message' => $addAddrListAllow[0]('message') . ' Address List Allow : ' . $value->address];
         }
@@ -370,6 +388,19 @@ class AdminController extends Controller
             $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name'].' dst-address-list='.$form['acl_group_name_allow'].' place-before='.$lastRule.' comment="'.$form['department_name'].' - '.$form['acl_group_name'].'"'));
             $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name_allow'].' dst-address-list='.$form['acl_group_name'].' place-before='.$lastRule.''));
         }
+
+        $client->sendSync(new RouterOS\Request('/system scheduler add name="'.$form['vpn_username'].'" start-date="'.explode(" ", $new_date)[0].'" start-time="'.explode(" ", $new_date)[1].'" interval="00:00:00" on-event="/ppp secret disable '.$form['vpn_username'].'"'));
+        $vpn_user->save();
+        $vpn_user_group->save();
+
+        $data = $this->getDetailRequest($form['id']);
+        $datas = $this->getAllRequest();
+
+        return [
+            'command' => $request->command,
+            'data' => $data,
+            'datas' => $datas
+        ];
     }
 
     public function editVPNMikroTik(Request $request){
@@ -380,7 +411,6 @@ class AdminController extends Controller
         parse_str($request->form, $form);
         $vpn_user = VpnUser::where('id',$form['id'])->first();
         $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
-        dd($vpn_user_group);
 
         $data = $this->getDetailRequest($form['id']);
         

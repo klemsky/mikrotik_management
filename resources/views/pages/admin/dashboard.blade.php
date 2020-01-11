@@ -2,6 +2,10 @@
 
 @section('title','Admin Dashboard')
 
+@section('css')
+<link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}">
+@endsection
+
 @section('html-header')
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection
@@ -69,7 +73,7 @@
                 {{csrf_field()}}
                 <div id="modal-login-body" class="modal-body">
                     <label>Password:</label>
-                    <input type="password" class="input-form" name="password" placeholder="Password MikroTik">
+                    <input type="password" class="input-form" name="password" placeholder="Password MikroTik" value="owen">
                     <p id="error" style="display:none;">Error Message</p>
                     <input type="hidden" id="command">
                 </div>

@@ -66,7 +66,7 @@ class ClientDashboardController extends Controller
                         $VpnAclList->no_ticket = $request->ticket;
                     // $VpnAclList->no_ticket = $request->ticket;
                     $VpnAclList->request_type = "Add Access";
-                    $VpnAclList->note = "note add access";
+                    $VpnAclList->note = $request->note;
                     $VpnAclList->completed = 0;
                     $VpnAclList->rejected = 0;
                     $VpnAclList->active = 0;
@@ -124,6 +124,7 @@ class ClientDashboardController extends Controller
             "access" => $accessip,
             "binusianid" => $request->binusianid,
             "department" => $request->user_department,
+            "notes" => $request->note,
             "directReportsEmail" => $directReportsEmail,
             // "expiry_date" => $request->expiry_date
 

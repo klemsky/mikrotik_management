@@ -45,7 +45,7 @@ Route::get('/login',function(){
 Route::get('/login/request={request}', 'ClientController@getLink'); //Ga perlu validasi
 Route::get('/client/dashboard',function(){
 	return view('pages.client.dashboard');
-});
+})->name('dashboardVPN');
 Route::post('/register', 'ClientController@loginEmailLDAP');
 Route::post('/registerClient','ClientController@registerClient');
 Route::post('/addAddr','ClientDashboardController@addAddress');

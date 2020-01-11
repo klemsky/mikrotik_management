@@ -55,6 +55,9 @@ img.contentBackground {
     z-index: -99;
     -webkit-filter: blur(8px);
 }
+img{
+    margin-top: -8px;
+}
 .infoHeader{
     padding-top: 4%;
     padding-bottom: 2%;
@@ -200,7 +203,7 @@ input.static-input-form:hover{
     /* box-shadow: none !important; */
 }
 .formBtn{
-    width: 100px;
+    width: 9vw;
     display: inline-block;
     padding: 0.3em 1.2em;
     margin: 0 0.1em 0.1em 0;
