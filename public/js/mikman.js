@@ -516,4 +516,5 @@ function copyTC(){
 
 function changeAsIType(){
     $('#link').val('');
+    $('#btnCopyTC').hide();
 }
