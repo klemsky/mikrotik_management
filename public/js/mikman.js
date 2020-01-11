@@ -1,5 +1,4 @@
 $(document).ready(function() { 
-    $('.toggle').binus_toggle();
     $countAccessList = 1;
 
     $("#add-ip").on("click", function() { 
@@ -141,6 +140,8 @@ function showDetailRequest(data){
     strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
     strBody += '<label>Name:</label>';
     strBody += '<input type="hidden" class="input-form create-vpn-form" name="id" value="'+data['id']+'">';
+    strBody += '<input type="hidden" class="input-form create-vpn-form" name="no_ticket" value="'+data['no_ticket']+'">';
+    strBody += '<input type="hidden" class="input-form create-vpn-form" name="vpn_user_group_id" value="'+data['vpn_user_group_id']+'">';
     strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="name" placeholder="Name" value="'+data['name']+'">';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
@@ -148,7 +149,7 @@ function showDetailRequest(data){
     strBody += '<input type="text" class="input-form create-vpn-form" name="vpn_username" placeholder="VPN Username" value="'+data['vpn_username']+'">';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
-    strBody += '<label>Access List Group Name:</label>';
+    strBody += '<label>Address List Group Name:</label>';
     strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name" placeholder="ACL Group Name" value="'+data['acl_group_name']+'">';
     strBody += '</div>';
     strBody += '</div>';
@@ -166,7 +167,7 @@ function showDetailRequest(data){
         strBody += '<input type="text" class="input-form create-vpn-form" name="local_address" placeholder="Local Address VPN" value="'+data["local_address"]+'">';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
-    strBody += '<label>Access List Group Allow:</label>';
+    strBody += '<label>Address List Group Allow:</label>';
     strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name_allow" placeholder="ACL Group Allow" value="'+data['acl_group_name_allow']+'">';
     strBody += '</div>';
     strBody += '</div>';
@@ -198,7 +199,12 @@ function showDetailRequest(data){
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '<strong>Status VPN:</strong><br>';
-    strBody += (data['completed']==0 && data['active']==0)?'Not created':'' + '<br>';
+    if(data['completed']==0 && data['rejected']==0 && data['active']==0)
+        strBody += 'Not created' + '<br><br>';
+    else if(data['completed']==0 && data['rejected']==0 && data['active']==1)
+        strBody += 'Created, Not sent' + '<br><br>';
+    else if(data['completed']==1 && data['rejected']==0 && data['active']==1)
+        strBody += 'Created, Sent' + '<br><br>';    
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '';
@@ -211,7 +217,8 @@ function showDetailRequest(data){
     var strFooter = '';
 
     strFooter += '<button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>';
-    strFooter += '<button type="button" class="btn btn-primary" onclick=showLoginModal("assign-address")>Assign VPN Address</button>';
+    if(data['remote_address'] == null || data['remote_address'] == "")
+        strFooter += '<button type="button" class="btn btn-primary" onclick=showLoginModal("assign-address")>Assign VPN Address</button>';
     strFooter += '<button type="button" class="btn btn-info" onclick=showLoginModal("create-vpn")>Create VPN Account</button>';
     
     $('#modal-header').html(strTitle);
@@ -222,8 +229,7 @@ function showDetailRequest(data){
 }
 
 function showDetailVPN(data){
-    console.log(data);
-    var strTitle = '<h4>Detail VPN Account: </h4>';
+    var strTitle = '<h4>Detail VPN Account: <strong>'+data['vpn_username']+'</strong></h4>';
     
     var strBody = '';
     
@@ -245,14 +251,15 @@ function showDetailVPN(data){
     strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
     strBody += '<label>Name:</label>';
     strBody += '<input type="hidden" class="input-form create-vpn-form" name="id" value="'+data['id']+'">';
-    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="name" placeholder="Name" value="'+data['name']+'">';
+    // strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="name" placeholder="Name" value="'+data['name']+'">';
+    strBody += '<strong>'+data['name']+'</strong>';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '<label>VPN Name:</label>';
     strBody += '<input type="text" class="input-form create-vpn-form" name="vpn_username" placeholder="VPN Username" value="'+data['vpn_username']+'">';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
-    strBody += '<label>Access List Group Name:</label>';
+    strBody += '<label>Address List Group Name:</label>';
     strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name" placeholder="ACL Group Name" value="'+data['acl_group_name']+'">';
     strBody += '</div>';
     strBody += '</div>';
@@ -260,7 +267,8 @@ function showDetailVPN(data){
     strBody += '<div class="row">';
     strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
     strBody += '<label>Email:</label>';
-    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="email" placeholder="Email" value="'+data['email']+'">';
+    // strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="email" placeholder="Email" value="'+data['email']+'">';
+    strBody += '<strong>'+data['email']+'</strong>';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '<label>Local Address:</label>';
@@ -270,7 +278,7 @@ function showDetailVPN(data){
         strBody += '<input type="text" class="input-form create-vpn-form" name="local_address" placeholder="Local Address VPN" value="'+data["local_address"]+'">';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
-    strBody += '<label>Access List Group Allow:</label>';
+    strBody += '<label>Address List Group Allow:</label>';
     strBody += '<input type="text" class="input-form create-vpn-form" name="acl_group_name_allow" placeholder="ACL Group Allow" value="'+data['acl_group_name_allow']+'">';
     strBody += '</div>';
     strBody += '</div>';
@@ -278,7 +286,8 @@ function showDetailVPN(data){
     strBody += '<div class="row">';
     strBody += '<div class="col-md-4" style="border-right: 1px solid black">';
     strBody += '<label>Department:</label>';
-    strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="department_name" placeholder="Department" value="'+data['department_name']+'">';
+    // strBody += '<input style="background-color: white;" type="text" class="input-form create-vpn-form" name="department_name" placeholder="Department" value="'+data['department_name']+'">';
+    strBody += '<strong>'+data['department_name']+'</strong>';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '<label>Remote Address:</label>';
@@ -423,15 +432,15 @@ function relogin(){
                 insertDataTables(response.datas);
             }
             else if(response.command == 'create-vpn'){
-                $("#error").css("color", "red");
-                $("#error").text(response.message);
-                $("#error").css("display", "block");
+                $('#modal-login').modal('hide');
+                showDetailRequest(response.data);
+                insertDataTables(response.datas);
             }
             else if(response.command == 'show-vpn'){
                 insertDataTables(response.data);
                 $('#modal-login').modal('hide');
-                $('.led-red').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'#f90','border-radius':'50%','box-shadow':'#000 0 -1px 7px 1px, inset #600 0 -1px 9px, #F00 0 2px 12px'});
-                $('.led-green').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'#690','border-radius':'50%','box-shadow':'#000 0 -1px 7px 1px, inset #460 0 -1px 9px, #7D0 0 2px 12px'});
+                $('.led-red').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'red','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #600 0 -1px 4px, #F00 0 2px 6px'});
+                $('.led-green').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'#690','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #460 0 -1px 4px, #7D0 0 2px 6px'});
             }
         },
         error: function (xhr, status, error) {
