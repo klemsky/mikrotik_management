@@ -2,6 +2,10 @@
 
 @section('title','Admin Dashboard')
 
+@section('css')
+<link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}">
+@endsection
+
 @section('html-header')
 <meta name="csrf-token" content="{{ csrf_token() }}" />
 @endsection

@@ -13,28 +13,19 @@
         <dd style="font-size: 0.8em; line-height: 22px;"></dd>
     </span>
 </dl>
-<form onsubmit="showLink(); return false;">
+<form>
     {{csrf_field()}}
     <label>VPN Ticket Number</label>
     <p>
         <span class="custom-textbox">
-            <span class="custom-textbox">
-                <span class="icon-wrap">
-                    <i class="icon icon-user"></i>
-                </span>
-                <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numberTicket">
-            </span>
+            <input type="text" id="numberTicket" placeholder="Ticket Number" class="input-form" name="numberTicket" onkeydown="changeAsIType()">
         </span>
     </p>
     <label>URL Generate</label>
-    <p>
-        <span class="custom-textbox">
-            <span class="custom-textbox">
-                <span class="icon-wrap">
-                    <i class="icon icon-user"></i>
-                </span>
-                <input type="text" id="link" placeholder="URL" class="input-form" name="link">
-            </span>
+    <p>               
+        <span class="input-group">
+            <input type="text" id="link" placeholder="URL" class="input-form" name="link">
+            <span class="addon" id="btnCopyTC">COPY</span>
         </span>
     </p>
     <p>
@@ -45,9 +36,4 @@
 
 @section('js')
 <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
-@if(isset($error))
-<script>
-showError('{{$error}}');
-</script>
-@endif
 @endsection

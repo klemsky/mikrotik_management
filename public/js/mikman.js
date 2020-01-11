@@ -40,6 +40,17 @@ $(document).ready(function() {
         insertRegistrationForm();
         $('#btn-submit-form').prop('disabled',true);
     });
+
+    $('#btnCopyTC').hide();
+    $('#ticket_submitBtn').click(function(e){
+        e.preventDefault();
+        showLink();
+        $('#ticket_submitBtn').prop('disabled',true);
+    });
+    $('#btnCopyTC').click(function(e){
+        copyTC();
+        $('#ticket_submitBtn').prop('disabled',false);
+    });
 });
 
 function insertRegistrationForm(){
@@ -492,13 +503,28 @@ function showLink(){
                 //     window.location.href = "/ip";
                 // },700);
                 $("#link").val(response.link);
+                $('#btnCopyTC').show();
                 // console.log('')
             }else{
                 // $('.is-error').show();
                 // $('.is-success').hide();
                 // $('.is-error').html(data);
                 showError(response.status);
+                $('#ticket_submitBtn').prop('disabled',false);
             }
         },
     });
+}
+
+function copyTC(){
+    var copyText = $('#link');
+
+    copyText.select();
+    document.execCommand("copy");
+    showSuccess("Link copied to clipboard");
+}
+
+function changeAsIType(){
+    $('#link').val('');
+    $('#btnCopyTC').hide();
 }

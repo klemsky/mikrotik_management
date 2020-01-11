@@ -1,8 +1,8 @@
-<link rel="stylesheet" href="{{asset('css/client/clientDashboard.css')}}">
-
 @extends('layouts.dashboard')
 @section('title','Client Dashboard')
-
+@section('css')
+<link rel="stylesheet" href="{{asset('css/client/clientDashboard.css')}}">
+@endsection
 @section('sidebar-title')
 <a href="javascript:;" onclick="showInfo()" style="text-align: center">VPN ACCOUNT</a>
 @endsection
@@ -104,8 +104,8 @@
                 </tr>
             </table>
             @else
-            <h3 class="infoHeader"><strong>VPN INFO</strong></h3>
             <table class="tableVPN">
+            <h3 class="infoHeader"><strong>VPN INFO</strong></h3>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Ticket Number :  <strong>{{$ticket}}</strong></p></td>
                 </tr>
@@ -157,6 +157,7 @@
                     <input type="text" class="static-input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
                     <input type="hidden" value="{{$data['user_name']}}" name="user_name">
                     <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
+                    <input type="hidden" value="{{$data['user_binusianid']}}" name="binusianid">
                 </div>
                 <div class="custom-textbox">
                     <label>Email : &nbsp;<i class="icon-checklist"></i></label><br>
@@ -184,12 +185,15 @@
                     <div id="input-date-container"></div>
                 </div> -->
                 <div class="custom-textbox">
-                    <label>Address : &nbsp;<i class="icon-checklist"></i></label><br>
+                    <label>*Keperluan :&nbsp;<i class="icon-checklist"></i></label><br>
+                    <input type="text" class="input-form" placeholder="Keperluan" name="note" style="background-color: white;">
+                </div>
+                <div class="custom-textbox">
+                    <label>*Address : &nbsp;<i class="icon-checklist"></i></label><br>
                     <div id="address-container" class="form-group">
                         <input type="text" class="input-form" name="txtAccess[1]" placeholder="IP Address 1" style="margin-bottom: 10px" value="">
                         <input type="hidden" value="1" id="countAccessIP" name="accessIpCount">
                     </div>
-                    
                 </div>
                 <div class="custom-textbox" style="text-align: center; margin-left: 0px;">
                     <div id="add-ip" class="formBtn" style="background-color : #52de97">
@@ -235,7 +239,9 @@
                 </tr>
                 @else
                 <tr class="trVPN" style="text-align: center">
-                    <td class="tdVPN"><p class="txtVPN" style="font-size: 24px">*You can change password after your VPN created</p></td>
+                    <div class="custom-textbox">
+                        <td class="tdVPN"><p class="txtVPN" style="font-size: 24px">*You can change password after your VPN created</p></td>
+                    </div>
                 </tr>
                 @endif
             </table>

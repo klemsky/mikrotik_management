@@ -209,7 +209,7 @@ class ClientController extends Controller
 
     	if($validator->fails()){
             foreach($validator->errors()->all() as $error){
-                return ['status' => 'Validator Fail', 'errMsg' => $error];
+                return ['status' => $error];
             }
     	}
 
@@ -236,7 +236,7 @@ class ClientController extends Controller
         }
         $body = json_decode($response->getBody());
         if($body->request->status->id == "3"){
-            return response(["link" => "Ticket is ". $body->request->status->name,'status' => $body->response_status->status]);
+            return response(["link" => "Ticket is ". $body->request->status->name,'status' => 'Ticket is already closed!']);
         }
         // return ['status' => 'failed'];  
         
@@ -244,7 +244,7 @@ class ClientController extends Controller
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://kl.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (
@@ -273,13 +273,17 @@ class ClientController extends Controller
             );
             // $smtp->send($data);
 
-            return response(["link" => 'udah punya vpn','status' => $body->response_status->status]);
+            return response(["link" => 'User already has VPN!','status' => 'User already has VPN.']);
         }
     }
 
     public function getLink($request){
         try {
             $ticket = Crypt::decrypt($request);
+            
+            if(!empty(VpnUser::where('no_ticket', $ticket)->first()->id)){
+                return redirect('/login')->withErrors('You already fill the registration form. Please kindly wait for futher assistance.');
+            }
             return view('pages.client.login')->with('ticket',$ticket);
         } catch (DecryptException $e) {
             return view('pages.client.login')->withErrors(['Error Ticket Not Found!']);
