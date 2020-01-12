@@ -1,13 +1,13 @@
 @extends('layouts.dmd')
 
-@section('title','BINUS | Login VPN')
+@section('title','Login VPN')
 
 @section('content')
 @if(isset($ticket))
 Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
 @endif
 
-<form class="custom-form" id="form-login-bns" method="POST" action="/loginVpnClient" enctype="multipart/form-data" autocomplete="on">
+<form class="custom-form" id="form-login-bns" method="POST" action="/register" enctype="multipart/form-data" autocomplete="on">
     {{csrf_field()}}
     <label>Login with Your Email Account</label>
     <p>
@@ -60,7 +60,6 @@ Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
 
 @section('js')
 <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
-<script type="text/javascript" src="{{asset('js/date.js')}}"></script>
 @if(isset($error))
 <script>
 showError('{{$error}}');

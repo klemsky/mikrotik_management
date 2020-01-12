@@ -16,6 +16,7 @@ use Illuminate\Contracts\Encryption\DecryptException;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Redirect;
 use PEAR2\Net\RouterOS\Response;
 
 class ClientController extends Controller
@@ -26,6 +27,7 @@ class ClientController extends Controller
         $validator = Validator::make($request->all(),
         [
             'txtAccess.*' => 'required|ipv4',
+            'user_notes' => 'required',
             'rbTemp' => 'required|in:perm,temp',
             'expiry_date' => 'date'
         ],
@@ -33,7 +35,8 @@ class ClientController extends Controller
             'txtAccess.*.required' => 'Please fill all IP Address!',
             'txtAccess.*.ipv4' => 'IP Address must be a valid IPv4!',
             'rbTemp.required' => 'VPN duration must be selected! Permanent/Temporary!',
-            'expiry_date.date' => 'Expiry date must be in date format!'
+            'expiry_date.date' => 'Expiry date must be in date format!',
+            'user_notes.required' => 'You must explain your reason!'
         ]
         );
     	if($validator->fails()){
@@ -75,6 +78,28 @@ class ClientController extends Controller
                 $aclDept = "vpn-".$aclDept[0]."-".$aclDept[1];
             else
                 $aclDept = "vpn-".$aclDept[0];
+
+            $sentences = strtolower($request->user_department);
+            $words = explode(" ", $sentences);
+            $spaceCount = count($words)-1;
+            
+            if($spaceCount > 2){
+                $sentences = preg_replace("/[^a-zA-Z1-9]/", "", $words);
+                $departmentInitial = '';
+                foreach($sentences as $i => $words){
+                    if(strlen($words) < 5){
+                        $firstCharacter = $words;
+                    }else{
+                        $firstCharacter = substr($words, 0, 1);
+                    }
+                    if(is_numeric($firstCharacter) || strlen($words) < 5 && $i != 0)
+                        $departmentInitial .= '-';
+                    $departmentInitial .= $firstCharacter;
+                }
+                if(count(explode("-", $departmentInitial)) > 2)
+                    $departmentInitial = explode("-", $departmentInitial)[0]."-".explode("-", $departmentInitial)[1];
+                $aclDept = "vpn-".$departmentInitial;
+            }
 
             if(empty(VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first())){
                 $aclDeptAllow = $aclDept."-allow";
@@ -129,13 +154,14 @@ class ClientController extends Controller
                 if($sameAddr == false){
                     $VpnAclList = new VpnAclList();
                     $VpnAclList->vpn_user_group_id = VpnUserGroup::where('department_id', Department::where('name',$request->user_department)->first()->id)->first()->id;
+                    $VpnAclList->vpn_user_id = VpnUser::where('id', User::where('email',$request->user_email)->first()->id)->first()->id;
                     $VpnAclList->address = $request->txtAccess[$i];
                     $VpnAclList->no_ticket = $request->ticket;
                     $VpnAclList->completed = 0;
                     $VpnAclList->rejected = 0;
                     $VpnAclList->active = 0;
                     $VpnAclList->request_type = "create-vpn";
-                    $VpnAclList->note = "note";
+                    $VpnAclList->note = $request->user_notes;
                     $VpnAclList->save();
                     $VpnAclLists = VpnAclList::where('vpn_user_group_id', $VpnUserGroupId)->get(['address'])->toArray();
                     array_push($accessip, $request->txtAccess[$i]);
@@ -161,7 +187,7 @@ class ClientController extends Controller
                 $exception = (string) $e->getResponse()->getBody();
                 $exception = json_decode($exception);
 
-                return ['status' => $exception->response_status->status, 'errMsg' => 'Invalid Ticket']; 
+                return ['status' => 'Invalid Ticket']; 
             }			
         }
 
@@ -188,7 +214,8 @@ class ClientController extends Controller
             "binusianid" => $request->binusianid,
             "department" => $request->user_department,
             "directReportsEmail" => $directReportsEmail,
-            "expiry_date" => $request->expiry_date
+            "expiry_date" => $request->expiry_date,
+            "notes" => $request->user_notes
 
             //BISA PASS YANG LEBIH DETAIL KALAU UDAH ADA, NAMA VPN MISALNYA
         );
@@ -214,7 +241,13 @@ class ClientController extends Controller
     	}
 
         $ticket = $request->number;
-
+        // 1. Semua tiket yang g ada di database keluar error ini jadinya kalo pake empty
+        // if(empty(VpnUser::where('no_ticket', $ticket)->first())){
+        //     return ['status' => 'Ticket sudah pernah di generate!'];
+        // }
+        if(VpnUser::where('no_ticket', $ticket)->first()){
+            return ['status' => 'Ticket sudah pernah di generate!'];
+        }
         $client = new Client([
             'base_uri' => 'https://ithelpdesk.apps.binus.edu/api/v3/',
         ]);
@@ -231,9 +264,10 @@ class ClientController extends Controller
                 $exception = (string) $e->getResponse()->getBody();
                 $exception = json_decode($exception);
 
-                return ['status' => $exception->response_status->status]; 
+                return ['status' => $exception->response_status->status];
             }			
         }
+        // 2. Kalo statusnya 3-Resolved ticketnya masih bisa di generate, tapi kalo closed keluar ini.
         $body = json_decode($response->getBody());
         if($body->request->status->id == "3"){
             return response(["link" => "Ticket is ". $body->request->status->name,'status' => 'Ticket is already closed!']);
@@ -244,7 +278,7 @@ class ClientController extends Controller
         //VALIDASI CEK KE DB PUNYA VPN/GA
         //TERUS SMTP
         $ticket = Crypt::encrypt($ticket);
-        $url = "http://rc.mikman.beta.binus.local/login/request=" . $ticket;
+        $url = "http://mikman.beta.binus.local/login/request=" . $ticket;
         if(empty(User::where('email', $body->request->requester->email_id)->first()->email)){
             $smtp = new SendEmailController();
             $data = array (
@@ -435,6 +469,20 @@ class ClientController extends Controller
     }
 
     public function loginEmailLDAP(Request $request){
+        ///----------------------- DATA DARI DB-------------------------------
+        $UserId = User::where('email',$request->password_name."@binus.edu")->value('id');
+        $userGroupId = VpnUser::where('user_id',$UserId)->value('vpn_user_group_id');
+
+        // NGECEK DAN DAPETIN ALLOW ADDRESS UNTUK ACCESSLIST YANG AKTIF PER DEPARMTMENT
+        // $addressAllow = VpnAclList::where('vpn_user_group_id',$userGroupId)->where('completed','=','1')->pluck('address');
+
+        // NGECEK DAN DAPETIN ALLOW ADDRESS UNTUK ACCESSLIST YANG AKTIF PER USER
+        $addressAllow = VpnAclList::where('vpn_user_id',$UserId)->where('active','=','1')->pluck('address');
+        $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
+        $status = VpnUser::where('vpn_username',$vpnUsername)->value('active');
+        $noTicket = VpnUser::where('user_id',$UserId)->value('no_ticket');
+        $vpnStatus = date("d-m-Y",strtotime("-1 days",strtotime(VpnUser::where('vpn_username',$vpnUsername)->value('expiry_date'))));
+        // --------------------------DATA DARI DB-----------------------------
          if($request->ticket!=null){
             //CEK DULU APAKAH USER yang login pake link ini adalah user yang request?
             $user = array (
@@ -456,29 +504,41 @@ class ClientController extends Controller
                 $encryptedData[$key] = $encryptedValue;
             }
             // dd(Crypt::decrypt($encryptedData['ticket']));
-
-            return view('pages.client.register')->with(array('data' => $data, 'encryptedData' => $encryptedData));
+            /// UNTUK NGECEK ADD ACCESS
+                // USER BELUM PERNAH REGIST
+            if($UserId==NULL){
+                // return back()->withErrors(["You don't have VPN Account, Please request from IT Helpdesk!"]);
+                return view('pages.client.register')->with(array('data' => $data, 'encryptedData' => $encryptedData));
+            }else{
+                // KIRIM USER KE FORM ADD ACCESS
+                return view('/pages/client/dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus,'ticket'=>$request->ticket]);
+                // return redirect()->route('dashboardVPN')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus,'ticket'=>$request->ticket]);
+            }
         }else{
             if($this->checkLDAPBind($request) != 'valid')
                 return back()->withErrors(['Invalid Email / Password!']);
             else
                 $data = $this->checkLDAPManager($request);
-            
-            $UserId = User::where('email',$request->password_name."@binus.edu")->value('id');
-            $userGroupId = VpnUser::where('user_id',$UserId)->value('vpn_user_group_id');
-            $addressAllow = VpnAclList::where('vpn_user_group_id',$userGroupId)->where('completed','=','1')->pluck('address');
-            // dd($addressAllow);
-            $vpnUsername = VpnUser::where('user_id',$UserId)->value('vpn_username');
-            $status = VpnUser::where('vpn_username',$vpnUsername)->value('completed');
-            $noTicket = VpnUser::where('user_id',$UserId)->value('no_ticket');
-            $vpnStatus = date("d-m-Y",strtotime("-1 days",strtotime(VpnUser::where('vpn_username',$vpnUsername)->value('expiry_date'))));
-            // dd($status);
-            if($status==1){
-                return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus]);
-            }else if($status==0){
-                return view('pages.client.dashboard')->with(['ticket'=>$noTicket,'managerName'=>$data['manager_name'],'managerEmail'=>$data['manager_email'],'username'=>$data['user_name']]);
-            }
+            // NGAMBIL DATA USER DARI DB
+                // USER BELUM PERNAH PUNYA AKUN TAPI PENGEN LOGIN
+                if($UserId==NULL){
+                    return back()->withErrors(["You don't have VPN Account, Please request from IT Helpdesk!"]);
+                }else{
+                    // CEK STATUSNYA SUDAH SELESAI APA KAGAK (GW AMBIL DARI COMPLETED, BISA DI GANTI KE ACTIVE)
+                    // STATUS=1 KALO UDAH SELESAI
+                    if($status==1){
+                        return view('pages.client.dashboard')->with(['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow,'status'=>$status,'vpnStatus'=>$vpnStatus]);
+                    }else if($status==0){
+                    // STATUS=0 KALO BELUM SELESAI
+                        return view('pages.client.dashboard')->with(['ticket'=>$noTicket,'managerName'=>$data['manager_name'],'managerEmail'=>$data['manager_email'],'username'=>$data['user_name']]);
+                    }
+                }
+            // }
             // return redirect()->route('clientDashboard',['data'=>$data,'vpnUsername'=>$vpnUsername,'address'=>$addressAllow]);
         }
+    }
+
+    public function showDashboard(){
+        return view('/pages/client/dashboard');     
     }
 }

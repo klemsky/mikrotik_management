@@ -16,9 +16,9 @@
     <script src="{{asset('dist/js/bootstrap.min.js')}}"></script>
     <script src="{{asset('binus-bootstrap/js/plugins/accordion-toggle.js')}}"></script>
     <script type="text/javascript" charset="utf8" src="{{asset('DataTables/datatables.js')}}"></script>
-    <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>
     <link rel="stylesheet" href="{{asset('css/client/clientRegister.css')}}">
+    <script type="text/javascript" src="{{asset('js/mikman.js')}}"></script>
 </head>
 <body>
 	<div class="register">
@@ -76,6 +76,10 @@
                                         <label>Department &nbsp;<i class="icon-checklist"></i></label>
                                         <input type="text" class="input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
                                         <input type="hidden" value="{{$encryptedData['user_department']}}" name="user_department">
+                                    </div>
+                                    <div class="custom-textbox">
+                                        <label>Reason / Necessity &nbsp;<i class="icon-checklist"></i></label>
+                                        <input type="text" class="input-form" name="user_notes" style="background-color: white;">
                                     </div>
                                     <div class="custom-radio">
                                             <input type="radio" class="inputInlineBlock" class="input-form" id="rbPermanent" name="rbTemp" onclick="hideTime()" value="perm">

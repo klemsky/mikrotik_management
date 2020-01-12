@@ -69,7 +69,7 @@ function insertRegistrationForm(){
                 });
             }else{
                 if(response.status == 'failed')
-                    showError(response.errMsg);
+                showError(response.errMsg);
                 $('#btn-submit-form').prop('disabled',false);
             }
         },
@@ -215,7 +215,10 @@ function showDetailRequest(data){
     else if(data['completed']==0 && data['rejected']==0 && data['active']==1)
         strBody += 'Created, Not sent' + '<br><br>';
     else if(data['completed']==1 && data['rejected']==0 && data['active']==1)
-        strBody += 'Created, Sent' + '<br><br>';    
+        strBody += 'Created, Sent' + '<br><br>';
+    else if(data['active']==2)
+        strBody += 'Created, Disabled' + '<br><br>';  
+
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '';
@@ -230,7 +233,10 @@ function showDetailRequest(data){
     strFooter += '<button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>';
     if(data['remote_address'] == null || data['remote_address'] == "")
         strFooter += '<button type="button" class="btn btn-primary" onclick=showLoginModal("assign-address")>Assign VPN Address</button>';
-    strFooter += '<button type="button" class="btn btn-info" onclick=showLoginModal("create-vpn")>Create VPN Account</button>';
+    if(data['completed']==0 && data['rejected']==0 && data['active']==1)
+        strFooter += '<button type="button" class="btn btn-success" onclick=showLoginModal("send-vpn")>Send Credential</button>';
+    else
+        strFooter += '<button type="button" class="btn btn-info" onclick=showLoginModal("create-vpn")>Create VPN Account</button>';
     
     $('#modal-header').html(strTitle);
     $('#modal-body').html(strBody);
@@ -322,7 +328,14 @@ function showDetailVPN(data){
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '<strong>Status VPN:</strong><br>';
-    strBody += (data['completed']==0 && data['active']==0)?'Not created':'' + '<br>';
+    if(data['completed']==0 && data['rejected']==0 && data['active']==0)
+        strBody += 'Not created' + '<br><br>';
+    else if(data['completed']==0 && data['rejected']==0 && data['active']==1)
+        strBody += 'Created, Not sent' + '<br><br>';
+    else if(data['completed']==1 && data['rejected']==0 && data['active']==1)
+        strBody += 'Created, Sent' + '<br><br>';
+    else if(data['active']==2)
+        strBody += 'Created, Disabled' + '<br><br>';
     strBody += '</div>';
     strBody += '<div class="col-md-4">';
     strBody += '';
@@ -335,9 +348,14 @@ function showDetailVPN(data){
     var strFooter = '';
 
     strFooter += '<button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>';
+    if(data['completed']==0 && data['rejected']==0 && data['active']==1)
+        strFooter += '<button type="button" class="btn btn-success" onclick=showLoginModal("send-vpn")>Send Credential</button>';
     strFooter += '<button type="button" class="btn btn-warning" onclick=showLoginModal("edit-vpn")>Edit VPN Account</button>';
-    strFooter += '<button type="button" class="btn btn-danger" onclick=showLoginModal("disable-vpn")>Disable VPN Account</button>';
-    
+    if(data['completed']==0 && data['rejected']==0 && data['active']==1)
+        strFooter += '<button type="button" class="btn btn-danger" onclick=showLoginModal("disable-vpn")>Disable VPN Account</button>';
+    else if(data['active']==2)
+        strFooter += '<button type="button" class="btn btn-success" onclick=showLoginModal("enable-vpn")>Enable VPN Account</button>';
+
     $('#modal-header').html(strTitle);
     $('#modal-body').html(strBody);
     $('#modal-footer').html(strFooter);
@@ -346,6 +364,7 @@ function showDetailVPN(data){
 }
 
 function insertDataTables(datas){
+    console.log(datas);
     $('.table-data-container table').empty();
     var strHTML = "";
 
@@ -353,7 +372,7 @@ function insertDataTables(datas){
     strHTML += "<thead>";
     strHTML += "<tr>";
     $.each(datas[0],function(key,value){
-        if(key != 'acl_lists' && key != 'user_id')
+        if(key != 'acl_lists' && key != 'user_id' && key != 'active')
             strHTML += "<th>" + key + "</th>";
     });
     strHTML += "</tr>";
@@ -364,10 +383,13 @@ function insertDataTables(datas){
         if(datas[key]['status'] != '4-Closed'){
             strHTML += "<tr ";
             if(datas[key]['acl_lists'] == null)
-                strHTML += "ondblclick=detailRequest('"+datas[key]['user_id']+"') style='cursor:pointer;'";
+                strHTML += "ondblclick=detailRequest('"+datas[key]['user_id']+"')";
             else
-                strHTML += "ondblclick=detailVPN('"+datas[key]['user_id']+"') style='cursor:pointer;'";
-            strHTML += ">";
+                strHTML += "ondblclick=detailVPN('"+datas[key]['user_id']+"')";
+            if(datas[key]['active'] != null && datas[key]['active'] != "" && datas[key]['active'] == 2)
+                strHTML += " style='cursor:pointer; color:silver'>";
+            else
+                strHTML += " style='cursor:pointer;'>";
             $.each(datas[key],function(key,value){
                 if(typeof(value) === 'object'){
                     // strHTML += "<td>";
@@ -375,7 +397,7 @@ function insertDataTables(datas){
                     //     strHTML += value['address'] + '<br>';
                     // });
                     // strHTML += "</td>";
-                }else if(key != 'user_id'){
+                }else if(key != 'user_id' && key != 'active'){
                     strHTML += "<td>";
                     strHTML += value;
                     strHTML += "</td>";
@@ -443,12 +465,25 @@ function relogin(){
                 insertDataTables(response.datas);
             }
             else if(response.command == 'create-vpn'){
-                $('#modal-login').modal('hide');
-                showDetailRequest(response.data);
-                insertDataTables(response.datas);
+                if(response.status == 'failed'){
+                    $('#modal-login').modal('hide');
+                    showError(response.errMsg);
+                }
+                else{
+                    $('#modal-login').modal('hide');
+                    showDetailRequest(response.data);
+                    insertDataTables(response.datas);
+                }
             }
             else if(response.command == 'show-vpn'){
                 insertDataTables(response.data);
+                $('#modal-login').modal('hide');
+                $('.led-red').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'red','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #600 0 -1px 4px, #F00 0 2px 6px'});
+                $('.led-green').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'#690','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #460 0 -1px 4px, #7D0 0 2px 6px'});
+            }
+            else if(response.command == 'disable-vpn' || response.command == 'enable-vpn' || response.command == 'edit-vpn'){
+                showDetailVPN(response.data);
+                insertDataTables(response.datas);
                 $('#modal-login').modal('hide');
                 $('.led-red').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'red','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #600 0 -1px 4px, #F00 0 2px 6px'});
                 $('.led-green').css({'margin-left':'2px','width':'12px','height':'12px','background-color':'#690','border-radius':'50%','box-shadow':'#000 0 -1px 2px 1px, inset #460 0 -1px 4px, #7D0 0 2px 6px'});
@@ -504,6 +539,8 @@ function showLink(){
                 // },700);
                 $("#link").val(response.link);
                 $('#btnCopyTC').show();
+                $('#ticket_submitBtn').prop('disabled',false);
+
                 // console.log('')
             }else{
                 // $('.is-error').show();
@@ -522,6 +559,7 @@ function copyTC(){
     copyText.select();
     document.execCommand("copy");
     showSuccess("Link copied to clipboard");
+    $('#link').val('');
 }
 
 function changeAsIType(){

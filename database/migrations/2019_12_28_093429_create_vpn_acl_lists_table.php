@@ -14,7 +14,9 @@ class CreateVpnAclListsTable extends Migration
     public function up()
     {
         Schema::create('vpn_acl_lists', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->unsignedBigInteger('vpn_user_group_id');
+            $table->unsignedBigInteger('vpn_user_id');
             $table->bigInteger('no_ticket')->nullable();
             $table->string('request_type');
             $table->string('note');
@@ -23,6 +25,7 @@ class CreateVpnAclListsTable extends Migration
             $table->boolean('rejected');
             $table->boolean('active');
             $table->foreign('vpn_user_group_id')->references('id')->on('vpn_user_groups');
+            $table->foreign('vpn_user_id')->references('id')->on('vpn_users');
             $table->timestamps();
         });
     }

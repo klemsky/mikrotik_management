@@ -14,11 +14,12 @@
     
     <link rel="stylesheet" href="{{asset('css/main.css')}}">
     <link rel="stylesheet" href="{{asset('css/sidebar-themes.css')}}">
+    
     <!-- <link rel="stylesheet" href="{{asset('binus-bootstrap/css/themes/edu/css/style.css')}}"> -->
     <link rel="stylesheet" href="{{asset('dist/css/bootstrap.min.css')}}">
     <link rel="shortcut icon" type="image/png" href="{{asset('img/icon.png')}}" />
     <link rel="stylesheet" type="text/css" href="{{asset('DataTables/datatables.css')}}">
- 
+    
     {{--Swall Fire--}}
     {{--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>--}}
     <script type="text/javascript" src="{{asset('js/sweetalert2.all.min.js')}}"></script>

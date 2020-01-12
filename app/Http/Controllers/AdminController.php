@@ -19,6 +19,7 @@ use GuzzleHttp\Exception\RequestException;
 use PEAR2\Net\RouterOS\Exception as RouterOSException;
 use PEAR2\Net\RouterOS\SocketException;
 use PEAR2\Net\Transmitter\Exception as TransmitterException;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -59,14 +60,15 @@ class AdminController extends Controller
         foreach ($dataInt as $key => $value) {
             $string .= ' ' . $dataInt[$key]('name');
         }
-        $dataPPP = $client->sendSync(new RouterOS\Request('/ppp secret print'));
         
         $dataAll = VpnUser::select('*')
         ->leftJoin('users','vpn_users.user_id', '=','users.id')
+        ->where('remote_address','!=','')
         ->get();
 
         $data = VpnUser::select(['user_id','vpn_username as vpn name','name'])
         ->leftJoin('users','vpn_users.user_id', '=','users.id')
+        ->where('remote_address','!=','')
         ->get();
 
         foreach ($dataAll as $key => $value) {
@@ -77,6 +79,7 @@ class AdminController extends Controller
             // $data[$key]['acl_group_name_allow'] = VpnUserGroup::select('acl_group_name_allow')->where('department_id',$dataAll[$key]['department_id'])->first()['acl_group_name_allow'];
             $data[$key]['acl_lists'] = DB::select("SELECT `address`, `no_ticket`, `completed`, `rejected`, `active` FROM vpn_acl_lists WHERE `vpn_user_group_id` = ".$dataAll[$key]['vpn_user_group_id']." ORDER BY INET_ATON(`address`)");
             $data[$key]['status'] = strpos($string, $dataAll[$key]['vpn_username']) ? '<div class="led-green">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Online</div>' : '<div class="led-red">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Offline</div>';
+            $data[$key]['active'] = $dataAll[$key]['active'];
         }
 
         return [
@@ -343,40 +346,21 @@ class AdminController extends Controller
         parse_str($request->form, $form);
         
         $vpn_user = VpnUser::where('id',$form['id'])->first();
+        if($vpn_user->remote_address == null || $vpn_user->remote_address == "")
+            return ['command' => $request->command, 'status' => 'failed', 'errMsg' => 'Please assign the VPN address first!'];
+        
         $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
-        $acl_lists = VpnAclList::where('vpn_user_group_id',$form['vpn_user_group_id'])->where('no_ticket',$form['no_ticket'])->get();
-        $new_date = date("M/d/Y H:i:s",strtotime($vpn_user->expiry_date));
-
-        if($vpn_user->vpn_username != $form['vpn_username'])
-            $vpn_user->vpn_username = $form['vpn_username'];
-        if($vpn_user->remote_address != $form['remote_address'])
-            $vpn_user->remote_address = $form['remote_address'];
-        if($vpn_user_group->local_address != $form['local_address'])
-            $vpn_user_group->local_address = $form['local_address'];
-
-        $vpn_user->active = 1;
-        foreach ($acl_lists as $key => $value) {
-            $acl_lists[$key]->active = 1;
-            $acl_lists[$key]->save();
-        }
+        $acl_lists = VpnAclList::where('vpn_user_group_id',$vpn_user->vpn_user_group_id)->where('no_ticket',$form['no_ticket'])->get();
         
         $data = $this->getDetailRequest($form['id']);
         
-        $client->sendSync(new RouterOS\Request('/ppp secret add name="'.$form['vpn_username'].'" password="binus123" service=l2tp profile=default local-address="'.$form['local_address'].'" remote-address="'.$form['remote_address'].'"'));
+        $client->sendSync(new RouterOS\Request('/ppp secret add name="'.$vpn_user->vpn_username.'" password="'.Str::random(8).'" service=l2tp profile=default local-address="'.$vpn_user_group->local_address.'" remote-address="'.$vpn_user->remote_address.'"'));
 
-        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$form['remote_address'].' list='.$vpn_user_group->acl_group_name.''));
+        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$vpn_user->remote_address.' list='.$vpn_user_group->acl_group_name.''));
         
         foreach ($data['access_list_ticket'] as $key => $value) {
             $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$value->address.' list='.$vpn_user_group->acl_group_name_allow.''));
-            // if(strpos($addAddrListAllow[0]('message') , 'failure') == 0)
-            //     return ['command' => $request->command,'message' => $addAddrListAllow[0]('message') . ' Address List Allow : ' . $value->address];
         }
-
-        // if(strpos($userPPP[0]('message') , 'failure') == 0)
-        //     return ['command' => $request->command,'message' => $userPPP[0]('message') . ' Secret'];
-   
-        // if(strpos($addAddrList[0]('message') , 'failure') == 0)
-        //     return ['command' => $request->command,'message' => $addAddrList[0]('message') . ' Address List'];
 
         $filterRule = $client->sendSync(new RouterOS\Request('/ip firewall filter print'));
         $lastRule = count($filterRule) - 2;
@@ -385,19 +369,28 @@ class AdminController extends Controller
             $string .= ' '. $filterRule[$key]('src-address-list');
         }
         if(strpos($string, $form['acl_group_name']) == false){
-            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name'].' dst-address-list='.$form['acl_group_name_allow'].' place-before='.$lastRule.' comment="'.$form['department_name'].' - '.$form['acl_group_name'].'"'));
-            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name_allow'].' dst-address-list='.$form['acl_group_name'].' place-before='.$lastRule.''));
+            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$vpn_user_group->acl_group_name.' dst-address-list='.$vpn_user_group->acl_group_name_allow.' place-before='.$lastRule.' comment="'.$data['department_name'].' - '.$vpn_user_group->acl_group_name.'"'));
+            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$vpn_user_group->acl_group_name_allow.' dst-address-list='.$vpn_user_group->acl_group_name.' place-before='.$lastRule.''));
         }
 
-        $client->sendSync(new RouterOS\Request('/system scheduler add name="'.$form['vpn_username'].'" start-date="'.explode(" ", $new_date)[0].'" start-time="'.explode(" ", $new_date)[1].'" interval="00:00:00" on-event="/ppp secret disable '.$form['vpn_username'].'"'));
+        if($vpn_user->expiry_date != null || $vpn_user->expiry_date != ""){
+            $new_date = date("M/d/Y H:i:s",strtotime($vpn_user->expiry_date));
+            $client->sendSync(new RouterOS\Request('/system scheduler add name="'.$vpn_user->vpn_username.'" start-date="'.explode(" ", $new_date)[0].'" start-time="'.explode(" ", $new_date)[1].'" interval="00:00:00" on-event="/ppp secret disable '.$vpn_user->vpn_username.'"'));
+        }
+
+        $vpn_user->active = 1;
+        foreach ($acl_lists as $key => $value) {
+            $acl_lists[$key]->active = 1;
+            $acl_lists[$key]->save();
+        }
         $vpn_user->save();
-        $vpn_user_group->save();
 
         $data = $this->getDetailRequest($form['id']);
         $datas = $this->getAllRequest();
 
         return [
             'command' => $request->command,
+            'status' => 'success',
             'data' => $data,
             'datas' => $datas
         ];
@@ -409,36 +402,267 @@ class AdminController extends Controller
         
         $form = array();
         parse_str($request->form, $form);
+        
         $vpn_user = VpnUser::where('id',$form['id'])->first();
         $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
 
-        $data = $this->getDetailRequest($form['id']);
+        // Edit VPN Username
+        $id = '';
+        if($form['vpn_username'] != $vpn_user->vpn_username){
+            $printRequest = new RouterOS\Request('/ppp secret print');
+            $printRequest->setArgument('.proplist', '.id');
+            $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+            $id = $client->sendSync($printRequest)->getProperty('.id');
+
+            $setRequest = new RouterOS\Request('/ppp secret set');
+            $setRequest->setArgument('numbers', $id);
+            $setRequest->setArgument('name', $form['vpn_username']);
+            $client->sendSync($setRequest);
+
+            // Update Scheduler VPN User
+            $printRequest = new RouterOS\Request('/system scheduler print');
+            $printRequest->setArgument('.proplist', '.id');
+            $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+            $id = $client->sendSync($printRequest)->getProperty('.id');
+
+            $setRequest = new RouterOS\Request('/system scheduler set');
+            $setRequest->setArgument('numbers', $id);
+            $setRequest->setArgument('name', $form['vpn_username']);
+            $setRequest->setArgument('on-event', '/ppp secret disable '.$form['vpn_username']);
+            $client->sendSync($setRequest);
+
+            $vpn_user->vpn_username = $form['vpn_username'];
+        }
+
+        // Edit VPN Address List Group Name
+        $id = '';
+        if($form['acl_group_name'] != $vpn_user_group->acl_group_name){
+            $printRequest = new RouterOS\Request('/ip firewall address-list print');
+            $printRequest->setArgument('.proplist', '.id');
+            $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name));
+            $id = $client->sendSync($printRequest);
+            foreach ($id as $key => $value) {
+                if($id[$key]('.id') != null && $id[$key]('.id') != ''){
+                    $setRequest = new RouterOS\Request('/ip firewall address-list set');
+                    $setRequest->setArgument('numbers', $id[$key]('.id'));
+                    $setRequest->setArgument('list', $form['acl_group_name']);
+                    $client->sendSync($setRequest);
+                }
+            }
+
+            $vpn_user_group->acl_group_name = $form['acl_group_name'];
+        }
+
+        // Edit VPN Address List Group Allow
+        $id = '';
+        if($form['acl_group_name_allow'] != $vpn_user_group->acl_group_name_allow){
+            $printRequest = new RouterOS\Request('/ip firewall address-list print');
+            $printRequest->setArgument('.proplist', '.id');
+            $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name_allow));
+            $id = $client->sendSync($printRequest);
+            foreach ($id as $key => $value) {
+                if($id[$key]('.id') != null && $id[$key]('.id') != ''){
+                    $setRequest = new RouterOS\Request('/ip firewall address-list set');
+                    $setRequest->setArgument('numbers', $id[$key]('.id'));
+                    $setRequest->setArgument('list', $form['acl_group_name_allow']);
+                    $client->sendSync($setRequest);
+                }
+            }
+            $vpn_user_group->acl_group_name_allow = $form['acl_group_name_allow'];
+        }
+
+        // Edit VPN Expiry Date
+        $id = '';
+        if($form['expiry_date'] != $vpn_user->expiry_date){
+            if($vpn_user->expiry_date == null || $vpn_user->expiry_date == ""){
+                $new_date = date("M/d/Y H:i:s",strtotime($form['expiry_date']));
+                $client->sendSync(new RouterOS\Request('/system scheduler add name="'.$vpn_user->vpn_username.'" start-date="'.explode(" ", $new_date)[0].'" start-time="'.explode(" ", $new_date)[1].'" interval="00:00:00" on-event="/ppp secret disable '.$vpn_user->vpn_username.'"'));
+
+                $vpn_user->expiry_date = $form['expiry_date'];
+            }
+            else if($form['expiry_date'] == "Permanent"){
+                $printRequest = new RouterOS\Request('/system scheduler print');
+                $printRequest->setArgument('.proplist', '.id');
+                $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+                $id = $client->sendSync($printRequest)->getProperty('.id');
+
+                $removeRequest = new RouterOS\Request('/system scheduler remove');
+                $removeRequest->setArgument('numbers', $id);
+                $client->sendSync($removeRequest);
+
+                $vpn_user->expiry_date = null;
+            }
+            else{
+                $new_date = date("M/d/Y H:i:s",strtotime($form['expiry_date']));
+                $printRequest = new RouterOS\Request('/system scheduler print');
+                $printRequest->setArgument('.proplist', '.id');
+                $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+                $id = $client->sendSync($printRequest)->getProperty('.id');
+
+                $setRequest = new RouterOS\Request('/system scheduler set');
+                $setRequest->setArgument('numbers', $id);
+                $setRequest->setArgument('start-date', explode(" ", $new_date)[0]);
+                $setRequest->setArgument('start-time', explode(" ", $new_date)[1]);
+                $client->sendSync($setRequest);
+            
+                $vpn_user->expiry_date = $form['expiry_date'];
+            }
+        }
+
+        $vpn_user->save();
+        $vpn_user_group->save();
         
-        $client->sendSync(new RouterOS\Request('/ppp secret add name="'.$form['vpn_username'].'" password="binus123" service=l2tp profile=default local-address="'.$form['local_address'].'" remote-address="'.$form['remote_address'].'"'));
+        $data = $this->getDetailVPN($form['id']);
+        $datas = $this->getAllVPNData($request)['data'];
 
-        $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$form['remote_address'].' list='.$form['acl_group_name'].''));
+        return [
+            'command' => $request->command,
+            'data' => $data,
+            'datas' => $datas
+        ];
+    }
+
+    public function disableVPNMikroTik(Request $request){
+        $client = $this->relogin($request->password);
         
-        foreach ($data['access_list_ticket'] as $key => $value) {
-            $client->sendSync(new RouterOS\Request('/ip firewall address-list add address='.$value->address.' list='.$form['acl_group_name_allow'].''));
-            // if(strpos($addAddrListAllow[0]('message') , 'failure') == 0)
-            //     return ['command' => $request->command,'message' => $addAddrListAllow[0]('message') . ' Address List Allow : ' . $value->address];
+        $form = array();
+        parse_str($request->form, $form);
+        
+        $vpn_user = VpnUser::where('id',$form['id'])->first();
+        $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
+        $acl_lists = VpnAclList::where('vpn_user_group_id',$vpn_user->vpn_user_group_id)
+        ->where('vpn_user_id',$vpn_user->id)
+        ->get();
+        
+        $addressAllow = array();
+        foreach ($acl_lists as $key => $value) 
+            array_push($addressAllow, $value->address);
+        natsort($addressAllow);
+
+        // Disable VPN Account
+        $id = '';
+        $printRequest = new RouterOS\Request('/ppp secret print');
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+        $id = $client->sendSync($printRequest)->getProperty('.id');
+
+        $disableRequest = new RouterOS\Request('/ppp secret disable');
+        $disableRequest->setArgument('numbers', $id);
+        $client->sendSync($disableRequest);
+
+        // Disable VPN Address List Group Name
+        $id = '';
+        $printRequest = new RouterOS\Request('/ip firewall address-list print');
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name));
+        $printRequest->setQuery(RouterOS\Query::where('address', $vpn_user->remote_address));
+        $id = $client->sendSync($printRequest)->getProperty('.id');
+
+        $disableRequest = new RouterOS\Request('/ip firewall address-list disable');
+        $disableRequest->setArgument('numbers', $id);
+        $client->sendSync($disableRequest);
+
+        // Disable VPN Address List Group Allow
+        $id = array();;
+        $printRequest = new RouterOS\Request('/ip firewall address-list print');
+        
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name_allow));
+        foreach ($addressAllow as $key => $value) {
+            $printRequest->setQuery(RouterOS\Query::where('address', $value));
+            array_push($id, $client->sendSync($printRequest)->getProperty('.id'));
         }
 
-        // if(strpos($userPPP[0]('message') , 'failure') == 0)
-        //     return ['command' => $request->command,'message' => $userPPP[0]('message') . ' Secret'];
-   
-        // if(strpos($addAddrList[0]('message') , 'failure') == 0)
-        //     return ['command' => $request->command,'message' => $addAddrList[0]('message') . ' Address List'];
+        $disableRequest = new RouterOS\Request('/ip firewall address-list disable');
+        foreach ($id as $key => $value) {
+            $disableRequest->setArgument('numbers', $value);
+            $client->sendSync($disableRequest);
+            $acl_lists[$key]->active = 2;
+            $acl_lists[$key]->save();
+        }
+        
+        $vpn_user->active = 2;
+        $vpn_user->save();
 
-        $filterRule = $client->sendSync(new RouterOS\Request('/ip firewall filter print'));
-        $lastRule = count($filterRule) - 2;
-        $string = '';
-        foreach ($filterRule as $key => $value) {
-            $string .= ' '. $filterRule[$key]('src-address-list');
+        $data = $this->getDetailVPN($form['id']);
+        $datas = $this->getAllVPNData($request)['data'];
+
+        return [
+            'command' => $request->command,
+            'data' => $data,
+            'datas' => $datas
+        ];
+    }
+
+    public function enableVPNMikroTik(Request $request){
+        $client = $this->relogin($request->password);
+        
+        $form = array();
+        parse_str($request->form, $form);
+        
+        $vpn_user = VpnUser::where('id',$form['id'])->first();
+        $vpn_user_group = VpnUserGroup::where('department_id',$form['department_id'])->first();
+        $acl_lists = VpnAclList::where('vpn_user_group_id',$vpn_user->vpn_user_group_id)
+        ->where('vpn_user_id',$vpn_user->id)
+        ->get();
+        
+        $addressAllow = array();
+        foreach ($acl_lists as $key => $value) 
+            array_push($addressAllow, $value->address);
+        natsort($addressAllow);
+
+        // Enable VPN Account
+        $id = '';
+        $printRequest = new RouterOS\Request('/ppp secret print');
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('name', $vpn_user->vpn_username));
+        $id = $client->sendSync($printRequest)->getProperty('.id');
+
+        $enableRequest = new RouterOS\Request('/ppp secret enable');
+        $enableRequest->setArgument('numbers', $id);
+        $client->sendSync($enableRequest);
+
+        // Enable VPN Address List Group Name
+        $id = '';
+        $printRequest = new RouterOS\Request('/ip firewall address-list print');
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name));
+        $printRequest->setQuery(RouterOS\Query::where('address', $vpn_user->remote_address));
+        $id = $client->sendSync($printRequest)->getProperty('.id');
+
+        $enableRequest = new RouterOS\Request('/ip firewall address-list enable');
+        $enableRequest->setArgument('numbers', $id);
+        $client->sendSync($enableRequest);
+
+        // Enable VPN Address List Group Allow
+        $id = array();;
+        $printRequest = new RouterOS\Request('/ip firewall address-list print');
+        
+        $printRequest->setArgument('.proplist', '.id');
+        $printRequest->setQuery(RouterOS\Query::where('list', $vpn_user_group->acl_group_name_allow));
+        foreach ($addressAllow as $key => $value) {
+            $printRequest->setQuery(RouterOS\Query::where('address', $value));
+            array_push($id, $client->sendSync($printRequest)->getProperty('.id'));
         }
-        if(strpos($string, $form['acl_group_name']) == false){
-            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name'].' dst-address-list='.$form['acl_group_name_allow'].' place-before='.$lastRule.' comment="'.$form['department_name'].' - '.$form['acl_group_name'].'"'));
-            $client->sendSync(new RouterOS\Request('/ip firewall filter add action=accept chain=forward src-address-list='.$form['acl_group_name_allow'].' dst-address-list='.$form['acl_group_name'].' place-before='.$lastRule.''));
+
+        $enableRequest = new RouterOS\Request('/ip firewall address-list enable');
+        foreach ($id as $key => $value) {
+            $enableRequest->setArgument('numbers', $value);
+            $client->sendSync($enableRequest);
+            $acl_lists[$key]->active = 1;
+            $acl_lists[$key]->save();
         }
+        
+        $vpn_user->active = 1;
+        $vpn_user->save();
+        
+        $data = $this->getDetailVPN($form['id']);
+        $datas = $this->getAllVPNData($request)['data'];
+
+        return [
+            'command' => $request->command,
+            'data' => $data,
+            'datas' => $datas
+        ];
     }
 }

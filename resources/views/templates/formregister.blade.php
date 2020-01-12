@@ -3,13 +3,13 @@
 <p>Dear IT Helpdesk,</p>
 
 Berikut adalah form pendaftaraan akun VPN yang telah Bapak/Ibu {{ $data["name"] ?? ''}} isi melalui aplikasi pendaftaran VPN.
-<table class="table-form-number">
-    <tr class="form-number">
+<table id="table-form-number">
+    <tr id="form-number">
         <td>FM-BINUS-AA-FPT-266/R2</td>
     </tr>
 </table>
 
-<table class="table-register-form">
+<table id="table-register-form">
     <tr>
         <th colspan="9">FORM PERMINTAAN ACCOUNT VPN</th>
     </tr>
@@ -51,31 +51,35 @@ Berikut adalah form pendaftaraan akun VPN yang telah Bapak/Ibu {{ $data["name"] 
         <td rowspan="{{ $data['countAccess'] ?? '1' }}">:</td>
         <td colspan="7">{{ $data['access'][0] ?? '' }}</td>
     </tr>
-    @if(isset($data['countAccess'])) @if($data['countAccess'] > '1') @for ($i = 1; $i
-    < $data[ 'countAccess']; $i++) <tr>
-        <td colspan="7">{{ $data['access'][$i] ?? '' }}</td>
-        </tr>
-        @endfor @endif @endif
-        <tr>
-            <td>Status VPN</td>
-            <td>:</td>
-            <td colspan="7">{{ $data['expiry_date'] ?? 'Permanent' }}</td>
-        </tr>
-        <tr>
-            <td colspan="9" class="table-header">B. Syarat dan Ketentuan</td>
-        </tr>
-        <tr>
-            <td colspan="9">1. Apaan tuh</td>
-        </tr>
-        <tr>
-            <td colspan="9">2. Apaan nih</td>
-        </tr>
-        <tr>
-            <td colspan="9">3. Apaan dah</td>
-        </tr>
-        <tr>
-            <td colspan="9">2. Apaan teh</td>
-        </tr>
+    @if(isset($data['countAccess']))
+        @if($data['countAccess'] > '1') 
+            @for ($i = 1; $i < $data[ 'countAccess']; $i++)
+            <tr>
+                <td colspan="7">{{ $data['access'][$i] ?? '' }}</td>
+            </tr>
+            @endfor
+        @endif
+    @endif
+    <tr>
+        <td>Status VPN</td>
+        <td>:</td>
+        <td colspan="7">{{ $data['expiry_date'] ?? 'Permanent' }}</td>
+    </tr>
+    <tr>
+        <td colspan="9" class="table-header">B. Syarat dan Ketentuan</td>
+    </tr>
+    <tr>
+        <td colspan="9">1. Apaan tuh</td>
+    </tr>
+    <tr>
+        <td colspan="9">2. Apaan nih</td>
+    </tr>
+    <tr>
+        <td colspan="9">3. Apaan dah</td>
+    </tr>
+    <tr>
+        <td colspan="9">2. Apaan teh</td>
+    </tr>
 </table>
 Terima kasih.
 <br>

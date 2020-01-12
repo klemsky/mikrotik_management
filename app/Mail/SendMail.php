@@ -74,6 +74,15 @@ class SendMail extends Mailable
 
 
             return $mail->view('templates.formaddaccess')->with('data', $this->data);
+        }else if($this->data["action"] == 'send_creds'){
+            $mail = $this->to($this->data['email']);
+            $mail = $this->subject('[Ticket ##RE-'. $this->data["number"] .'##] :'. $this->data["subject"]);
+            $mail = $this->from('mikman@binus.edu');
+            // $mail = $this->cc(['richie.muliawan@binus.edu','ithelpdesk@binus.edu']);
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal  in MacOS Create Guide.pdf');
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window  7 Create Guide.pdf');
+            $mail->attach('/var/www/html/laravel-richie/public/document/VPN Internal in window 10 Create Guide.pdf');
+    
         }
         // return $this->from('noreply-mikman@binus.edu')->subject('test')->view('dynamic_email_template')->with('data', $this->data);
     }

@@ -11,9 +11,9 @@
 @endsection -->
 @section('sidebar-header-user')
     @if(isset($status))
-    <strong>{{$data['user_name']}}</strong>
+    <strong>{{$data['user_name'] ?? '' }}</strong>
     @else
-    <strong>{{$username}}</strong>
+    <strong>{{$username ?? '' }}</strong>
     @endif
 @endsection
 
@@ -25,21 +25,21 @@
 <div class="sidebar-item sidebar-menu">
     <ul>
         <li class="sidebar-dropdown info active" style="padding: 0px;border-top: 1px solid #ffffff;">
-            <a href="#" id="VPN-Home" onclick="showHome()">
+            <a href="#vpnHome" id="VPN-Home" onclick="showHome()">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">VPN Home</span>
             </a>
         </li>
     </ul>
     <ul>
         <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
-            <a href="#" id="VPN-Add"  onclick="showAccess()">
+            <a href="#vpnAccess" id="VPN-Add"  onclick="showAccess()">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Add VPN Access</span>
             </a>
         </li>
     </ul>
     <ul>
         <li class="sidebar-dropdown info" style="padding: 0px;border-top: 1px solid #ffffff;">
-            <a href="#" id="VPN-Password" onclick="showPassword()">
+            <a href="#vpnPassword" id="VPN-Password" onclick="showPassword()">
                 <span class="menu-text" style="padding:10px 0 10px 10px;">Change VPN Password</span>
             </a>
         </li>
@@ -56,13 +56,13 @@
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">VPN Name  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">{{$vpnUsername}}</p></td>
+                    <td class="tdVPN"><p class="txtVPN">{{$vpnUsername ?? '' }}</p></td>
                 </tr>
                 @if(null!==$vpnStatus)
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">VPN Status </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">Temporary until <strong>{{$vpnStatus}}</strong></p></td>
+                    <td class="tdVPN"><p class="txtVPN">Temporary until <strong>{{$vpnStatus ?? '' }}</strong></p></td>
                 </tr>
                 @else
                 <tr class="trVPN">
@@ -74,22 +74,22 @@
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Name  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">{{$data['user_name']}}</p></td>
+                    <td class="tdVPN"><p class="txtVPN">{{$data['user_name'] ?? '' }}</p></td>
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Email  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">{{$data['user_email']}}</p></td>
+                    <td class="tdVPN"><p class="txtVPN">{{$data['user_email'] ?? '' }}</p></td>
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Department  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">{{$data['user_department']}}</p></td>
+                    <td class="tdVPN"><p class="txtVPN">{{$data['user_department'] ?? '' }}</p></td>
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Manager  </p></td>
                     <td class="tdVPN"><p class="txtVPN">:</p></td>
-                    <td class="tdVPN"><p class="txtVPN">{{$data['manager_name']}}</p></td>
+                    <td class="tdVPN"><p class="txtVPN">{{$data['manager_name'] ?? '' }}</p></td>
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN" style="vertical-align: text-top"><p class="txtVPN" >Access List  </p></td>
@@ -107,7 +107,7 @@
             <table class="tableVPN">
             <h3 class="infoHeader"><strong>VPN INFO</strong></h3>
                 <tr class="trVPN">
-                    <td class="tdVPN"><p class="txtVPN">Ticket Number :  <strong>{{$ticket}}</strong></p></td>
+                    <td class="tdVPN"><p class="txtVPN">Ticket Number :  <strong>{{$ticket ?? '' }}</strong></p></td>
                 </tr>
                 <tr  class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Status : <strong>Onhold</strong></p></td>
@@ -117,11 +117,11 @@
                 </tr>
                 @if(isset($secHead))
                     <tr class="trVPN">
-                        <td class="tdVPN"><p class="txtVPN">Section Head Requester: <strong>{{$secHead}}</strong><br>Email: <strong>{{$managerEmail}}</strong></p></td>
+                        <td class="tdVPN"><p class="txtVPN">Section Head Requester: <strong>{{$secHead ?? '' }}</strong><br>Email: <strong>{{$managerEmail ?? '' }}</strong></p></td>
                     </tr>
                 @endif
                 <tr class="trVPN">
-                    <td class="tdVPN"><p class="txtVPN">Manager Requester: <strong>{{$managerName}}</strong><br>Email: <strong>{{$managerEmail}}</strong></p></td>
+                    <td class="tdVPN"><p class="txtVPN">Manager Requester: <strong>{{$managerName ?? '' }}</strong><br>Email: <strong>{{$managerEmail ?? '' }}</strong></p></td>
                 </tr>
                 <tr class="trVPN">
                     <td class="tdVPN"><p class="txtVPN">Section Head IT Infrastructure and Unified Communication: <strong>Budi Ariyanto</strong><br>Email: <strong>binus_ay@binus.edu</strong></p></td>
@@ -148,27 +148,27 @@
                 <h3 class="infoHeader"><strong>ADD ACCESS</strong></h3>
                 <div class="ticketBox">
                     @if(isset($ticket))
-                        Ticket No. : &nbsp;<strong>{{$ticket}}</strong>
-                        <input type="hidden" id="ticket_number" value={{$ticket}} name="ticket">
+                        Ticket No. : &nbsp;<strong>{{$ticket ?? '' }}</strong>
+                        <input type="hidden" id="ticket_number" value="{{$ticket ?? '' }}" name="ticket">
                     @endif
                 </div>
                 <div class="custom-textbox">
                     <label>Full Name : &nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="static-input-form" value="{{$data['user_name']}}" disabled style="background-color: white;">
-                    <input type="hidden" value="{{$data['user_name']}}" name="user_name">
-                    <input type="hidden" value="{{$data['manager_name']}}" name="manager_name">
-                    <input type="hidden" value="{{$data['user_binusianid']}}" name="binusianid">
+                    <input type="text" class="static-input-form" value="{{$data['user_name'] ?? '' }}" disabled style="background-color: white;">
+                    <input type="hidden" value="{{$data['user_name'] ?? ''}}" name="user_name">
+                    <input type="hidden" value="{{$data['manager_name'] ?? ''}}" name="manager_name">
+                    <input type="hidden" value="{{$data['user_binusianid'] ?? ''}}" name="binusianid">
                 </div>
                 <div class="custom-textbox">
                     <label>Email : &nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="static-input-form" value="{{$data['user_email']}}" disabled style="background-color: white;">
-                    <input type="hidden" value="{{$data['user_email']}}" name="user_email">
-                    <input type="hidden" value="{{$data['manager_email']}}" name="manager_email">
+                    <input type="text" class="static-input-form" value="{{$data['user_email'] ?? ''}}" disabled style="background-color: white;">
+                    <input type="hidden" value="{{$data['user_email'] ?? ''}}" name="user_email">
+                    <input type="hidden" value="{{$data['manager_email'] ?? ''}}" name="manager_email">
                 </div>
                 <div class="custom-textbox">
                     <label>Department :&nbsp;<i class="icon-checklist"></i></label><br>
-                    <input type="text" class="static-input-form" value="{{$data['user_department']}}" disabled style="background-color: white;">
-                    <input type="hidden" value="{{$data['user_department']}}" name="user_department">
+                    <input type="text" class="static-input-form" value="{{$data['user_department'] ?? ''}}" disabled style="background-color: white;">
+                    <input type="hidden" value="{{$data['user_department'] ?? ''}}" name="user_department">
                 </div>
                 <!-- <div class="custom-radio">
                         <label> Waktu : </label>
@@ -246,7 +246,10 @@
                 @endif
             </table>
             </div>
-        </div>
+        <!-- </div>
+        <div id="vpnHistory" class="VPN-Content">
+            <h3 style="color: white"><h3 class="infoHeader"><strong>REQUEST VPN HISTORY</strong></h3>
+        </div> -->
         
     </div>
     <!-- <img src="{{asset('img/spiritBackground.png')}}" class="contentBackground">
@@ -301,6 +304,10 @@ $(document).ready(function(){
         });
     }
 });
-
+$(document).ready(function(){
+    if($ticket){
+        showAccess();
+    }
+});
 </script>
 @endsection
